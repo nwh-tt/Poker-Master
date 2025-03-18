@@ -1,0 +1,693 @@
+
+{
+    open: [
+        {
+            hand: "AA",
+            action: "raise",
+        },
+        {
+            hand: "AKs",
+            action: "raise",
+        },
+        {
+            hand: "AQs",
+            action: "raise",
+        },
+        {
+            hand: "AJs",
+            action: "raise",
+        },
+        {
+            hand: "ATs",
+            action: "raise",
+        },
+        {
+            hand: "A9s",
+            action: "raise",
+        },
+        {
+            hand: "A8s",
+            action: "raise",
+        },
+        {
+            hand: "A7s",
+            action: "raise",
+        },
+        {
+            hand: "A6s",
+            action: "raise",
+        },
+        {
+            hand: "A5s",
+            action: "raise",
+        },
+        {
+            hand: "A4s",
+            action: "raise",
+        },
+        {
+            hand: "A3s",
+            action: "raise",
+        },
+        {
+            hand: "A2s",
+            action: "raise",
+        },
+        {
+            hand: "AKo",
+            action: "raise",
+        },
+        {
+            hand: "AQo",
+            action: "raise",
+        },
+        {
+            hand: "AJo",
+            action: "raise",
+        },
+        {
+            hand: "ATo",
+            action: "raise",
+        },
+        {
+            hand: "A9o",
+            action: "raise",
+        },
+        {
+            hand: "A8o",
+            action: "raise",
+        },
+        {
+            hand: "A7o",
+            action: "raise",
+        },
+        {
+            hand: "A6o",
+            action: "raise",
+        },
+        {
+            hand: "A5o",
+            action: "raise",
+        },
+        {
+            hand: "A4o",
+            action: "raise",
+        },
+        {
+            hand: "A3o",
+            action: "raise",
+        },
+        {
+            hand: "A2o",
+            action: "fold",
+        },
+        
+        {
+            hand: "KK",
+            action: "raise",
+        },
+        {
+            hand: "KQs",
+            action: "raise",
+        },
+        {
+            hand: "KJs",
+            action: "raise",
+        },
+        {
+            hand: "KTs",
+            action: "raise",
+        },
+        {
+            hand: "K9s",
+            action: "raise",
+        },
+        {
+            hand: "K8s",
+            action: "raise",
+        },
+        {
+            hand: "K7s",
+            action: "raise",
+        },
+        {
+            hand: "K6s",
+            action: "raise",
+        },
+        {
+            hand: "K5s",
+            action: "raise",
+        },
+        {
+            hand: "K4s",
+            action: "raise",
+        },
+        {
+            hand: "K3s",
+            action: "raise",
+        },
+        {
+            hand: "K2s",
+            action: "raise",
+        },
+        {
+            hand: "KQo",
+            action: "raise",
+        },
+        {
+            hand: "KJo",
+            action: "raise",
+        },
+        {
+            hand: "KTo",
+            action: "raise",
+        },
+        {
+            hand: "K9o",
+            action: "raise",
+        },
+        {
+            hand: "K8o",
+            action: "raise",
+        },
+        {
+            hand: "K7o",
+            action: "fold",
+        },
+        {
+            hand: "K6o",
+            action: "fold",
+        },
+        {
+            hand: "K5o",
+            action: "fold",
+        },
+        {
+            hand: "K4o",
+            action: "fold",
+        },
+        {
+            hand: "K3o",
+            action: "fold",
+        },
+        {
+            hand: "K2o",
+            action: "fold",
+        },
+        
+        {
+            hand: "QQ",
+            action: "raise",
+        },
+        {
+            hand: "QJs",
+            action: "raise",
+        },
+        {
+            hand: "QTs",
+            action: "raise",
+        },
+        {
+            hand: "Q9s",
+            action: "raise",
+        },
+        {
+            hand: "Q8s",
+            action: "raise",
+        },
+        {
+            hand: "Q7s",
+            action: "raise",
+        },
+        {
+            hand: "Q6s",
+            action: "raise",
+        },
+        {
+            hand: "Q5s",
+            action: "raise",
+        },
+        {
+            hand: "Q4s",
+            action: "raise",
+        },
+        {
+            hand: "Q3s",
+            action: "raise",
+        },
+        {
+            hand: "Q2s",
+            action: "raise",
+        },
+        {
+            hand: "QJo",
+            action: "raise",
+        },
+        {
+            hand: "QTo",
+            action: "raise",
+        },
+        {
+            hand: "Q9o",
+            action: "raise",
+        },
+        {
+            hand: "Q8o",
+            action: "fold",
+        },
+        {
+            hand: "Q7o",
+            action: "fold",
+        },
+        {
+            hand: "Q6o",
+            action: "fold",
+        },
+        {
+            hand: "Q5o",
+            action: "fold",
+        },
+        {
+            hand: "Q4o",
+            action: "fold",
+        },
+        {
+            hand: "Q3o",
+            action: "fold",
+        },
+        {
+            hand: "Q2o",
+            action: "fold",
+        },
+        
+        {
+            hand: "JJ",
+            action: "raise",
+        },
+        {
+            hand: "JTs",
+            action: "raise",
+        },
+        {
+            hand: "J9s",
+            action: "raise",
+        },
+        {
+            hand: "J8s",
+            action: "raise",
+        },
+        {
+            hand: "J7s",
+            action: "raise",
+        },
+        {
+            hand: "J6s",
+            action: "raise",
+        },
+        {
+            hand: "J5s",
+            action: "raise",
+        },
+        {
+            hand: "J4s",
+            action: "raise",
+        },
+        {
+            hand: "J3s",
+            action: "fold",
+        },
+        {
+            hand: "J2s",
+            action: "fold",
+        },
+        {
+            hand: "JTo",
+            action: "raise",
+        },
+        {
+            hand: "J9o",
+            action: "raise",
+        },
+        {
+            hand: "J8o",
+            action: "fold",
+        },
+        {
+            hand: "J7o",
+            action: "fold",
+        },
+        {
+            hand: "J6o",
+            action: "fold",
+        },
+        {
+            hand: "J5o",
+            action: "fold",
+        },
+        {
+            hand: "J4o",
+            action: "fold",
+        },
+        {
+            hand: "J3o",
+            action: "fold",
+        },
+        {
+            hand: "J2o",
+            action: "fold",
+        },
+        
+        {
+            hand: "TT",
+            action: "raise",
+        },
+        {
+            hand: "T9s",
+            action: "raise",
+        },
+        {
+            hand: "T8s",
+            action: "raise",
+        },
+        {
+            hand: "T7s",
+            action: "raise",
+        },
+        {
+            hand: "T6s",
+            action: "raise",
+        },
+        {
+            hand: "T5s",
+            action: "fold",
+        },
+        {
+            hand: "T4s",
+            action: "fold",
+        },
+        {
+            hand: "T3s",
+            action: "fold",
+        },
+        {
+            hand: "T2s",
+            action: "fold",
+        },
+        {
+            hand: "T9o",
+            action: "raise",
+        },
+        {
+            hand: "T8o",
+            action: "fold",
+        },
+        {
+            hand: "T7o",
+            action: "fold",
+        },
+        {
+            hand: "T6o",
+            action: "fold",
+        },
+        {
+            hand: "T5o",
+            action: "fold",
+        },
+        {
+            hand: "T4o",
+            action: "fold",
+        },
+        {
+            hand: "T3o",
+            action: "fold",
+        },
+        {
+            hand: "T2o",
+            action: "fold",
+        },
+        
+        {
+            hand: "99",
+            action: "raise",
+        },
+        {
+            hand: "98s",
+            action: "raise",
+        },
+        {
+            hand: "97s",
+            action: "raise",
+        },
+        {
+            hand: "96s",
+            action: "raise",
+        },
+        {
+            hand: "95s",
+            action: "fold",
+        },
+        {
+            hand: "94s",
+            action: "fold",
+        },
+        {
+            hand: "93s",
+            action: "fold",
+        },
+        {
+            hand: "92s",
+            action: "fold",
+        },
+        {
+            hand: "98o",
+            action: "fold",
+        },
+        {
+            hand: "97o",
+            action: "fold",
+        },
+        {
+            hand: "96o",
+            action: "fold",
+        },
+        {
+            hand: "95o",
+            action: "fold",
+        },
+        {
+            hand: "94o",
+            action: "fold",
+        },
+        {
+            hand: "93o",
+            action: "fold",
+        },
+        {
+            hand: "92o",
+            action: "fold",
+        },
+        
+        {
+            hand: "88",
+            action: "raise",
+        },
+        {
+            hand: "87s",
+            action: "raise",
+        },
+        {
+            hand: "86s",
+            action: "raise",
+        },
+        {
+            hand: "85s",
+            action: "fold",
+        },
+        {
+            hand: "84s",
+            action: "fold",
+        },
+        {
+            hand: "83s",
+            action: "fold",
+        },
+        {
+            hand: "82s",
+            action: "fold",
+        },
+        {
+            hand: "87o",
+            action: "fold",
+        },
+        {
+            hand: "86o",
+            action: "fold",
+        },
+        {
+            hand: "85o",
+            action: "fold",
+        },
+        {
+            hand: "84o",
+            action: "fold",
+        },
+        {
+            hand: "83o",
+            action: "fold",
+        },
+        {
+            hand: "82o",
+            action: "fold",
+        },
+        {
+            hand: "77",
+            action: "raise",
+        },
+        {
+            hand: "76s",
+            action: "raise",
+        },
+        {
+            hand: "75s",
+            action: "raise",
+        },
+        {
+            hand: "74s",
+            action: "fold",
+        },
+        {
+            hand: "73s",
+            action: "fold",
+        },
+        {
+            hand: "72s",
+            action: "fold",
+        },
+        {
+            hand: "76o",
+            action: "fold",
+        },
+        {
+            hand: "75o",
+            action: "fold",
+        },
+        {
+            hand: "74o",
+            action: "fold",
+        },
+        {
+            hand: "73o",
+            action: "fold",
+        },
+        {
+            hand: "72o",
+            action: "fold",
+        },
+        
+        {
+            hand: "66",
+            action: "raise",
+        },
+        {
+            hand: "65s",
+            action: "raise",
+        },
+        {
+            hand: "64s",
+            action: "fold",
+        },
+        {
+            hand: "63s",
+            action: "fold",
+        },
+        {
+            hand: "62s",
+            action: "fold",
+        },
+        {
+            hand: "65o",
+            action: "fold",
+        },
+        {
+            hand: "64o",
+            action: "fold",
+        },
+        {
+            hand: "63o",
+            action: "fold",
+        },
+        {
+            hand: "62o",
+            action: "fold",
+        },
+        
+        {
+            hand: "55",
+            action: "raise",
+        },
+        {
+            hand: "54s",
+            action: "raise",
+        },
+        {
+            hand: "53s",
+            action: "fold",
+        },
+        {
+            hand: "52s",
+            action: "fold",
+        },
+        {
+            hand: "54o",
+            action: "fold",
+        },
+        {
+            hand: "53o",
+            action: "fold",
+        },
+        {
+            hand: "52o",
+            action: "fold",
+        },
+        {
+            hand: "44",
+            action: "raise",
+        },
+        {
+            hand: "43s",
+            action: "fold",
+        },
+        {
+            hand: "42s",
+            action: "fold",
+        },
+        {
+            hand: "43o",
+            action: "fold",
+        },
+        {
+            hand: "42o",
+            action: "fold",
+        },
+        {
+            hand: "33",
+            action: "raise",
+        },
+        {
+            hand: "32s",
+            action: "fold",
+        },
+        {
+            hand: "32o",
+            action: "fold",
+        },
+        {
+            hand: "22",
+            action: "raise",
+        },
+    ],
+    vsRaise: [
+        
+    ]
+
+}
