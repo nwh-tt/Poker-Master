@@ -16,7 +16,7 @@ final class PlayerTests: XCTestCase {
         XCTAssertEqual(player.position, "BTN")
         XCTAssertEqual(player.stack, 1000.0)
         XCTAssertEqual(player.lastMove, LastMove.none)
-        XCTAssertEqual(player.betAmount, 0.0)
+        XCTAssertEqual(player.currentBetAmount, 0.0)
         XCTAssertTrue(player.hand.isEmpty)
     }
 
@@ -25,26 +25,49 @@ final class PlayerTests: XCTestCase {
         player.bet(amount: 100.0)
         
         XCTAssertEqual(player.stack, 900.0)
-        XCTAssertEqual(player.betAmount, 100.0)
+        XCTAssertEqual(player.currentBetAmount, 100.0)
     }
 
-    func testRaiseFunctionality() {
+    func testRaiseDefaultFunctionality() {
         let player = Player(position: "MP", stack: 1000.0)
-        player.raise(amount: 150.0)
+        player.raise(amountRaisingTo: 150.0)
         
         XCTAssertEqual(player.stack, 850.0)
-        XCTAssertEqual(player.betAmount, 150.0)
+        XCTAssertEqual(player.currentBetAmount, 150.0)
+        XCTAssertEqual(player.lastMove, LastMove.raise)
+    }
+    
+    func testRaiseWithPreviousBetFunctionality() {
+        let player = Player(position: "MP", stack: 1000.0)
+        player.raise(amountRaisingTo: 50)
+        player.raise(amountRaisingTo: 150.0)
+        
+        XCTAssertEqual(player.stack, 850.0)
+        XCTAssertEqual(player.currentBetAmount, 150.0)
         XCTAssertEqual(player.lastMove, LastMove.raise)
     }
 
-    func testCallFunctionality() {
+    func testCallDefaultFunctionality() {
         let player = Player(position: "SB", stack: 1000.0)
-        player.call(amount: 50.0)
+        player.call(amountCallingTo: 50.0)
         
         XCTAssertEqual(player.stack, 950.0)
-        XCTAssertEqual(player.betAmount, 50.0)
+        XCTAssertEqual(player.currentBetAmount, 50.0)
         XCTAssertEqual(player.lastMove, LastMove.call)
     }
+    
+    func testCallRaiseFunctionality() {
+        let player = Player(position: "SB", stack: 1000.0)
+        player.raise(amountRaisingTo: 50)
+        // Imagine someone else raises to 100 and they want to call
+        player.call(amountCallingTo: 100.0)
+        
+        XCTAssertEqual(player.stack, 900.0)
+        XCTAssertEqual(player.currentBetAmount, 100.0)
+        XCTAssertEqual(player.lastMove, LastMove.call)
+    }
+    
+    
 
     func testDealFunctionality() {
         let player = Player(position: "BB", stack: 1000.0)

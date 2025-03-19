@@ -16,34 +16,29 @@ class GameManager: ObservableObject {
     var betNumber: Int = 1
     var lastRaise: Double = 0.0
     var villian: Player? = nil
-    let decisionMaker: DecisionMaker = DecisionMaker()
+    let decisionMaker: DecisionMaker
+    
+    var gameplaySpeed: Int
     
     
-    init() {
+    init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Int = 3) {
+        self.gameplaySpeed = gameplaySpeed // Controls speed of play
+        self.decisionMaker = decisionMaker
         players = createRandomPlayers()
         user = players[0]
         // deal two cards to each player
         for player in players {
             player.hand.append(deck.dealCard())
             player.hand.append(deck.dealCard())
-            if (player.position == "SB") {
-                player.betAmount = 1.0
-                pot += 1.0
-            }
-            if (player.position == "BB") {
-                player.betAmount = 2.0
-                pot += 2.0
-            }
+            pot = 3
         }
         // set the playerTurn variable equal to the index that of the utg player
         turn = players.firstIndex(where: { $0.position == "UTG" })!
+        
+        
     }
     
     func startGame() async {
-        var bettingOver = false
-        
-        
-        
         print("Game has started")
         for player in players {
             print(player.toString())
@@ -53,6 +48,10 @@ class GameManager: ObservableObject {
         }
         
         await gameTask.value
+        
+        for player in players {
+            print(player.toString())
+        }
     }
     
     @MainActor
@@ -84,26 +83,27 @@ class GameManager: ObservableObject {
             }
             
             // need to check if player last bet == last raise - means it checked through and betting is over
-            if (lastRaise != 0.0 && players[turn].betAmount == lastRaise) {
+            if (lastRaise != 0.0 && players[turn].currentBetAmount == lastRaise) {
                 break
             }
             
             let decision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villian ?? nil, betNumber: betNumber)
-            let playerCopy = Player(position: players[turn].position, stack: players[turn].stack)
+            let playerCopy = Player(position: players[turn].position, stack: players[turn].stack, betAmount: players[turn].currentBetAmount, hand: players[turn].hand, lastMove: players[turn].lastMove)
             playerCopy.hand = players[turn].hand
             if (decision == "raise") {
                 // Update players fields
-                playerCopy.raise(amount: lastRaise + 10.0)
+                let potIncrease = playerCopy.raise(amountRaisingTo: lastRaise + 10.0)
                 betNumber += 1
-                lastRaise = playerCopy.betAmount
+                lastRaise = playerCopy.currentBetAmount
                 villian = players[turn]
-                pot += lastRaise
-                print("Player \(playerCopy.position) has raised to \(playerCopy.betAmount) ---------- Pot Now: " + String(pot))
+                pot += potIncrease
+                print("Player \(playerCopy.position) has raised to \(playerCopy.currentBetAmount) ---------- Pot Now: " + String(pot))
             }
             else if (decision == "call") {
-                playerCopy.call(amount: lastRaise)
+                // need to save pot increase to account for raise -> raise or raise -> call another raise
+                let potIncrease = playerCopy.call(amountCallingTo: lastRaise)
                 
-                pot += lastRaise
+                pot += potIncrease
                 print("Player \(playerCopy.position) has called ---------- Pot Now: " + String(pot))
             }
             else {
@@ -114,12 +114,14 @@ class GameManager: ObservableObject {
                 
             players[turn] = playerCopy
             turn = (turn + 1) % 6
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            
+            let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
+            try? await Task.sleep(nanoseconds: sleepTime)
         }
         print("Pre flop betting is over players remaining: ")
         for p in players {
             if p.lastMove != LastMove.fold {
-                print(p.position + ": " + String(p.betAmount))
+                print(p.position + ": " + String(p.currentBetAmount))
             }
         }
         print("Pot = " + String(pot))
@@ -130,25 +132,31 @@ class GameManager: ObservableObject {
         let positionList = ["BTN", "SB", "BB", "UTG", "MP", "CO"]
         let userPosition = positionList.randomElement()!
         
-        return reorderPlayers(playerPosition: userPosition)
+        return createAndReorderPlayers(playerPosition: userPosition)
     }
     
-    func reorderPlayers(playerPosition: String) -> [Player] {
+    func createAndReorderPlayers(playerPosition: String) -> [Player] {
         let positionList = ["BTN", "SB", "BB", "UTG", "MP", "CO"]
         var playersReordered: [Player] = []
         var index = positionList.firstIndex(of: playerPosition)!
         
         for _ in 1...6 {
-            playersReordered.append(Player(position: positionList[index], stack: 100.0))
+            let player: Player = Player(position: positionList[index], stack: 100.0)
+            if positionList[index] == "SB" {
+                player.currentBetAmount = 1.0
+                player.stack -= 1.0
+            }
+            if positionList[index] == "BB" {
+                player.currentBetAmount = 2.0
+                player.stack -= 2.0
+            }
+            
+            playersReordered.append(player)
             index = (index + 1) % 6
+            
         }
          
         return playersReordered
-    }
-    
-    func determineMove(player: Player) {
-        
-        
     }
     
     // right a toString functiobn

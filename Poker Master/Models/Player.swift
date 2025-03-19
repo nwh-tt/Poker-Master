@@ -18,29 +18,37 @@ enum LastMove: String {
 class Player {
     var position: String
     var stack: Double
-    var hand: [Card] = []
-    var lastMove: LastMove = LastMove.none
-    var betAmount: Double = 0.0
+    var hand: [Card]
+    var lastMove: LastMove
+    var currentBetAmount: Double
     
     
-    init(position: String, stack: Double) {
+    init(position: String, stack: Double, betAmount: Double = 0.0, hand: [Card] = [], lastMove: LastMove = LastMove.none) {
         self.position = position
         self.stack = stack
+        self.currentBetAmount = betAmount
+        self.hand = hand
+        self.lastMove = lastMove
     }
     
-    func raise(amount: Double) {
-        bet(amount: amount)
+    // amount is the amount to raise to (need to account for the current bet amount)
+    func raise(amountRaisingTo: Double) -> Double {
+        let difference = amountRaisingTo - currentBetAmount
+        bet(amount: difference)
         lastMove = LastMove.raise
+        return difference
     }
     
-    func call(amount: Double) {
-        bet(amount: amount)
+    func call(amountCallingTo: Double) -> Double {
+        let difference = amountCallingTo - currentBetAmount
+        bet(amount: difference)
         lastMove = LastMove.call
+        return difference
     }
     
     func bet(amount: Double) {
         stack -= amount
-        betAmount += amount
+        currentBetAmount += amount
     }
     
     func deal(card: Card) {
@@ -48,7 +56,10 @@ class Player {
     }
     
     func toString() -> String {
-        return "Position: \(position), Stack: \(stack), Hand: \(hand[0].toString()), \(hand[1].toString())"
+        if hand.isEmpty {
+            return "Position: \(position), Stack: \(stack), Last Bet: \(currentBetAmount)"
+        }
+        return "Position: \(position), Stack: \(stack), Last Bet: \(currentBetAmount), Hand: \(hand[0].toString()), \(hand[1].toString())"
     }
     
     // should return the hand like this "A9s" if same suit or "A9o" if not same suit bigger card should always be first
