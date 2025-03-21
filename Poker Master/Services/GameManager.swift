@@ -11,12 +11,15 @@ class GameManager: ObservableObject {
     @Published var players: [Player] = []
     @Published var user: Player? = nil
     @Published var pot: Double = 0.0
+    @Published var waitingForUserInput: Bool = false
+    
     let deck: Deck = Deck()
     var turn: Int = 0
     var betNumber: Int = 1
     var lastRaise: Double = 0.0
     var villian: Player? = nil
     let decisionMaker: DecisionMaker
+    private var pendingUserMoveContinuation: CheckedContinuation<LastMove, Never>?
     
     var gameplaySpeed: Int
     
@@ -34,8 +37,6 @@ class GameManager: ObservableObject {
         }
         // set the playerTurn variable equal to the index that of the utg player
         turn = players.firstIndex(where: { $0.position == "UTG" })!
-        
-        
     }
     
     func startGame() async {
@@ -69,13 +70,6 @@ class GameManager: ObservableObject {
                 break
             }
             
-            // check if the player is the user
-            if (user?.position == players[turn].position) {
-                // wait for user to make a move
-                //turn = (turn + 1) % 6
-                //continue
-            }
-            
             // check if the cpu player has folded
             if (players[turn % 6].lastMove == LastMove.fold) {
                 turn = (turn + 1) % 6
@@ -87,10 +81,26 @@ class GameManager: ObservableObject {
                 break
             }
             
-            let decision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villian ?? nil, betNumber: betNumber)
+            let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villian ?? nil, betNumber: betNumber)
             let playerCopy = Player(position: players[turn].position, stack: players[turn].stack, betAmount: players[turn].currentBetAmount, hand: players[turn].hand, lastMove: players[turn].lastMove)
+            
+            // check if the player is the user
+            if (user?.position == players[turn].position) {
+                print("Waiting for input")
+                let userDecision = await waitForUserInput()
+                if (userDecision == idealDecision) {
+                    print("correct")
+                    break
+                } else {
+                    // break loop print incorrect you should have: right move
+                    print("Incorrect you should have: " + userDecision.rawValue)
+                    break
+                }
+            }
+            
+            
             playerCopy.hand = players[turn].hand
-            if (decision == "raise") {
+            if (idealDecision == .raise) {
                 // Update players fields
                 let potIncrease = playerCopy.raise(amountRaisingTo: lastRaise + 10.0)
                 betNumber += 1
@@ -99,7 +109,7 @@ class GameManager: ObservableObject {
                 pot += potIncrease
                 print("Player \(playerCopy.position) has raised to \(playerCopy.currentBetAmount) ---------- Pot Now: " + String(pot))
             }
-            else if (decision == "call") {
+            else if (idealDecision == .call) {
                 // need to save pot increase to account for raise -> raise or raise -> call another raise
                 let potIncrease = playerCopy.call(amountCallingTo: lastRaise)
                 
@@ -125,6 +135,18 @@ class GameManager: ObservableObject {
             }
         }
         print("Pot = " + String(pot))
+    }
+    
+    func waitForUserInput() async -> LastMove {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<LastMove, Never>) in
+            // Save the continuation so it can be resumed when the user makes a move
+            self.pendingUserMoveContinuation = continuation
+        }
+    }
+    
+    func userMadeMove(decision: LastMove) {
+        pendingUserMoveContinuation?.resume(returning: decision)
+        pendingUserMoveContinuation = nil
     }
         
     

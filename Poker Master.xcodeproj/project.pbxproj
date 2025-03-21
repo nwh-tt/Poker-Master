@@ -28,6 +28,7 @@
 		B6ADA4252C06490E00358F34 /* DecisionMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6ADA4242C06490E00358F34 /* DecisionMaker.swift */; };
 		B6ADA4272C2B241400358F34 /* DecisionMakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6ADA4262C2B241400358F34 /* DecisionMakerTests.swift */; };
 		B6D403682D8A09D3008A83E8 /* PlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403672D8A09D3008A83E8 /* PlayerTests.swift */; };
+		B6D4036A2D8DBEAD008A83E8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403692D8DBEAD008A83E8 /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		B6ADA4242C06490E00358F34 /* DecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionMaker.swift; sourceTree = "<group>"; };
 		B6ADA4262C2B241400358F34 /* DecisionMakerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionMakerTests.swift; sourceTree = "<group>"; };
 		B6D403672D8A09D3008A83E8 /* PlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTests.swift; sourceTree = "<group>"; };
+		B6D403692D8DBEAD008A83E8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 				B649ED492BD1B0C900157267 /* Player.swift */,
 				B649ED502BD6DA6500157267 /* Card.swift */,
 				B649ED522BD6E78200157267 /* Deck.swift */,
+				B6D403692D8DBEAD008A83E8 /* User.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -357,6 +360,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6D4036A2D8DBEAD008A83E8 /* User.swift in Sources */,
 				B672D7DD2BC87E6300E7F5F6 /* PokerTableView.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,

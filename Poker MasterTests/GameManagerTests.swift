@@ -18,11 +18,11 @@ import XCTest
 //}
 
 class MockDecisionMaker: DecisionMaker {
-    var moveSequence: [String] = []
+    var moveSequence: [LastMove] = []
     private var moveIndex = 0
     
-    override func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
-        guard moveIndex < moveSequence.count else { return "fold" }
+    override func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
+        guard moveIndex < moveSequence.count else { return .fold }
         let move = moveSequence[moveIndex]
         moveIndex += 1
         return move
@@ -115,7 +115,7 @@ final class GameManagerTests: XCTestCase {
     @MainActor
     func testExecuteLoop_BB_Calls() async {
         // Make all but one player fold
-        mockDecisionMaker.moveSequence = ["fold", "raise", "fold", "fold", "fold", "call"]
+        mockDecisionMaker.moveSequence = [.fold, .raise, .fold, .fold, .fold, .call]
 
         let expectation = XCTestExpectation(description: "Execute loop should finish when one player remains")
 
@@ -133,7 +133,7 @@ final class GameManagerTests: XCTestCase {
     @MainActor
     func testExecuteLoop_AllFold_OnePlayerRemains() async {
         // Make all but one player fold
-        mockDecisionMaker.moveSequence = ["fold", "fold", "fold", "fold", "fold"]
+        mockDecisionMaker.moveSequence = [.fold, .fold, .fold, .fold, .fold]
 
         let expectation = XCTestExpectation(description: "Execute loop should finish when one player remains")
 
@@ -153,7 +153,7 @@ final class GameManagerTests: XCTestCase {
     func testExecuteLoop_AllCall_BettingEnds() async {
 
         // All players call the last raise
-        mockDecisionMaker.moveSequence = ["raise", "call", "call", "call", "call", "call"]
+        mockDecisionMaker.moveSequence = [.raise, .call, .call, .call, .call, .call]
 
         let expectation = XCTestExpectation(description: "Execute loop should finish when betting is complete")
 
@@ -174,7 +174,7 @@ final class GameManagerTests: XCTestCase {
     func testExecuteLoop_RaisesOccur() async {
 
         // Players raise in turns
-        mockDecisionMaker.moveSequence = ["raise", "raise", "raise", "call", "call"]
+        mockDecisionMaker.moveSequence = [.raise, .raise, .raise, .call, .call]
 
         let expectation = XCTestExpectation(description: "Execute loop should finish with players raising and calling")
 
@@ -193,7 +193,7 @@ final class GameManagerTests: XCTestCase {
     func testExecuteLoop_CorrectPotCalculation() async {
 
         // Players make different moves
-        mockDecisionMaker.moveSequence = ["raise", "call", "fold", "call", "call"]
+        mockDecisionMaker.moveSequence = [.raise, .call, .fold, .call, .call]
 
         let expectation = XCTestExpectation(description: "Execute loop should finish and calculate pot size correctly")
 
@@ -207,6 +207,24 @@ final class GameManagerTests: XCTestCase {
         // If bb and sb call than the pot will be 40 but could be 41, 42, 43 if they fold
         XCTAssertGreaterThan(gameManager.pot, 40, "Pot should increase after betting")
     }
+    
+    func testWaitForUserInput() async {
+            let expectedMove: LastMove = .call
+            let expectation = expectation(description: "User input should be received")
+
+            Task {
+                let result = await gameManager.waitForUserInput()
+                XCTAssertEqual(result, expectedMove, "User move should match expected input")
+                expectation.fulfill()
+            }
+
+            // Simulate user input after a short delay
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                self.gameManager.userMadeMove(decision: expectedMove)
+            }
+
+            await fulfillment(of: [expectation], timeout: 2.0)
+        }
     
     func testReorderPlayers() throws {
         // ["BTN", "SB", "BB", "UTG", "MP", "CO"]

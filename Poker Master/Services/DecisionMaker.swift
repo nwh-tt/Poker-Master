@@ -4,16 +4,18 @@
 //
 //  Created by Ned Whittleton on 5/28/24.
 //
-
 import Foundation
 
 
+enum DecisionError: Error {
+    case issueWithDecisionMaker(String)
+}
 
 // btn sb bb utg mp co
 // btn sb bb lj hj co
 class DecisionMaker {
     
-    func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
+    func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
         
         if (hero.position == "BTN") {
             return determineMoveBTNPreFlop(hero: hero, villian: villian, betNumber: betNumber)
@@ -33,10 +35,12 @@ class DecisionMaker {
         if (hero.position == "CO") {
             return determineMoveCOPreFlop(hero: hero, villian: villian, betNumber: betNumber)
         }
-        return "error"
+        
+        // probably want to throw error here
+        return .none
     }
     
-    private func determineMoveCOPreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
+    private func determineMoveCOPreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
         var raiseHands: [String] = []
         var callHands: [String] = []
         
@@ -44,7 +48,7 @@ class DecisionMaker {
             raiseHands = open_CO_raise
         }
         if (betNumber == 2) {
-            return "Error on - Bet: " + hero.position + " v " + villian!.position
+            return .none
         }
         if (betNumber == 3) {
             switch villian!.position {
@@ -58,11 +62,11 @@ class DecisionMaker {
                 raiseHands = self.bet3_CO_v_BTN_raise
                 callHands = self.bet3_CO_v_BTN_call
             default:
-                return "Error on - Bet 3: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 4) {
-            return "Error on - Bet: " + hero.position + " v " + villian!.position
+            return .none
         }
         if (betNumber == 5) {
             switch villian!.position {
@@ -76,21 +80,21 @@ class DecisionMaker {
                 raiseHands = self.bet5_CO_v_BTN_raise
                 callHands = self.bet5_CO_v_BTN_call
             default:
-                return "Error on - Bet 5: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         
         if (raiseHands.contains(hero.getHand())) {
-            return "raise"
+            return .raise
         }
         if (callHands.contains(hero.getHand())) {
-            return "call"
+            return .call
         }
         
-        return "fold"
+        return .fold
     }
     
-    private func determineMoveMPPreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
+    private func determineMoveMPPreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
         var raiseHands: [String] = []
         var callHands: [String] = []
         
@@ -102,7 +106,7 @@ class DecisionMaker {
                 raiseHands = self.bet_MP_v_UTG_raise
             }
             else {
-                return "Error on - Bet: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 3) {
@@ -120,7 +124,7 @@ class DecisionMaker {
                 raiseHands = self.bet3_MP_v_BTN_raise
                 callHands = self.bet3_MP_v_BTN_call
             default:
-                return "Error on - Bet 3: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 4) {
@@ -129,7 +133,7 @@ class DecisionMaker {
                 callHands = self.bet4_MP_v_UTG_call
             }
             else {
-                return "Error on - Bet 4: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 5) {
@@ -147,22 +151,22 @@ class DecisionMaker {
                 raiseHands = self.bet5_MP_v_BTN_raise
                 callHands = self.bet5_MP_v_BTN_call
             default:
-                return "Error on - Bet 5: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         
         if (raiseHands.contains(hero.getHand())) {
-            return "raise"
+            return .raise
         }
         if (callHands.contains(hero.getHand())) {
-            return "call"
+            return .call
         }
         
-        return "fold"
+        return .fold
     }
         
     
-    private func determineMoveUTGPreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
+    private func determineMoveUTGPreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
         var raiseHands: [String] = []
         var callHands: [String] = []
         
@@ -171,7 +175,7 @@ class DecisionMaker {
         }
         
         if (betNumber == 2) {
-            return "Error on - Bet 2: " + hero.position + " v " + villian!.position
+            return .none
         }
         if (betNumber == 3) {
             switch villian!.position {
@@ -191,11 +195,11 @@ class DecisionMaker {
                 raiseHands = self.bet3_UTG_v_CO_raise
                 callHands = self.bet3_UTG_v_CO_call
             default:
-                return "Error on - Bet 3: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 4) {
-            return "Error on - Bet 4: " + hero.position + " v " + villian!.position
+            return .none
         }
         
         if (betNumber == 5) {
@@ -216,22 +220,22 @@ class DecisionMaker {
                 raiseHands = self.bet5_UTG_v_CO_raise
                 callHands = self.bet5_UTG_v_CO_call
             default:
-                return "Error on - Bet 5: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         
         
         if (raiseHands.contains(hero.getHand())) {
-            return "raise"
+            return .raise
         }
         if (callHands.contains(hero.getHand())) {
-            return "call"
+            return .call
         }
         
-        return "fold"
+        return .fold
     }
     
-    private func determineMoveBBPreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
+    private func determineMoveBBPreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
         var raiseHands: [String] = []
         var callHands: [String] = []
         
@@ -257,11 +261,11 @@ class DecisionMaker {
                 raiseHands = self.bet_BB_v_CO_raise
                 callHands = self.bet_BB_v_CO_call
             default:
-                return "Error on - Bet: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 3) {
-            return "Error on - Bet 3: " + hero.position + " v " + villian!.position
+            return .none
         }
         if (betNumber == 4) {
             switch villian!.position {
@@ -281,24 +285,24 @@ class DecisionMaker {
                 raiseHands = self.bet4_BB_v_CO_raise
                 callHands = self.bet4_BB_v_CO_call
             default:
-                return "Error on - Bet 4: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 5) {
-            return "Error on - Bet 5: " + hero.position + " v " + villian!.position
+            return .none
         }
         
         if (raiseHands.contains(hero.getHand())) {
-            return "raise"
+            return .raise
         }
         if (callHands.contains(hero.getHand())) {
-            return "call"
+            return .call
         }
         
-        return "fold"
+        return .fold
     }
     
-    private func determineMoveSBPreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
+    private func determineMoveSBPreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
         var raiseHands: [String] = []
         var callHands: [String] = []
         
@@ -316,7 +320,7 @@ class DecisionMaker {
             case "BTN":
                 raiseHands = self.bet_SB_v_BTN_raise
             default:
-                return "Error on - Bet: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 3) {
@@ -325,7 +329,7 @@ class DecisionMaker {
                 callHands = self.bet3_SB_v_BB_call
             }
             else {
-                return "Error on - Bet 3: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 4) {
@@ -343,7 +347,7 @@ class DecisionMaker {
                 raiseHands = self.bet4_SB_v_BTN_raise
                 callHands = self.bet4_SB_v_BTN_call
             default:
-                return "Error on - Bet 4: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 5) {
@@ -351,22 +355,22 @@ class DecisionMaker {
                 callHands = self.bet5_SB_v_BB_call
             }
             else {
-                return "Error on - Bet 5: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         
         if (raiseHands.contains(hero.getHand())) {
-            return "raise"
+            return .raise
         }
         if (callHands.contains(hero.getHand())) {
-            return "call"
+            return .call
         }
         
-        return "fold"
+        return .fold
         
     }
     
-    private func determineMoveBTNPreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
+    private func determineMoveBTNPreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
         var raiseHands: [String] = []
         var callHands: [String] = []
         
@@ -385,7 +389,7 @@ class DecisionMaker {
                 raiseHands = self.bet_BTN_v_CO_raise
                 callHands = self.bet_BTN_v_CO_call
             default:
-                return "Error on - Bet: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 3) {
@@ -397,7 +401,7 @@ class DecisionMaker {
                 raiseHands = self.bet3_BTN_v_BB_raise
                 callHands = self.bet3_BTN_v_BB_call
             default:
-                return "Error on - Bet 3: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 4) {
@@ -412,7 +416,7 @@ class DecisionMaker {
                 raiseHands = self.bet4_BTN_v_CO_raise
                 callHands = self.bet4_BTN_v_CO_call
             default:
-                return "Error on - Bet 4: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         if (betNumber == 5) {
@@ -422,18 +426,18 @@ class DecisionMaker {
             case "BB":
                 callHands = self.bet5_BTN_v_BB_call
             default:
-                return "Error on - Bet 5: " + hero.position + " v " + villian!.position
+                return .none
             }
         }
         
         if (raiseHands.contains(hero.getHand())) {
-            return "raise"
+            return .raise
         }
         if (callHands.contains(hero.getHand())) {
-            return "call"
+            return .call
         }
         
-        return "fold"
+        return .fold
     }
     
     // btn hero ranges

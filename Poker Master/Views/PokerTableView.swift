@@ -61,7 +61,9 @@ struct PokerTableView: View {
                 VStack {
                     Spacer()
                     HStack {
-                        Button(action:{}) {
+                        Button(action:{
+                            gameManager.userMadeMove(decision: LastMove.call)
+                        }) {
                             Text("Call")
                                     .frame(maxWidth: .infinity)
                                     .padding()
@@ -69,7 +71,9 @@ struct PokerTableView: View {
                                     .foregroundColor(.white)  // Set the text color to white
                                     .clipShape(Capsule())
                         }
-                        Button(action:{}) {
+                        Button(action:{
+                            gameManager.userMadeMove(decision: LastMove.raise)
+                        }) {
                             Text("Raise")
                                 .frame(maxWidth: .infinity)
                                     .padding()
@@ -77,7 +81,9 @@ struct PokerTableView: View {
                                     .foregroundColor(.white)  // Set the text color to white
                                     .clipShape(Capsule())
                         }
-                        Button(action:{}) {
+                        Button(action:{
+                            gameManager.userMadeMove(decision: LastMove.fold)
+                        }) {
                             Text("Fold")
                                 .frame(maxWidth: .infinity)
                                     .padding()
