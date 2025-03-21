@@ -86,8 +86,9 @@ class GameManager: ObservableObject {
             
             // check if the player is the user
             if (user?.position == players[turn].position) {
-                print("Waiting for input")
+                waitingForUserInput = true // unlock buttons
                 let userDecision = await waitForUserInput()
+                waitingForUserInput = false // lock buttons again
                 if (userDecision == idealDecision) {
                     print("correct")
                     break

@@ -70,7 +70,8 @@ struct PokerTableView: View {
                                     .background(darkBlue)
                                     .foregroundColor(.white)  // Set the text color to white
                                     .clipShape(Capsule())
-                        }
+                                    .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
+                        }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
                             gameManager.userMadeMove(decision: LastMove.raise)
                         }) {
@@ -80,7 +81,8 @@ struct PokerTableView: View {
                                     .background(darkBlue)
                                     .foregroundColor(.white)  // Set the text color to white
                                     .clipShape(Capsule())
-                        }
+                                    .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
+                        }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
                             gameManager.userMadeMove(decision: LastMove.fold)
                         }) {
@@ -90,7 +92,8 @@ struct PokerTableView: View {
                                     .background(darkBlue)
                                     .foregroundColor(.white)  // Set the text color to white
                                     .clipShape(Capsule())
-                        }
+                                    .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
+                        }.disabled(!gameManager.waitingForUserInput)
                     }.padding()
                 }.padding()
                 Button(action: {
