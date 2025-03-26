@@ -13,30 +13,38 @@ class GameManager: ObservableObject {
     @Published var pot: Double = 0.0
     @Published var waitingForUserInput: Bool = false
     
+    // variables needed for incorrect or correct move
+    @Published var showIncorrectPopup: Bool = false
+    @Published var adviceText: String = ""
+    
     let deck: Deck = Deck()
     var turn: Int = 0
     var betNumber: Int = 1
     var lastRaise: Double = 0.0
     var villian: Player? = nil
     let decisionMaker: DecisionMaker
+    
+    private var correctMove: LastMove = .none // used to check if the user made the correct move and update ui
     private var pendingUserMoveContinuation: CheckedContinuation<LastMove, Never>?
     
     var gameplaySpeed: Int
+    var testingMode: Bool
     
     
-    init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Int = 3) {
+    init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Int = 3, testingMode: Bool = false) {
         self.gameplaySpeed = gameplaySpeed // Controls speed of play
         self.decisionMaker = decisionMaker
+        self.testingMode = testingMode
         players = createRandomPlayers()
         user = players[0]
         // deal two cards to each player
         for player in players {
             player.hand.append(deck.dealCard())
             player.hand.append(deck.dealCard())
-            pot = 3
         }
+        pot = 3
         // set the playerTurn variable equal to the index that of the utg player
-        turn = players.firstIndex(where: { $0.position == "UTG" })!
+        
     }
     
     func startGame() async {
@@ -44,16 +52,45 @@ class GameManager: ObservableObject {
         for player in players {
             print(player.toString())
         }
+        
+        try? await Task.sleep(nanoseconds: 500_000_000) // Wait 0.5 seconds
         let gameTask = Task {
             await executeLoop()
         }
         
         await gameTask.value
+    }
+    
+    func resetAndStartNewGame() {
+        // Reset players and reinitialize the deck
+        deck.resetDeck()
+        players = createRandomPlayers()
+        user = players[0]
         
+        // Deal two new cards to each player
         for player in players {
-            print(player.toString())
+            player.hand = [deck.dealCard(), deck.dealCard()]
+        }
+        
+        // Reset game-related variables
+        pot = 3
+        turn = players.firstIndex(where: { $0.position == "UTG" })!
+        betNumber = 1
+        lastRaise = 0.0
+        villian = nil
+        correctMove = .none
+        pendingUserMoveContinuation = nil
+        waitingForUserInput = false
+        showIncorrectPopup = false
+        adviceText = ""
+        
+        // Optionally delay before starting the game again
+        Task {
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s delay
+            await startGame()
         }
     }
+
     
     @MainActor
     func executeLoop() async {
@@ -84,18 +121,22 @@ class GameManager: ObservableObject {
             let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villian ?? nil, betNumber: betNumber)
             let playerCopy = Player(position: players[turn].position, stack: players[turn].stack, betAmount: players[turn].currentBetAmount, hand: players[turn].hand, lastMove: players[turn].lastMove)
             
-            // check if the player is the user
-            if (user?.position == players[turn].position) {
-                waitingForUserInput = true // unlock buttons
-                let userDecision = await waitForUserInput()
-                waitingForUserInput = false // lock buttons again
-                if (userDecision == idealDecision) {
-                    print("correct")
-                    break
-                } else {
-                    // break loop print incorrect you should have: right move
-                    print("Incorrect you should have: " + userDecision.rawValue)
-                    break
+            // when in testing mode we skip over waiting for the user
+            if (!testingMode) {
+                // check if the player is the user
+                if (user?.position == players[turn].position) {
+                    correctMove = idealDecision
+                    waitingForUserInput = true // unlock buttons
+                    let userDecision = await waitForUserInput()
+                    waitingForUserInput = false // lock buttons again
+                    if (userDecision == idealDecision) {
+                        break
+                    } else {
+                        // break loop print incorrect you should have: right move'
+                        showIncorrectPopup = true
+                        adviceText = "Correct Move: " + idealDecision.rawValue
+                        break
+                    }
                 }
             }
             
@@ -129,15 +170,16 @@ class GameManager: ObservableObject {
             let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
             try? await Task.sleep(nanoseconds: sleepTime)
         }
-        print("Pre flop betting is over players remaining: ")
-        for p in players {
-            if p.lastMove != LastMove.fold {
-                print(p.position + ": " + String(p.currentBetAmount))
-            }
-        }
-        print("Pot = " + String(pot))
+//        print("Pre flop betting is over players remaining: ")
+//        for p in players {
+//            if p.lastMove != LastMove.fold {
+//                print(p.position + ": " + String(p.currentBetAmount))
+//            }
+//        }
+//        print("Pot = " + String(pot))
     }
     
+    @MainActor
     func waitForUserInput() async -> LastMove {
         return await withCheckedContinuation { (continuation: CheckedContinuation<LastMove, Never>) in
             // Save the continuation so it can be resumed when the user makes a move
@@ -145,9 +187,12 @@ class GameManager: ObservableObject {
         }
     }
     
-    func userMadeMove(decision: LastMove) {
-        pendingUserMoveContinuation?.resume(returning: decision)
+    @MainActor
+    func userMadeMove(decision: LastMove) -> Bool {
+        guard let continuation = pendingUserMoveContinuation else { return false }
+        continuation.resume(returning: decision)
         pendingUserMoveContinuation = nil
+        return decision == correctMove
     }
         
     
@@ -182,7 +227,7 @@ class GameManager: ObservableObject {
         return playersReordered
     }
     
-    // right a toString functiobn
+    
     func toString() -> String {
         return "Players: " + players[0].toString() + players[1].toString() + players[2].toString() + players[3].toString() + players[4].toString() + players[5].toString()
     }

@@ -36,7 +36,7 @@ final class GameManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         mockDecisionMaker = MockDecisionMaker()
-        gameManager = GameManager(decisionMaker: mockDecisionMaker, gameplaySpeed: 5)
+        gameManager = GameManager(decisionMaker: mockDecisionMaker, gameplaySpeed: 5, testingMode: true)
     }
 
     override func tearDown() {
@@ -61,10 +61,6 @@ final class GameManagerTests: XCTestCase {
     }
     
     func testStartGame_Single() async {
-        let gameManager = GameManager(gameplaySpeed: 5)
-            
-        // Store initial stacks
-        let initialStacks = gameManager.players.map { $0.stack }
             
         // Run the game
         await gameManager.startGame()
@@ -87,10 +83,7 @@ final class GameManagerTests: XCTestCase {
     
     func testStartGame_Many() async {
         for _ in 1...5 {  // Run multiple times for consistency
-            let gameManager = GameManager(gameplaySpeed: 5)
-                
-            // Store initial stacks
-            let initialStacks = gameManager.players.map { $0.stack }
+            let gameManager = GameManager(gameplaySpeed: 5, testingMode: true)
                 
             // Run the game
             await gameManager.startGame()
@@ -110,6 +103,53 @@ final class GameManagerTests: XCTestCase {
             // Pot should match total chips lost
             XCTAssertEqual(totalChipsLost, gameManager.pot, accuracy: 0.01, "The total chips bet should be equal to the pot")
                 }
+        }
+    
+    func testResetAndStartNewGameDealsNewCards() {
+            
+        // Act: Call the reset function
+        gameManager.resetAndStartNewGame()
+            
+        // Assert: Each player has two new cards dealt
+        for player in gameManager.players {
+            XCTAssertEqual(player.hand.count, 2)
+        }
+    }
+    
+    func testResetAndStartNewGameResetsGameVariables() {
+            // Arrange: Set some game-related variables before resetting
+            gameManager.pot = 10
+            gameManager.turn = 2
+            gameManager.betNumber = 5
+            gameManager.lastRaise = 2.0
+            gameManager.villian = gameManager.players[1]
+            for player in gameManager.players {
+                player.stack = 50 // Temporarily setting stack to a different value
+            }
+            
+            // Act: Call the reset function
+            gameManager.resetAndStartNewGame()
+            
+            // Assert: Game-related variables are reset
+            XCTAssertEqual(gameManager.pot, 3)
+            XCTAssertEqual(gameManager.turn, gameManager.players.firstIndex(where: { $0.position == "UTG" }) ?? 0)
+            XCTAssertEqual(gameManager.betNumber, 1)
+            XCTAssertEqual(gameManager.lastRaise, 0.0)
+            XCTAssertNil(gameManager.villian)
+            XCTAssertFalse(gameManager.waitingForUserInput)
+            XCTAssertFalse(gameManager.showIncorrectPopup)
+            XCTAssertEqual(gameManager.adviceText, "")
+            for player in gameManager.players {
+                if player.position == "BB" {
+                    XCTAssertEqual(player.stack, 98, "BB's stack should be reset to 98")
+                }
+                else if player.position == "SB" {
+                    XCTAssertEqual(player.stack, 99, "BB's stack should be reset to 99")
+                }
+                else {
+                    XCTAssertEqual(player.stack, 100, "Player's stack should be reset to 100")
+                }
+            }
         }
     
     @MainActor
@@ -209,22 +249,26 @@ final class GameManagerTests: XCTestCase {
     }
     
     func testWaitForUserInput() async {
-            let expectedMove: LastMove = .call
-            let expectation = expectation(description: "User input should be received")
-
-            Task {
-                let result = await gameManager.waitForUserInput()
-                XCTAssertEqual(result, expectedMove, "User move should match expected input")
-                expectation.fulfill()
-            }
-
-            // Simulate user input after a short delay
-            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                self.gameManager.userMadeMove(decision: expectedMove)
-            }
-
-            await fulfillment(of: [expectation], timeout: 2.0)
+        gameManager.testingMode = false
+        let expectedMove: LastMove = .call
+        let expectation = expectation(description: "User input should be received")
+        
+        print(gameManager.testingMode)
+        
+        Task {
+            let result = await gameManager.waitForUserInput()
+            XCTAssertEqual(result, expectedMove, "User move should match expected input")
+            expectation.fulfill()
         }
+
+        // Simulate user input after a short delay
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+            Task { @MainActor in
+                    self.gameManager.userMadeMove(decision: expectedMove)
+            }
+        }
+        await fulfillment(of: [expectation], timeout: 2.0)
+    }
     
     func testReorderPlayers() throws {
         // ["BTN", "SB", "BB", "UTG", "MP", "CO"]

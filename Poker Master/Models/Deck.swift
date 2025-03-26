@@ -53,7 +53,7 @@ class Deck {
         return cards.removeFirst()
     }
     
-    func reset() {
+    func resetDeck() {
         createDeck()
     }
     

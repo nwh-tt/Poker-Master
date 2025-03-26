@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Card {
+class Card: Equatable {
     var suit: String
     var rank: String
     
@@ -18,5 +18,9 @@ class Card {
     
     func toString() -> String {
         return "\(rank) of \(suit)"
+    }
+    
+    static func == (lhs: Card, rhs: Card) -> Bool {
+        return lhs.rank == rhs.rank && lhs.suit == rhs.suit
     }
 }
