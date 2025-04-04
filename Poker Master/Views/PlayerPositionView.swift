@@ -60,7 +60,7 @@ struct PlayerPositionView: View {
                     )
                     .offset(CGSize(width: 0, height: 30))
             }
-            if (!isUser) {
+            if (!isUser && player.lastMove != LastMove.fold) {
                 CardBackView()
                     .offset(CGSize(width: cardOffsets[0], height: -30))
                 CardBackView()
@@ -74,6 +74,6 @@ struct PlayerPositionView: View {
 
 #Preview {
     let player = Player(position: "BB", stack: 100.0)
-    player.lastMove = LastMove.fold
-    return PlayerPositionView(player: player , direction: "right", isUser: true)
+    player.lastMove = LastMove.raise
+    return PlayerPositionView(player: player , direction: "right", isUser: false)
 }

@@ -32,6 +32,7 @@
 		B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */; };
 		B6D4036F2D9340A3008A83E8 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B6D4036E2D9340A3008A83E8 /* ConfettiSwiftUI */; };
 		B6D403712D94357A008A83E8 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403702D94357A008A83E8 /* MenuView.swift */; };
+		B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +81,7 @@
 		B6D403692D8DBEAD008A83E8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncorrectSelectionView.swift; sourceTree = "<group>"; };
 		B6D403702D94357A008A83E8 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,7 +124,7 @@
 		B649ED4B2BD1B2CE00157267 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				B649ED4C2BD1B2E100157267 /* GameManager.swift */,
+				B6D403722D9D74F1008A83E8 /* Games */,
 				B6ADA4242C06490E00358F34 /* DecisionMaker.swift */,
 			);
 			path = Services;
@@ -236,6 +238,15 @@
 				B6ADA4232C0135B700358F34 /* BTN_strategy_chart.json */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		B6D403722D9D74F1008A83E8 /* Games */ = {
+			isa = PBXGroup;
+			children = (
+				B649ED4C2BD1B2E100157267 /* GameManager.swift */,
+				B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */,
+			);
+			path = Games;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -376,6 +387,7 @@
 			files = (
 				B6D4036A2D8DBEAD008A83E8 /* User.swift in Sources */,
 				B672D7DD2BC87E6300E7F5F6 /* PokerTableView.swift in Sources */,
+				B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
 				B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,

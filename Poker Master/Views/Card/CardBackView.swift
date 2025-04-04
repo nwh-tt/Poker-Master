@@ -10,7 +10,7 @@ import SwiftUI
 
 
 struct CardBackView: View {
-    let cardColor: Color = .red.opacity(0.8)
+    let cardColor: Color = .blue.opacity(0.8)
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     
     var body: some View {

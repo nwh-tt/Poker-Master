@@ -43,8 +43,6 @@ class GameManager: ObservableObject {
             player.hand.append(deck.dealCard())
         }
         pot = 3
-        // set the playerTurn variable equal to the index that of the utg player
-        
     }
     
     func startGame() async {
@@ -141,7 +139,6 @@ class GameManager: ObservableObject {
             }
             
             
-            playerCopy.hand = players[turn].hand
             if (idealDecision == .raise) {
                 // Update players fields
                 let potIncrease = playerCopy.raise(amountRaisingTo: lastRaise + 10.0)

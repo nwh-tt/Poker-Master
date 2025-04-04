@@ -37,7 +37,7 @@ class DecisionMaker {
         }
         
         // probably want to throw error here
-        return .none
+        return .fold
     }
     
     private func determineMoveCOPreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
@@ -48,7 +48,7 @@ class DecisionMaker {
             raiseHands = open_CO_raise
         }
         if (betNumber == 2) {
-            return .none
+            return .fold
         }
         if (betNumber == 3) {
             switch villian!.position {
@@ -62,11 +62,11 @@ class DecisionMaker {
                 raiseHands = self.bet3_CO_v_BTN_raise
                 callHands = self.bet3_CO_v_BTN_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 4) {
-            return .none
+            return .fold
         }
         if (betNumber == 5) {
             switch villian!.position {
@@ -80,7 +80,7 @@ class DecisionMaker {
                 raiseHands = self.bet5_CO_v_BTN_raise
                 callHands = self.bet5_CO_v_BTN_call
             default:
-                return .none
+                return .fold
             }
         }
         
@@ -106,7 +106,7 @@ class DecisionMaker {
                 raiseHands = self.bet_MP_v_UTG_raise
             }
             else {
-                return .none
+                return .fold
             }
         }
         if (betNumber == 3) {
@@ -124,7 +124,7 @@ class DecisionMaker {
                 raiseHands = self.bet3_MP_v_BTN_raise
                 callHands = self.bet3_MP_v_BTN_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 4) {
@@ -133,7 +133,7 @@ class DecisionMaker {
                 callHands = self.bet4_MP_v_UTG_call
             }
             else {
-                return .none
+                return .fold
             }
         }
         if (betNumber == 5) {
@@ -151,7 +151,7 @@ class DecisionMaker {
                 raiseHands = self.bet5_MP_v_BTN_raise
                 callHands = self.bet5_MP_v_BTN_call
             default:
-                return .none
+                return .fold
             }
         }
         
@@ -175,7 +175,7 @@ class DecisionMaker {
         }
         
         if (betNumber == 2) {
-            return .none
+            return .fold
         }
         if (betNumber == 3) {
             switch villian!.position {
@@ -195,11 +195,11 @@ class DecisionMaker {
                 raiseHands = self.bet3_UTG_v_CO_raise
                 callHands = self.bet3_UTG_v_CO_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 4) {
-            return .none
+            return .fold
         }
         
         if (betNumber == 5) {
@@ -220,7 +220,7 @@ class DecisionMaker {
                 raiseHands = self.bet5_UTG_v_CO_raise
                 callHands = self.bet5_UTG_v_CO_call
             default:
-                return .none
+                return .fold
             }
         }
         
@@ -261,11 +261,11 @@ class DecisionMaker {
                 raiseHands = self.bet_BB_v_CO_raise
                 callHands = self.bet_BB_v_CO_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 3) {
-            return .none
+            return .fold
         }
         if (betNumber == 4) {
             switch villian!.position {
@@ -285,11 +285,11 @@ class DecisionMaker {
                 raiseHands = self.bet4_BB_v_CO_raise
                 callHands = self.bet4_BB_v_CO_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 5) {
-            return .none
+            return .fold
         }
         
         if (raiseHands.contains(hero.getHand())) {
@@ -320,7 +320,7 @@ class DecisionMaker {
             case "BTN":
                 raiseHands = self.bet_SB_v_BTN_raise
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 3) {
@@ -329,7 +329,7 @@ class DecisionMaker {
                 callHands = self.bet3_SB_v_BB_call
             }
             else {
-                return .none
+                return .fold
             }
         }
         if (betNumber == 4) {
@@ -347,7 +347,7 @@ class DecisionMaker {
                 raiseHands = self.bet4_SB_v_BTN_raise
                 callHands = self.bet4_SB_v_BTN_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 5) {
@@ -355,7 +355,7 @@ class DecisionMaker {
                 callHands = self.bet5_SB_v_BB_call
             }
             else {
-                return .none
+                return .fold
             }
         }
         
@@ -389,7 +389,7 @@ class DecisionMaker {
                 raiseHands = self.bet_BTN_v_CO_raise
                 callHands = self.bet_BTN_v_CO_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 3) {
@@ -401,7 +401,7 @@ class DecisionMaker {
                 raiseHands = self.bet3_BTN_v_BB_raise
                 callHands = self.bet3_BTN_v_BB_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 4) {
@@ -416,7 +416,7 @@ class DecisionMaker {
                 raiseHands = self.bet4_BTN_v_CO_raise
                 callHands = self.bet4_BTN_v_CO_call
             default:
-                return .none
+                return .fold
             }
         }
         if (betNumber == 5) {
@@ -426,7 +426,7 @@ class DecisionMaker {
             case "BB":
                 callHands = self.bet5_BTN_v_BB_call
             default:
-                return .none
+                return .fold
             }
         }
         
