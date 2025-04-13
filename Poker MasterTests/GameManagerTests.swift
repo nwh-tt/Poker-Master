@@ -68,7 +68,7 @@ final class GameManagerTests: XCTestCase {
         // Ensure either one player remains unfolded OR only one raise occurred
         let remainingPlayers = gameManager.players.filter { $0.lastMove != .fold }.count
         let raiseCount = gameManager.players.filter { $0.lastMove == .raise }.count
-                
+        print(remainingPlayers, raiseCount)
         XCTAssert(remainingPlayers == 1 || raiseCount == 1,
                           "Either only one player should remain, or only one raise should have occurred, but not necessarily both.")
                 
@@ -122,7 +122,7 @@ final class GameManagerTests: XCTestCase {
             gameManager.turn = 2
             gameManager.betNumber = 5
             gameManager.lastRaise = 2.0
-            gameManager.villian = gameManager.players[1]
+            gameManager.villain = gameManager.players[1]
             for player in gameManager.players {
                 player.stack = 50 // Temporarily setting stack to a different value
             }
@@ -135,7 +135,7 @@ final class GameManagerTests: XCTestCase {
             XCTAssertEqual(gameManager.turn, gameManager.players.firstIndex(where: { $0.position == "UTG" }) ?? 0)
             XCTAssertEqual(gameManager.betNumber, 1)
             XCTAssertEqual(gameManager.lastRaise, 0.0)
-            XCTAssertNil(gameManager.villian)
+            XCTAssertNil(gameManager.villain)
             XCTAssertFalse(gameManager.waitingForUserInput)
             XCTAssertFalse(gameManager.showIncorrectPopup)
             XCTAssertEqual(gameManager.adviceText, "")

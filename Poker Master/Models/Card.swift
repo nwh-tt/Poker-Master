@@ -20,6 +20,7 @@ class Card: Equatable {
         return "\(rank) of \(suit)"
     }
     
+    
     static func == (lhs: Card, rhs: Card) -> Bool {
         return lhs.rank == rhs.rank && lhs.suit == rhs.suit
     }

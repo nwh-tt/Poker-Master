@@ -133,7 +133,7 @@ struct PokerTableView: View {
             .edgesIgnoringSafeArea(.all)
             .onAppear {
                 Task {
-                    await gameManager.startGame()
+                    gameManager.resetAndStartNewGame()
                 }
         }
             

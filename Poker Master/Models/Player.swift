@@ -62,6 +62,34 @@ class Player {
         return "Position: \(position), Stack: \(stack), Last Bet: \(currentBetAmount), Hand: \(hand[0].toString()), \(hand[1].toString())"
     }
     
+    func setHand(hand: String) {
+        let ranks = Array(hand)
+        let rank1 = String(ranks[0])
+        let rank2 = String(ranks[1])
+        
+        let suitedness = ranks.count == 3 ? String(ranks[2]) : "o"
+
+        let suits = ["heart", "diamond", "club", "spade"]
+
+        var suit1 = suits.randomElement()!
+        var suit2 = suits.randomElement()!
+
+        if suitedness == "s" {
+            suit2 = suit1 // same suit
+        } else if suitedness == "o" {
+            // ensure different suits
+            while suit2 == suit1 {
+                suit2 = suits.randomElement()!
+            }
+        }
+
+        let card1 = Card(suit: suit1, rank: rank1)
+        let card2 = Card(suit: suit2, rank: rank2)
+    
+        self.hand = [card1, card2]
+    }
+
+    
     // should return the hand like this "A9s" if same suit or "A9o" if not same suit bigger card should always be first
     func getHand() -> String {
         let rankOrder: [String: Int] = [

@@ -33,6 +33,9 @@
 		B6D4036F2D9340A3008A83E8 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B6D4036E2D9340A3008A83E8 /* ConfettiSwiftUI */; };
 		B6D403712D94357A008A83E8 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403702D94357A008A83E8 /* MenuView.swift */; };
 		B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */; };
+		B6D403762DA07098008A83E8 /* Ranges.json in Resources */ = {isa = PBXBuildFile; fileRef = B6D403752DA07098008A83E8 /* Ranges.json */; };
+		B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403772DA07150008A83E8 /* RangesFileManager.swift */; };
+		B6D4037A2DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403792DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +85,9 @@
 		B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncorrectSelectionView.swift; sourceTree = "<group>"; };
 		B6D403702D94357A008A83E8 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManager.swift; sourceTree = "<group>"; };
+		B6D403752DA07098008A83E8 /* Ranges.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Ranges.json; sourceTree = "<group>"; };
+		B6D403772DA07150008A83E8 /* RangesFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesFileManager.swift; sourceTree = "<group>"; };
+		B6D403792DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +159,7 @@
 		B6870FFD2D6E061D00A1EAB1 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B6D403772DA07150008A83E8 /* RangesFileManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -169,6 +176,7 @@
 		B697E7682BC849E700191C7A = {
 			isa = PBXGroup;
 			children = (
+				B6D403752DA07098008A83E8 /* Ranges.json */,
 				B697E7732BC849E700191C7A /* Poker Master */,
 				B697E7862BC849E800191C7A /* Poker MasterTests */,
 				B697E7902BC849E800191C7A /* Poker MasterUITests */,
@@ -219,6 +227,7 @@
 				B649ED542BD6FE5000157267 /* DeckTests.swift */,
 				B6ADA4262C2B241400358F34 /* DecisionMakerTests.swift */,
 				B6D403672D8A09D3008A83E8 /* PlayerTests.swift */,
+				B6D403792DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift */,
 			);
 			path = "Poker MasterTests";
 			sourceTree = "<group>";
@@ -359,6 +368,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6D403762DA07098008A83E8 /* Ranges.json in Resources */,
 				B697E77E2BC849E800191C7A /* Preview Assets.xcassets in Resources */,
 				B697E77B2BC849E800191C7A /* Assets.xcassets in Resources */,
 			);
@@ -400,6 +410,7 @@
 				B697E7792BC849E700191C7A /* Item.swift in Sources */,
 				B649ED4A2BD1B0C900157267 /* Player.swift in Sources */,
 				B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */,
+				B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */,
 				B672D7DF2BC88CB900E7F5F6 /* CardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -408,6 +419,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6D4037A2DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift in Sources */,
 				B6D403682D8A09D3008A83E8 /* PlayerTests.swift in Sources */,
 				B6ADA4272C2B241400358F34 /* DecisionMakerTests.swift in Sources */,
 				B649ED552BD6FE5000157267 /* DeckTests.swift in Sources */,

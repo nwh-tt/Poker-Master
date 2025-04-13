@@ -10,6 +10,10 @@ import SwiftData
 
 @main
 struct Poker_MasterApp: App {
+    init() {
+        RangesFileManager.loadInitialRangesIfNeeded()  // Ensure the file is copied from bundle to Documents directory
+    }
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
