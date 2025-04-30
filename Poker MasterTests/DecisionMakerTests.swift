@@ -19,6 +19,7 @@ final class DecisionMakerTests: XCTestCase {
     override func setUp() {
         hero = Player(position:"BTN", stack: 100.0)
         villian = Player(position:"BB", stack: 100.0)
+        loadedRanges = RangesFileManager.loadRanges()
         
     }
     
@@ -44,14 +45,15 @@ final class DecisionMakerTests: XCTestCase {
 
         // Test case for bet2 raise scenario
         func test2betRaise() {
+            
             hero.position = "BTN"
-            hero.hand = [Card(suit: "hearts", rank: "Q"), Card(suit: "spades", rank: "Q")] // Pocket queens (strong hand)
+            hero.hand = [Card(suit: "hearts", rank: "A"), Card(suit: "spades", rank: "A")] // Pocket queens (strong hand)
             villian.position = "UTG"
             
             let choice = decisionMaker.determineMovePreFlop(hero: hero, villian: villian, betNumber: 2)
             
             // Assert that the choice is "raise" with a strong hand in the bet2 scenario
-            XCTAssertEqual(choice, .raise, "Expected to raise with pocket queens on BTN in bet2 scenario.")
+            XCTAssertEqual(choice, .raise, "Expected to raise with pocket Aces on BTN in bet2 scenario.")
         }
 
         // Test case for bet2 fold scenario

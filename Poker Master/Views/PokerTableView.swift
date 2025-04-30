@@ -13,7 +13,7 @@ struct PokerTableView: View {
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     let padding = 40.0
-    @StateObject var gameManager = GameManager()
+    @StateObject var gameManager = SimplePreFlopManager()
     
     @State private var triggerMoneyConfetti: Int = 0
     // @State private var pulseAnimation: Bool = false
@@ -22,6 +22,7 @@ struct PokerTableView: View {
     // function to trigger confetti and turn buttons green
     private func buttonClicked(buttonClicked: LastMove) {
         let isCorrect = gameManager.userMadeMove(decision: buttonClicked)
+        print("called", isCorrect)
         if (isCorrect) {
             triggerMoneyConfetti += 1;
             correctMoveMade = buttonClicked
@@ -133,7 +134,7 @@ struct PokerTableView: View {
             .edgesIgnoringSafeArea(.all)
             .onAppear {
                 Task {
-                    gameManager.resetAndStartNewGame()
+                    await gameManager.startGame()
                 }
         }
             

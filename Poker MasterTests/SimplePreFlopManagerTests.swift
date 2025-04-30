@@ -31,7 +31,17 @@ final class SimplePreFlopManagerTests: XCTestCase {
         // print(simpleManager.loadPossibleRanges())
     }
     
+    func testStartGame() async {
+        await simpleManager.executeLoop()
+    }
+    
+    func testFailure() {
+        simpleManager.betToStopOn = 2
+        simpleManager.setUserHand(hero: "SB", villian: "MP")
+    }
+    
     func testStageTheGame_SetsVillainPosition() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         simpleManager.user?.position = "CO"
         simpleManager.stageTheGame()
         
@@ -40,6 +50,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testStageTheGame_SetsUserHand() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         simpleManager.user?.position = "BTN"
         simpleManager.stageTheGame()
         
@@ -49,6 +60,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testStageTheGame_SetsCorrectBetToStopOn() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         simpleManager.user?.position = "MP"
         simpleManager.stageTheGame()
 
@@ -57,6 +69,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testSetUserHand_Open_DoesNotChangeHand() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
         simpleManager.betToStopOn = 1
         let originalHand = simpleManager.user?.getHand()
@@ -66,6 +79,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testSetUserHand_VsRaise_DoesNotChangeHand() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
         simpleManager.betToStopOn = 2
         let originalHand = simpleManager.user?.getHand()
@@ -75,6 +89,8 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testSetUserHand_VsRaiseMPvCO_DoesNotChangeHand() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
+        
         // Given
         simpleManager.betToStopOn = 2
         let originalHand = simpleManager.user?.getHand()
@@ -84,6 +100,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testSetUserHand_3bet() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
         simpleManager.betToStopOn = 3
         simpleManager.setUserHand(hero: "CO", villian: "BTN")
@@ -96,6 +113,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testSetUserHand_4bet() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
         simpleManager.betToStopOn = 4
         simpleManager.setUserHand(hero: "CO", villian: "MP")
@@ -108,6 +126,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     func testSetUserHand_5bet() {
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
         simpleManager.betToStopOn = 5
         simpleManager.setUserHand(hero: "CO", villian: "BTN")

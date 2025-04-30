@@ -63,6 +63,11 @@ class Player {
     }
     
     func setHand(hand: String) {
+        // check if hand is empty
+        guard !hand.isEmpty else {
+            print("Empty hand string")
+            return
+        }
         let ranks = Array(hand)
         let rank1 = String(ranks[0])
         let rank2 = String(ranks[1])

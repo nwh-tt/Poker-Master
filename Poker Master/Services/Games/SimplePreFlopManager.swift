@@ -24,9 +24,8 @@ class SimplePreFlopManager: GameManager {
     var ranges: [String: [String]]
     var betToStopOn: Int = 1
     
-    override init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Int, testingMode: Bool) {
+    override init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Int = 3, testingMode: Bool = false) {
         self.ranges = RangesFileManager.loadRanges()
-        
         super.init(gameplaySpeed: gameplaySpeed, testingMode: testingMode)
         
         stageTheGame()
@@ -37,7 +36,7 @@ class SimplePreFlopManager: GameManager {
         let allKeys = Array(ranges.keys)
         guard let heroPosition = user?.position else { return }
         // take user position and use heroBetMapping to select random bet number
-        var betNumber = heroBetMapping6player[heroPosition]?.randomElement() ?? "1"
+        let betNumber = heroBetMapping6player[heroPosition]?.randomElement() ?? "1"
         betToStopOn = betNumber == "open" ? 1 : Int(betNumber)!
         
         // filter out all keys that don't contain "bet(betNumber)_userPosition"
@@ -48,15 +47,14 @@ class SimplePreFlopManager: GameManager {
             return
         }
         
-        // Gather possible hands
-        let possibleHands = ranges[randomKey] ?? []
-        
         // set villian position
         let villainPosition = extractVillainPosition(from: randomKey)
         villain = Player(position: villainPosition, stack: 100.0, hand: [deck.dealCard(), deck.dealCard()])
         
         // set user hand
         setUserHand(hero: heroPosition, villian: villainPosition)
+        turn = players.firstIndex(where: { $0.position == "UTG" })!
+        print("Hero: \(user?.position ?? "") Villian: \(villain?.position ?? "") BetToStopOn: \(betToStopOn)")
     }
     
     func setUserHand(hero: String, villian: String) {
@@ -86,15 +84,58 @@ class SimplePreFlopManager: GameManager {
     
     override func executeLoop() async {
         while (true) {
-            // fold if the player is not the villian
-            let playerCopy = Player(position: players[turn].position, stack: players[turn].stack, betAmount: players[turn].currentBetAmount, hand: players[turn].hand, lastMove: players[turn].lastMove)
-            playerCopy.hand = players[turn].hand
+            // We have 3 cases
+            // 1. player is the villian
+            //    - Always raise
+            // 2. player is the user
+            //    a.) Reached betToStopOn
+            //          - If we are testing we can just fold here
+            //          - If we are not testing we need to wait for user input
+            //    b.) Not reached betToStopOn
+            //          - In this situation always raise
+            // 3. player is neither
+            //       - For this case we can just auto fold
             
-            if (players[turn % 6].position != villain?.position) {
-                players[turn % 6].lastMove = .fold
+            // Skip any player who already folded
+            if (players[turn].lastMove == LastMove.fold) {
+                turn = (turn + 1) % 6
+                continue
+            }
+
+            // make a copy for ui updates
+            let playerCopy = Player(
+                position: players[turn].position,
+                stack: players[turn].stack,
+                betAmount: players[turn].currentBetAmount,
+                hand: players[turn].hand, lastMove: players[turn].lastMove
+            )
+            
+            if (playerCopy.position == villain?.position) { // Case 1: Villain always raises
+                raise(player: playerCopy)
+            } // If is the user
+            else if (playerCopy.position == user?.position) { // Case 2: User
+                if (betToStopOn == betNumber) { // Case 2a: BetToStopOn is reached - take user input
+                    
+                    let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villain ?? nil, betNumber: betNumber)
+                    correctMove = idealDecision
+                    await handleUserDecision(playerCopy: playerCopy, turn: turn, idealDecision: idealDecision)
+                }
+                else { // Case 2b: BetToStopOn is not reached - raise
+                    // If it is not we just raise and move forward
+                    raise(player: playerCopy)
+                }
+            }
+            else if (players[turn].position != villain?.position) { // Case 3: Everyone else folds
+                playerCopy.lastMove = .fold
+                activePlayers -= 1
             }
             
+            
+            players[turn] = playerCopy // this updates the ui
             turn = (turn + 1) % 6
+            
+            let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
+            try? await Task.sleep(nanoseconds: sleepTime)
         }
     }
     

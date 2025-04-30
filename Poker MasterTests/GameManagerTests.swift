@@ -245,7 +245,7 @@ final class GameManagerTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 5.0)
 
         // If bb and sb call than the pot will be 40 but could be 41, 42, 43 if they fold
-        XCTAssertGreaterThan(gameManager.pot, 40, "Pot should increase after betting")
+        XCTAssertGreaterThan(gameManager.pot, 39, "Pot should increase after betting")
     }
     
     func testWaitForUserInput() async {

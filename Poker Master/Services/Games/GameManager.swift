@@ -23,8 +23,9 @@ class GameManager: ObservableObject {
     var lastRaise: Double = 0.0
     var villain: Player? = nil
     let decisionMaker: DecisionMaker
+    var activePlayers: Int = 6
     
-    private var correctMove: LastMove = .none // used to check if the user made the correct move and update ui
+    var correctMove: LastMove = .none // used to check if the user made the correct move and update ui
     private var pendingUserMoveContinuation: CheckedContinuation<LastMove, Never>?
     
     var gameplaySpeed: Int
@@ -52,11 +53,9 @@ class GameManager: ObservableObject {
         }
         
         try? await Task.sleep(nanoseconds: 500_000_000) // Wait 0.5 seconds
-        let gameTask = Task {
-            await executeLoop()
-        }
         
-        await gameTask.value
+        
+        await executeLoop()
     }
     
     func resetAndStartNewGame() {
@@ -81,6 +80,7 @@ class GameManager: ObservableObject {
         waitingForUserInput = false
         showIncorrectPopup = false
         adviceText = ""
+        activePlayers = 6
         
         // Optionally delay before starting the game again
         Task {
@@ -92,7 +92,6 @@ class GameManager: ObservableObject {
     
     @MainActor
     func executeLoop() async {
-        var activePlayers = 6
         while (true) {
             // need to check if the betting is over pre flop
             // 1. check if all players have had a turn
@@ -106,7 +105,7 @@ class GameManager: ObservableObject {
             }
             
             // check if the cpu player has folded
-            if (players[turn % 6].lastMove == LastMove.fold) {
+            if (players[turn].lastMove == LastMove.fold) {
                 turn = (turn + 1) % 6
                 continue
             }
@@ -118,7 +117,7 @@ class GameManager: ObservableObject {
             
             let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villain ?? nil, betNumber: betNumber)
             let playerCopy = Player(position: players[turn].position, stack: players[turn].stack, betAmount: players[turn].currentBetAmount, hand: players[turn].hand, lastMove: players[turn].lastMove)
-            
+             
             // when in testing mode we skip over waiting for the user
             if (!testingMode) {
                 // check if the player is the user
@@ -128,6 +127,7 @@ class GameManager: ObservableObject {
                     let userDecision = await waitForUserInput()
                     waitingForUserInput = false // lock buttons again
                     if (userDecision == idealDecision) {
+                        
                         break
                     } else {
                         // break loop print incorrect you should have: right move'
@@ -140,12 +140,8 @@ class GameManager: ObservableObject {
             
             
             if (idealDecision == .raise) {
-                // Update players fields
-                let potIncrease = playerCopy.raise(amountRaisingTo: lastRaise + 10.0)
-                betNumber += 1
-                lastRaise = playerCopy.currentBetAmount
-                villain = players[turn]
-                pot += potIncrease
+                raise(player: playerCopy)
+                villain = playerCopy
                 print("Player \(playerCopy.position) has raised to \(playerCopy.currentBetAmount) ---------- Pot Now: " + String(pot))
             }
             else if (idealDecision == .call) {
@@ -167,13 +163,6 @@ class GameManager: ObservableObject {
             let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
             try? await Task.sleep(nanoseconds: sleepTime)
         }
-//        print("Pre flop betting is over players remaining: ")
-//        for p in players {
-//            if p.lastMove != LastMove.fold {
-//                print(p.position + ": " + String(p.currentBetAmount))
-//            }
-//        }
-//        print("Pot = " + String(pot))
     }
     
     @MainActor
@@ -224,6 +213,49 @@ class GameManager: ObservableObject {
         return playersReordered
     }
     
+    func raise(player: Player) {
+        var raiseTo: Double = 0.0
+
+        switch betNumber {
+        case 1:
+            raiseTo = 2.5
+        case 2:
+            // 3-bet: typically 3.5x the open size
+            raiseTo = 2.5 * 3.5
+        case 3:
+            // 4-bet: typically 2x the 3-bet
+            raiseTo = (2.5 * 3.5) * 2
+        case 4:
+            // 5-bet or all-in
+            raiseTo = player.stack // go all-in
+        default:
+            raiseTo = player.stack
+        }
+
+        let potIncrease = player.raise(amountRaisingTo: raiseTo)
+        betNumber += 1
+        lastRaise = player.currentBetAmount
+        pot += potIncrease
+    }
+    
+    func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: LastMove) async {
+        if !testingMode {
+            waitingForUserInput = true
+            let userDecision = await waitForUserInput()
+            waitingForUserInput = false
+
+            if userDecision == idealDecision {
+                players[turn] = playerCopy
+            } else {
+                showIncorrectPopup = true
+                adviceText = "Correct Move: " + idealDecision.rawValue
+                players[turn] = playerCopy
+            }
+        } else {
+            playerCopy.lastMove = .fold
+            activePlayers -= 1
+        }
+    }
     
     func toString() -> String {
         return "Players: " + players[0].toString() + players[1].toString() + players[2].toString() + players[3].toString() + players[4].toString() + players[5].toString()
