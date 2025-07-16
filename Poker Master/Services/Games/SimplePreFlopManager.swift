@@ -119,6 +119,7 @@ class SimplePreFlopManager: GameManager {
                     let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villain ?? nil, betNumber: betNumber)
                     correctMove = idealDecision
                     await handleUserDecision(playerCopy: playerCopy, turn: turn, idealDecision: idealDecision)
+                    break
                 }
                 else { // Case 2b: BetToStopOn is not reached - raise
                     // If it is not we just raise and move forward
@@ -136,6 +137,38 @@ class SimplePreFlopManager: GameManager {
             
             let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
             try? await Task.sleep(nanoseconds: sleepTime)
+        }
+    }
+    
+    override func resetAndStartNewGame() {
+        pot = 0
+        betToStopOn = 1
+        // Reset players and reinitialize the deck
+        deck.resetDeck()
+        players = createRandomPlayers()
+        user = players[0]
+        
+        // Deal two new cards to each player
+        for player in players {
+            player.hand = [deck.dealCard(), deck.dealCard()]
+        }
+        
+        // Reset game-related variables
+        turn = players.firstIndex(where: { $0.position == "UTG" })!
+        betNumber = 1
+        lastRaise = 0.0
+        villain = nil
+        correctMove = .none
+        pendingUserMoveContinuation = nil
+        waitingForUserInput = false
+        showIncorrectPopup = false
+        adviceText = ""
+        activePlayers = 6
+        stageTheGame()
+        // Optionally delay before starting the game again
+        Task {
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s delay
+            await startGame()
         }
     }
     

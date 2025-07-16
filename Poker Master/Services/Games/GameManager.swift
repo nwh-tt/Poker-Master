@@ -12,6 +12,9 @@ class GameManager: ObservableObject {
     @Published var user: Player? = nil
     @Published var pot: Double = 0.0
     @Published var waitingForUserInput: Bool = false
+    @Published var score: Int = 0
+    @Published var handsPlayed: Int = 0
+    
     
     // variables needed for incorrect or correct move
     @Published var showIncorrectPopup: Bool = false
@@ -26,7 +29,7 @@ class GameManager: ObservableObject {
     var activePlayers: Int = 6
     
     var correctMove: LastMove = .none // used to check if the user made the correct move and update ui
-    private var pendingUserMoveContinuation: CheckedContinuation<LastMove, Never>?
+    var pendingUserMoveContinuation: CheckedContinuation<LastMove, Never>?
     
     var gameplaySpeed: Int
     var testingMode: Bool
@@ -43,7 +46,7 @@ class GameManager: ObservableObject {
             player.hand.append(deck.dealCard())
             player.hand.append(deck.dealCard())
         }
-        pot = 3
+        pot = 1.5
     }
     
     func startGame() async {
@@ -197,12 +200,14 @@ class GameManager: ObservableObject {
         for _ in 1...6 {
             let player: Player = Player(position: positionList[index], stack: 100.0)
             if positionList[index] == "SB" {
-                player.currentBetAmount = 1.0
-                player.stack -= 1.0
+                player.currentBetAmount = 0.5
+                player.stack -= 0.5
+                pot += 0.5
             }
             if positionList[index] == "BB" {
-                player.currentBetAmount = 2.0
-                player.stack -= 2.0
+                player.currentBetAmount = 1.0
+                player.stack -= 1.0
+                pot += 1.0
             }
             
             playersReordered.append(player)
@@ -220,36 +225,42 @@ class GameManager: ObservableObject {
         case 1:
             raiseTo = 2.5
         case 2:
-            // 3-bet: typically 3.5x the open size
             raiseTo = 2.5 * 3.5
         case 3:
-            // 4-bet: typically 2x the 3-bet
             raiseTo = (2.5 * 3.5) * 2
         case 4:
-            // 5-bet or all-in
             raiseTo = player.stack // go all-in
         default:
             raiseTo = player.stack
         }
+
+        // Round to nearest 0.5
+        raiseTo = (raiseTo * 2).rounded() / 2
 
         let potIncrease = player.raise(amountRaisingTo: raiseTo)
         betNumber += 1
         lastRaise = player.currentBetAmount
         pot += potIncrease
     }
-    
+
     func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: LastMove) async {
         if !testingMode {
             waitingForUserInput = true
             let userDecision = await waitForUserInput()
             waitingForUserInput = false
-
+                
             if userDecision == idealDecision {
                 players[turn] = playerCopy
+                // Makes sure they update in sync on the ui
+                await MainActor.run {
+                    score += 1
+                    handsPlayed += 1
+                }
             } else {
                 showIncorrectPopup = true
                 adviceText = "Correct Move: " + idealDecision.rawValue
                 players[turn] = playerCopy
+                handsPlayed += 1
             }
         } else {
             playerCopy.lastMove = .fold

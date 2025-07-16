@@ -11,7 +11,7 @@ import ConfettiSwiftUI
 struct PokerTableView: View {
     let darkGreen = Color(red: 0, green: 0.15, blue: 0)
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
-    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
+    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.5)
     let padding = 40.0
     @StateObject var gameManager = SimplePreFlopManager()
     
@@ -30,6 +30,11 @@ struct PokerTableView: View {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
                 correctMoveMade = .none // Reset button color
+                // check if handsPlayed > handLimit
+                if (gameManager.handsPlayed >= 10) {
+                    // TODO: Show end of game screen
+                    return
+                }
                 gameManager.resetAndStartNewGame()
             }
         }
@@ -53,6 +58,30 @@ struct PokerTableView: View {
                             .stroke(borderColor, lineWidth: 3)
                     )
                 EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
+                // add a score in the top right corner
+                HStack {
+                    Spacer()
+                    Text("\(gameManager.score) / \(gameManager.handsPlayed)")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule()
+                                .fill(Color.black.opacity(0.4))
+                                .overlay(
+                                    Capsule()
+                                        .stroke(Color.white.opacity(0.4), lineWidth: 2)
+                                )
+                        )
+                        .padding(.top, 16)
+                        .padding(.trailing, 16)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                .padding(.top, 8)
+                .padding(.trailing, 12)
+                
+                
                 VStack(alignment: .center)
                 {
                     Spacer()
@@ -123,7 +152,7 @@ struct PokerTableView: View {
                     }.padding()
                         .confettiCannon(trigger: $triggerMoneyConfetti, num: 50, confettis: [.text("💵"), .text("💰")])
                 }.padding()
-                Text("Current Pot: \(gameManager.pot)")
+                Text("\(String(format: "%.1f", gameManager.pot)) BB")
                     .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2 - 60)
                     .colorInvert()
             }
@@ -136,7 +165,7 @@ struct PokerTableView: View {
                 Task {
                     await gameManager.startGame()
                 }
-        }
+            }
             
     }
 }

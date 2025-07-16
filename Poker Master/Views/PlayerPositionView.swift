@@ -13,7 +13,7 @@ struct PlayerPositionView: View {
     let direction: String
     let isUser: Bool
     
-    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
+    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.5)
     
     var body: some View {
         let textOffset = direction == "right" ? 10 : -10
@@ -31,7 +31,7 @@ struct PlayerPositionView: View {
                         .stroke(borderColor, lineWidth: 2)
                 )
                 .overlay(
-                    Text("\(Int(player.stack)) BB")
+                    Text("\(String(format: "%.1f", player.stack)) BB")
                         .font(.system(size: 12))
                         .fontWeight(.bold)
                         .foregroundColor(textColor)
@@ -51,9 +51,9 @@ struct PlayerPositionView: View {
             if (player.lastMove != LastMove.none) {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color.blue)
-                    .frame(width: 50, height: 15)
+                    .frame(width: 60, height: 20)
                     .overlay(
-                        Text(player.lastMove.rawValue)
+                        Text(player.isReRaise ? "ReRaise" : player.lastMove.rawValue)
                             .font(.system(size: 12))
                             .fontWeight(.heavy)
                             .foregroundColor(Color.white)
@@ -74,6 +74,7 @@ struct PlayerPositionView: View {
 
 #Preview {
     let player = Player(position: "BB", stack: 100.0)
-    player.lastMove = LastMove.raise
+    player.raise(amountRaisingTo: 2.5)
+    player.raise(amountRaisingTo: 10)
     return PlayerPositionView(player: player , direction: "right", isUser: false)
 }

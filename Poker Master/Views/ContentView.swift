@@ -19,10 +19,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            PokerTableView()
-            HStack {
-                
-            }
+            MainView()
         }
     }
 }

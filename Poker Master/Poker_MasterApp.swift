@@ -30,6 +30,8 @@ struct Poker_MasterApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(.dark)
+                .environment(\.font, .custom("Exo2-Regular", size: 18))
         }
         .modelContainer(sharedModelContainer)
     }

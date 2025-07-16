@@ -25,7 +25,7 @@ struct CardView: View {
                     .fontWeight(.bold)
                     .foregroundColor(color)
                     .padding(.bottom, -8)
-                    .padding(.leading, 10)
+                    .padding(.leading, 12)
                 Image(systemName: "suit.\(card.suit).fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)

@@ -21,6 +21,7 @@ class Player {
     var hand: [Card]
     var lastMove: LastMove
     var currentBetAmount: Double
+    var isReRaise: Bool = false
     
     
     init(position: String, stack: Double, betAmount: Double = 0.0, hand: [Card] = [], lastMove: LastMove = LastMove.none) {
@@ -33,6 +34,10 @@ class Player {
     
     // amount is the amount to raise to (need to account for the current bet amount)
     func raise(amountRaisingTo: Double) -> Double {
+        if (lastMove == LastMove.raise) {
+            isReRaise = true // variable used for ui display
+        }
+            
         let difference = amountRaisingTo - currentBetAmount
         bet(amount: difference)
         lastMove = LastMove.raise
