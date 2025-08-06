@@ -11,8 +11,11 @@ struct CardView: View {
     // Takes in a suit and value
     let card: Card
     
+    
     var body: some View {
         let color: Color = card.suit == "heart" || card.suit == "diamond" ? .red : .black
+        
+        
         
         ZStack {
             RoundedRectangle(cornerRadius: 5)

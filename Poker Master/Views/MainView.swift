@@ -9,46 +9,68 @@ import SwiftUI
 
 struct MainView: View {
     @State private var selectedTab = 2
+    @StateObject private var navState = NavigationState()
     
     init() {
            let tabBarAppearance = UITabBar.appearance()
         tabBarAppearance.backgroundColor = UIColor(Color.black)
            tabBarAppearance.barTintColor = UIColor(Color.black) // Legacy fallback
            tabBarAppearance.unselectedItemTintColor = UIColor.gray
-           tabBarAppearance.tintColor = UIColor.white
+           tabBarAppearance.tintColor = UIColor.gray
        }
 
        var body: some View {
-           TabView(selection: $selectedTab) {
-               HomeView()
-                   .tabItem {
-                       Image(systemName: "house.fill")
+           ZStack(alignment: .bottom) {
+                   TabView(selection: $selectedTab) {
+                       HomeView()
+                           .tabItem {
+                               Image(systemName: selectedTab == 0 ? "house.fill" : "house")
+                                   .environment(\.symbolVariants, .none)
+                           }
+                           .tag(0)
+                       
+                       ChallengesView()
+                           .tabItem {
+                               Image(systemName: selectedTab == 1 ? "trophy.fill" : "trophy")
+                                   .environment(\.symbolVariants, .none)
+                           }
+                           .tag(1)
+                       
+                       MenuView()
+                           .tabItem {
+                               Image(systemName: selectedTab == 2 ? "play.circle.fill" : "play.circle")
+                                   .environment(\.symbolVariants, .none)
+                               
+                           }
+                           .tag(2)
+                       
+                       StatsView()
+                           .tabItem {
+                               Image(systemName: selectedTab == 3 ? "chart.bar.fill" : "chart.bar")
+                                   .environment(\.symbolVariants, .none)
+                           }
+                           .tag(3)
+                       
+                       ProfileView()
+                           .tabItem {
+                               Image(systemName: selectedTab == 4 ? "person.circle.fill" : "person.circle")
+                                   .environment(\.symbolVariants, .none)
+                           }
+                           .tag(4)
                    }
-                   .tag(0)
+                   .accentColor(.white)
+                   .background(Color.black.edgesIgnoringSafeArea(.bottom))
+                   .environmentObject(navState)
                
-               ChallengesView()
-                   .tabItem {
-                       Image(systemName: "trophy.fill")
-                   }
-                   .tag(1)
-               MenuView()
-                   .tabItem {
-                       Image(systemName: "play.circle.fill")
-                   }
-                   .tag(2)
-               StatsView()
-                   .tabItem {
-                       Image(systemName: "chart.bar.fill")
-                   }
-                   .tag(3)
-               ProfileView()
-                   .tabItem {
-                       Image(systemName: "person.fill")
-                   }
-                   .tag(4)
+               
+               if navState.showTabBar {
+                   Rectangle()
+                       .fill(Color.white.opacity(0.4))
+                       .frame(height: 0.5)
+                       .edgesIgnoringSafeArea(.bottom)
+                       .padding(.bottom, 60)
+               }
            }
-           .accentColor(.white)
-           .background(Color.black.edgesIgnoringSafeArea(.bottom))
        }
    
 }

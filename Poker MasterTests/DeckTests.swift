@@ -58,7 +58,6 @@ final class DeckTests: XCTestCase {
             // Act
             deck.resetDeck() // Reset the deck
             let newOrder = deck.cards // Get the new order after reset
-
             // Assert
             XCTAssertEqual(newOrder.count, 52, "Deck should contain 52 cards after reset")
             XCTAssertNotEqual(originalOrder, newOrder, "Deck should be shuffled after reset")

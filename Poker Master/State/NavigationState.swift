@@ -1,18 +1,7 @@
-//
-//  NavigationState.swift
-//  Poker Master
-//
-//  Created by Ned Whittleton on 8/4/25.
-//
-
+// NavigationState.swift
+import Foundation
 import SwiftUI
 
-struct NavigationState: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
-#Preview {
-    NavigationState()
+class NavigationState: ObservableObject {
+    @Published var showTabBar: Bool = true
 }

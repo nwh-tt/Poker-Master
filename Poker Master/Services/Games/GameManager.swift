@@ -225,9 +225,9 @@ class GameManager: ObservableObject {
         case 1:
             raiseTo = 2.5
         case 2:
-            raiseTo = 2.5 * 3.5
+            raiseTo = lastRaise * 4
         case 3:
-            raiseTo = (2.5 * 3.5) * 2
+            raiseTo = lastRaise * 2.5
         case 4:
             raiseTo = player.stack // go all-in
         default:

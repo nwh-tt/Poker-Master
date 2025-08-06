@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MenuView: View {
-    let gameModes = ["Preflop", "Post Flop"]
+    @EnvironmentObject var navState: NavigationState
     
     var body: some View {
         NavigationStack {
@@ -31,16 +31,35 @@ struct MenuView: View {
                     NavigationLink {
                         PokerTableView()
                             .toolbar(.hidden, for: .tabBar)
+                            .onAppear {
+                                navState.showTabBar = false
+                            }
+                            .onDisappear {
+                                navState.showTabBar = true
+                            }
                     } label: {
                         MenuOption(gameName: "Basic Preflop", gameDescription: "Heads-up preflop decision training", gradientColor: Color(red: 80/255, green: 15/255, blue: 25/255).opacity(0.7))
                     }
-                    MenuOption(gameName: "Advanced Preflop (WIP)", gameDescription: "Multiway preflop with EV", gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7))
+                    NavigationLink {
+                        PokerTableView()
+                            .toolbar(.hidden, for: .tabBar)
+                            .onAppear {
+                                navState.showTabBar = false
+                            }
+                            .onDisappear {
+                                navState.showTabBar = true
+                            }
+                    } label: {
+                        MenuOption(gameName: "Advanced Preflop (WIP)", gameDescription: "Multiway preflop with EV", gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7))
+                    }
+                    
                     MenuOption(gameName: "Post Flop (WIP)", gameDescription: "Multiway postflop with EV", gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9))
                 }
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // Fill available space
             .background(Color.black)  // Set background color to black
+            
         }
         
     }

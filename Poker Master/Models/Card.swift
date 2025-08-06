@@ -17,7 +17,7 @@ class Card: Equatable {
     }
     
     func toString() -> String {
-        return "\(rank) of \(suit)"
+        return "\(rank)\(suit.prefix(1))"
     }
     
     
