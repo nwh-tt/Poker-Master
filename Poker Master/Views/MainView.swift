@@ -63,13 +63,6 @@ struct MainView: View {
                    .environmentObject(navState)
                
                
-               if navState.showTabBar {
-                   Rectangle()
-                       .fill(Color.white.opacity(0.4))
-                       .frame(height: 0.5)
-                       .edgesIgnoringSafeArea(.bottom)
-                       .padding(.bottom, 60)
-               }
            }
        }
    

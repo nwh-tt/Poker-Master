@@ -9,9 +9,9 @@ import Foundation
 
 
 class User: Player {
-    var playerMove: LastMove
+    var playerMove: Move
     
-    init(playerMove: LastMove) {
+    init(playerMove: Move) {
         self.playerMove = playerMove
         super.init(position: "User", stack: 1000.0)
     }

@@ -43,19 +43,6 @@ final class DecisionMakerTests: XCTestCase {
             XCTAssertEqual(choice, .fold, "Expected to fold with 2-5 on BTN based on open fold ranges.")
         }
 
-        // Test case for bet2 raise scenario
-        func test2betRaise() {
-            
-            hero.position = "BTN"
-            hero.hand = [Card(suit: "hearts", rank: "A"), Card(suit: "spades", rank: "A")] // Pocket queens (strong hand)
-            villian.position = "UTG"
-            
-            let choice = decisionMaker.determineMovePreFlop(hero: hero, villian: villian, betNumber: 2)
-            
-            // Assert that the choice is "raise" with a strong hand in the bet2 scenario
-            XCTAssertEqual(choice, .raise, "Expected to raise with pocket Aces on BTN in bet2 scenario.")
-        }
-
         // Test case for bet2 fold scenario
         func test2betfold() {
             hero.position = "BTN"

@@ -8,7 +8,7 @@
 import Foundation
 
 // make an enum for last move
-enum LastMove: String {
+enum Move: String {
     case call = "Call"
     case raise = "Raise"
     case fold = "Fold"
@@ -19,12 +19,12 @@ class Player {
     var position: String
     var stack: Double
     var hand: [Card]
-    var lastMove: LastMove
+    var lastMove: Move
     var currentBetAmount: Double
     var isReRaise: Bool = false
     
     
-    init(position: String, stack: Double, betAmount: Double = 0.0, hand: [Card] = [], lastMove: LastMove = LastMove.none) {
+    init(position: String, stack: Double, betAmount: Double = 0.0, hand: [Card] = [], lastMove: Move = Move.none) {
         self.position = position
         self.stack = stack
         self.currentBetAmount = betAmount
@@ -34,20 +34,20 @@ class Player {
     
     // amount is the amount to raise to (need to account for the current bet amount)
     func raise(amountRaisingTo: Double) -> Double {
-        if (lastMove == LastMove.raise) {
+        if (lastMove == Move.raise) {
             isReRaise = true // variable used for ui display
         }
             
         let difference = amountRaisingTo - currentBetAmount
         bet(amount: difference)
-        lastMove = LastMove.raise
+        lastMove = Move.raise
         return difference
     }
     
     func call(amountCallingTo: Double) -> Double {
         let difference = amountCallingTo - currentBetAmount
         bet(amount: difference)
-        lastMove = LastMove.call
+        lastMove = Move.call
         return difference
     }
     
@@ -136,6 +136,20 @@ class Player {
             } else {
                 return "\(highRank)\(lowRank)o"
             }
+    }
+    
+    func handIsPair() -> Bool {
+        let rankOrder: [String: Int] = [
+                "A": 14, "K": 13, "Q": 12, "J": 11,
+                "T": 10, "9": 9, "8": 8, "7": 7,
+                "6": 6, "5": 5, "4": 4, "3": 3, "2": 2
+            ]
+        
+        let card1 = hand[0].rank
+        let card2 = hand[1].rank
+        let card1RankValue = rankOrder[card1] ?? 0
+        let card2RankValue = rankOrder[card2] ?? 0
+        return card1RankValue == card2RankValue
     }
 }
 

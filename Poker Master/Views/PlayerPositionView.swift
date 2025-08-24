@@ -20,7 +20,7 @@ struct PlayerPositionView: View {
         let rectangleOffset = direction == "right" ? 48 : -48
         let cardOffsets = direction == "right" ? [45, 67] : [-67, -45]
         // let amount = player.folded ? "Fold" : "\(Int(player.stack)) BB"
-        let textColor = player.lastMove == LastMove.fold ? Color.gray : Color.white
+        let textColor = player.lastMove == Move.fold ? Color.gray : Color.white
         
         ZStack {
             RoundedRectangle(cornerRadius: 5)
@@ -48,7 +48,7 @@ struct PlayerPositionView: View {
                         .fontWeight(.bold)
                         .foregroundColor(textColor)
                 )
-            if (player.lastMove != LastMove.none) {
+            if (player.lastMove != Move.none) {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color.blue)
                     .frame(width: 60, height: 20)
@@ -60,7 +60,7 @@ struct PlayerPositionView: View {
                     )
                     .offset(CGSize(width: 0, height: 30))
             }
-            if (!isUser && player.lastMove != LastMove.fold) {
+            if (!isUser && player.lastMove != Move.fold) {
                 CardBackView()
                     .offset(CGSize(width: cardOffsets[0], height: -30))
                 CardBackView()

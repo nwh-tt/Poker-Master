@@ -15,7 +15,7 @@ final class PlayerTests: XCTestCase {
         
         XCTAssertEqual(player.position, "BTN")
         XCTAssertEqual(player.stack, 1000.0)
-        XCTAssertEqual(player.lastMove, LastMove.none)
+        XCTAssertEqual(player.lastMove, Move.none)
         XCTAssertEqual(player.currentBetAmount, 0.0)
         XCTAssertTrue(player.hand.isEmpty)
     }
@@ -34,7 +34,7 @@ final class PlayerTests: XCTestCase {
         
         XCTAssertEqual(player.stack, 850.0)
         XCTAssertEqual(player.currentBetAmount, 150.0)
-        XCTAssertEqual(player.lastMove, LastMove.raise)
+        XCTAssertEqual(player.lastMove, Move.raise)
     }
     
     func testRaiseWithPreviousBetFunctionality() {
@@ -44,7 +44,7 @@ final class PlayerTests: XCTestCase {
         
         XCTAssertEqual(player.stack, 850.0)
         XCTAssertEqual(player.currentBetAmount, 150.0)
-        XCTAssertEqual(player.lastMove, LastMove.raise)
+        XCTAssertEqual(player.lastMove, Move.raise)
     }
 
     func testCallDefaultFunctionality() {
@@ -53,7 +53,7 @@ final class PlayerTests: XCTestCase {
         
         XCTAssertEqual(player.stack, 950.0)
         XCTAssertEqual(player.currentBetAmount, 50.0)
-        XCTAssertEqual(player.lastMove, LastMove.call)
+        XCTAssertEqual(player.lastMove, Move.call)
     }
     
     func testCallRaiseFunctionality() {
@@ -64,7 +64,7 @@ final class PlayerTests: XCTestCase {
         
         XCTAssertEqual(player.stack, 900.0)
         XCTAssertEqual(player.currentBetAmount, 100.0)
-        XCTAssertEqual(player.lastMove, LastMove.call)
+        XCTAssertEqual(player.lastMove, Move.call)
     }
     
     

@@ -13,16 +13,20 @@ struct PokerTableView: View {
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.5)
     let padding = 40.0
-    @StateObject var gameManager = SimplePreFlopManager()
+    @StateObject var gameManager: GameManager
+    
+    init(gameManager: GameManager) {
+        self._gameManager = StateObject(wrappedValue: gameManager)
+    }
     
     @State private var triggerMoneyConfetti: Int = 0
     // @State private var pulseAnimation: Bool = false
-    @State private var correctMoveMade: LastMove = .none
+    @State private var correctMoveMade: Move = .none
     
     // function to trigger confetti and turn buttons green
-    private func buttonClicked(buttonClicked: LastMove) {
+    private func buttonClicked(buttonClicked: Move) {
         let isCorrect = gameManager.userMadeMove(decision: buttonClicked)
-        print("called", isCorrect)
+        
         if (isCorrect) {
             triggerMoneyConfetti += 1;
             correctMoveMade = buttonClicked
@@ -117,7 +121,7 @@ struct PokerTableView: View {
                     Spacer()
                     HStack {
                         Button(action:{
-                            buttonClicked(buttonClicked: LastMove.call)
+                            buttonClicked(buttonClicked: Move.call)
                         }) {
                             Text("Call")
                                     .frame(maxWidth: .infinity)
@@ -128,7 +132,7 @@ struct PokerTableView: View {
                                     .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
                         }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
-                            buttonClicked(buttonClicked: LastMove.raise)
+                            buttonClicked(buttonClicked: Move.raise)
                         }) {
                             Text("Raise")
                                 .frame(maxWidth: .infinity)
@@ -139,7 +143,7 @@ struct PokerTableView: View {
                                     .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
                         }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
-                            buttonClicked(buttonClicked: LastMove.fold)
+                            buttonClicked(buttonClicked: Move.fold)
                         }) {
                             Text("Fold")
                                 .frame(maxWidth: .infinity)
@@ -171,5 +175,5 @@ struct PokerTableView: View {
 }
 
 #Preview {
-    PokerTableView()
+    PokerTableView(gameManager: SimplePreFlopManager())
 }

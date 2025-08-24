@@ -24,6 +24,7 @@ class SimplePreFlopManager: GameManager {
     var ranges: [String: [String]]
     var betToStopOn: Int = 1
     
+    
     override init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Int = 3, testingMode: Bool = false) {
         self.ranges = RangesFileManager.loadRanges()
         super.init(gameplaySpeed: gameplaySpeed, testingMode: testingMode)
@@ -97,7 +98,7 @@ class SimplePreFlopManager: GameManager {
             //       - For this case we can just auto fold
             
             // Skip any player who already folded
-            if (players[turn].lastMove == LastMove.fold) {
+            if (players[turn].lastMove == Move.fold) {
                 turn = (turn + 1) % 6
                 continue
             }
@@ -114,8 +115,8 @@ class SimplePreFlopManager: GameManager {
                 raise(player: playerCopy)
             } // If is the user
             else if (playerCopy.position == user?.position) { // Case 2: User
+                
                 if (betToStopOn == betNumber) { // Case 2a: BetToStopOn is reached - take user input
-                    
                     let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villain ?? nil, betNumber: betNumber)
                     correctMove = idealDecision
                     await handleUserDecision(playerCopy: playerCopy, turn: turn, idealDecision: idealDecision)
@@ -152,6 +153,16 @@ class SimplePreFlopManager: GameManager {
         for player in players {
             player.hand = [deck.dealCard(), deck.dealCard()]
         }
+        
+        // Determine game duration using game.date to current Date
+        // game.duration = Date().timeIntervalSince(game.date)
+        // game.totalHands = hands.count
+        
+        // GameDataManager.createNewGame(game: game, context: modelContext)
+        // HandLogDataManager.addHands(handLogs: hands, to: game, context: modelContext)
+        
+        
+        
         
         // Reset game-related variables
         turn = players.firstIndex(where: { $0.position == "UTG" })!

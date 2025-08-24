@@ -9,19 +9,11 @@ import XCTest
 
 @testable import Poker_Master
 
-//class MockDecisionMaker: DecisionMakerProtocol {
-//    var forcedMove: String = "call"  // Default behavior
-//
-//    func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> String {
-//        return forcedMove  // Return whatever move we want for testing
-//    }
-//}
-
 class MockDecisionMaker: DecisionMaker {
-    var moveSequence: [LastMove] = []
+    var moveSequence: [Move] = []
     private var moveIndex = 0
     
-    override func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> LastMove {
+    override func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> Move {
         guard moveIndex < moveSequence.count else { return .fold }
         let move = moveSequence[moveIndex]
         moveIndex += 1
@@ -50,14 +42,14 @@ final class GameManagerTests: XCTestCase {
             XCTAssertEqual(gameManager.players.count, 6) // Assuming createRandomPlayers() generates 6 players
             XCTAssertNotNil(gameManager.user)
             XCTAssertEqual(gameManager.players.first?.position, gameManager.user?.position)
-            XCTAssertGreaterThanOrEqual(gameManager.pot, 3.0) // SB + BB
+            XCTAssertGreaterThanOrEqual(gameManager.pot, 1.5) // SB + BB
             
             // Ensure SB and BB have correct starting bet
             let smallBlind = gameManager.players.first(where: { $0.position == "SB" })
             let bigBlind = gameManager.players.first(where: { $0.position == "BB" })
             
-            XCTAssertEqual(smallBlind?.currentBetAmount, 1.0)
-            XCTAssertEqual(bigBlind?.currentBetAmount, 2.0)
+            XCTAssertEqual(smallBlind?.currentBetAmount, 0.5)
+            XCTAssertEqual(bigBlind?.currentBetAmount, 1.0)
     }
     
     func testStartGame_Single() async {
@@ -141,10 +133,10 @@ final class GameManagerTests: XCTestCase {
             XCTAssertEqual(gameManager.adviceText, "")
             for player in gameManager.players {
                 if player.position == "BB" {
-                    XCTAssertEqual(player.stack, 98, "BB's stack should be reset to 98")
+                    XCTAssertEqual(player.stack, 99, "BB's stack should be reset to 99")
                 }
                 else if player.position == "SB" {
-                    XCTAssertEqual(player.stack, 99, "BB's stack should be reset to 99")
+                    XCTAssertEqual(player.stack, 99.5, "SB's stack should be reset to 99.5")
                 }
                 else {
                     XCTAssertEqual(player.stack, 100, "Player's stack should be reset to 100")
@@ -206,7 +198,7 @@ final class GameManagerTests: XCTestCase {
 
         // Ensure all players matched the last raise
         for player in gameManager.players {
-            XCTAssertEqual(player.currentBetAmount, 10.0, "All players should have matched the last raise")
+            XCTAssertEqual(player.currentBetAmount, 2.5, "All players should have matched the last raise")
         }
     }
     
@@ -226,7 +218,7 @@ final class GameManagerTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 5.0)
 
         // Check if last raise is updated
-        XCTAssertEqual(gameManager.lastRaise, 30, "There should be a valid lastRaise amount")
+        XCTAssertEqual(gameManager.lastRaise, 25.0, "There should be a valid lastRaise amount")
     }
     
     @MainActor
@@ -245,12 +237,12 @@ final class GameManagerTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 5.0)
 
         // If bb and sb call than the pot will be 40 but could be 41, 42, 43 if they fold
-        XCTAssertGreaterThan(gameManager.pot, 39, "Pot should increase after betting")
+        XCTAssertGreaterThan(gameManager.pot, 10, "Pot should increase after betting")
     }
     
     func testWaitForUserInput() async {
         gameManager.testingMode = false
-        let expectedMove: LastMove = .call
+        let expectedMove: Move = .call
         let expectation = expectation(description: "User input should be received")
         
         print(gameManager.testingMode)

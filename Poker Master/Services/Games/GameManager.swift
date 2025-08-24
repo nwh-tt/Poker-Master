@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 class GameManager: ObservableObject {
     @Published var players: [Player] = []
     @Published var user: Player? = nil
@@ -20,6 +21,10 @@ class GameManager: ObservableObject {
     @Published var showIncorrectPopup: Bool = false
     @Published var adviceText: String = ""
     
+    // Database values
+//    var game: Game = Game()
+//    var hands: [HandLog] = []
+    
     let deck: Deck = Deck()
     var turn: Int = 0
     var betNumber: Int = 1
@@ -28,8 +33,8 @@ class GameManager: ObservableObject {
     let decisionMaker: DecisionMaker
     var activePlayers: Int = 6
     
-    var correctMove: LastMove = .none // used to check if the user made the correct move and update ui
-    var pendingUserMoveContinuation: CheckedContinuation<LastMove, Never>?
+    var correctMove: Move = .none // used to check if the user made the correct move and update ui
+    var pendingUserMoveContinuation: CheckedContinuation<Move, Never>?
     
     var gameplaySpeed: Int
     var testingMode: Bool
@@ -85,6 +90,10 @@ class GameManager: ObservableObject {
         adviceText = ""
         activePlayers = 6
         
+        // reset db values
+//        game = Game()
+//        hands = []
+        
         // Optionally delay before starting the game again
         Task {
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s delay
@@ -108,7 +117,7 @@ class GameManager: ObservableObject {
             }
             
             // check if the cpu player has folded
-            if (players[turn].lastMove == LastMove.fold) {
+            if (players[turn].lastMove == Move.fold) {
                 turn = (turn + 1) % 6
                 continue
             }
@@ -125,10 +134,15 @@ class GameManager: ObservableObject {
             if (!testingMode) {
                 // check if the player is the user
                 if (user?.position == players[turn].position) {
+                    // create handlog
+                     
+                    //game.hands = hands
                     correctMove = idealDecision
                     waitingForUserInput = true // unlock buttons
                     let userDecision = await waitForUserInput()
                     waitingForUserInput = false // lock buttons again
+                    
+                    
                     if (userDecision == idealDecision) {
                         
                         break
@@ -136,6 +150,7 @@ class GameManager: ObservableObject {
                         // break loop print incorrect you should have: right move'
                         showIncorrectPopup = true
                         adviceText = "Correct Move: " + idealDecision.rawValue
+                        
                         break
                     }
                 }
@@ -155,7 +170,7 @@ class GameManager: ObservableObject {
                 print("Player \(playerCopy.position) has called ---------- Pot Now: " + String(pot))
             }
             else {
-                playerCopy.lastMove = LastMove.fold
+                playerCopy.lastMove = Move.fold
                 activePlayers -= 1
                 print("Player \(playerCopy.position) has folded leaving \(activePlayers) players remaining")
             }
@@ -168,16 +183,29 @@ class GameManager: ObservableObject {
         }
     }
     
+    // returns open, vsRaise, "3bet, 4bet", "5bet"
+    func getRaiseType() -> String {
+        if (betNumber == 1) {
+            return "open"
+        }
+        else if (betNumber == 2) {
+            return "vsRaise"
+        }
+        else {
+            return String(betNumber) + "bet"
+        }
+    }
+    
     @MainActor
-    func waitForUserInput() async -> LastMove {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<LastMove, Never>) in
+    func waitForUserInput() async -> Move {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Move, Never>) in
             // Save the continuation so it can be resumed when the user makes a move
             self.pendingUserMoveContinuation = continuation
         }
     }
     
     @MainActor
-    func userMadeMove(decision: LastMove) -> Bool {
+    func userMadeMove(decision: Move) -> Bool {
         guard let continuation = pendingUserMoveContinuation else { return false }
         continuation.resume(returning: decision)
         pendingUserMoveContinuation = nil
@@ -243,14 +271,23 @@ class GameManager: ObservableObject {
         pot += potIncrease
     }
 
-    func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: LastMove) async {
+    func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: Move) async {
         if !testingMode {
             waitingForUserInput = true
             let userDecision = await waitForUserInput()
             waitingForUserInput = false
+            
+            let raiseTypeValue = (userDecision == .raise) ? getRaiseType() : ""
+            let betAmountValue = (userDecision == .raise || userDecision == .call) ? players[turn].currentBetAmount : 0
+            
+            // let handLog = HandLog(typeOfHand: "Preflop", position: user?.position ?? "", hand: user?.getHand() ?? "", pair: user?.handIsPair() ?? false, action: userDecision.rawValue, raiseType: raiseTypeValue, betAmount: betAmountValue, pot: pot, xpEarned: 0, isCorrect: false, game: game)
                 
             if userDecision == idealDecision {
                 players[turn] = playerCopy
+                //handLog.isCorrect = true
+                //handLog.xpEarned = 10
+                
+                //hands.append(handLog)
                 // Makes sure they update in sync on the ui
                 await MainActor.run {
                     score += 1
@@ -261,6 +298,8 @@ class GameManager: ObservableObject {
                 adviceText = "Correct Move: " + idealDecision.rawValue
                 players[turn] = playerCopy
                 handsPlayed += 1
+                
+                //hands.append(handLog)
             }
         } else {
             playerCopy.lastMove = .fold

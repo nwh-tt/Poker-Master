@@ -17,6 +17,7 @@ struct Poker_MasterApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
+            Challenges.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -32,6 +33,10 @@ struct Poker_MasterApp: App {
             ContentView()
                 .preferredColorScheme(.dark)
                 .environment(\.font, .custom("Exo2-Regular", size: 18))
+                .task {    // This runs once when ContentView appears
+                    let context = ModelContext(sharedModelContainer)
+                    await ChallengeDataManager.preloadChallengesIfNeeded(context: context)
+                }
         }
         .modelContainer(sharedModelContainer)
     }
