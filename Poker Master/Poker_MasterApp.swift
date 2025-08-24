@@ -17,7 +17,9 @@ struct Poker_MasterApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
-            Challenges.self
+            Challenges.self,
+            Game.self,
+            HandLog.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

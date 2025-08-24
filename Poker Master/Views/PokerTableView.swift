@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import ConfettiSwiftUI
 
 struct PokerTableView: View {
@@ -13,11 +14,8 @@ struct PokerTableView: View {
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.5)
     let padding = 40.0
-    @StateObject var gameManager: GameManager
-    
-    init(gameManager: GameManager) {
-        self._gameManager = StateObject(wrappedValue: gameManager)
-    }
+    @StateObject private var gameManager = SimplePreFlopManager()
+    @Environment(\.modelContext) private var context
     
     @State private var triggerMoneyConfetti: Int = 0
     // @State private var pulseAnimation: Bool = false
@@ -166,6 +164,7 @@ struct PokerTableView: View {
             }
             .edgesIgnoringSafeArea(.all)
             .onAppear {
+                gameManager.setContext(context)
                 Task {
                     await gameManager.startGame()
                 }
@@ -175,5 +174,20 @@ struct PokerTableView: View {
 }
 
 #Preview {
-    PokerTableView(gameManager: SimplePreFlopManager())
+    let schema = Schema([
+            Game.self,
+            HandLog.self,
+            Challenges.self,
+            Item.self
+        ])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+        let container = try! ModelContainer(for: schema, configurations: [config])
+        let context = ModelContext(container)
+
+        // Add some mock data so the preview isn't empty
+
+        return PokerTableView()
+            .modelContainer(container)
+            .environment(\.modelContext, context)
 }

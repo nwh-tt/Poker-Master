@@ -29,7 +29,7 @@ struct MenuView: View {
                 
                 VStack {
                     NavigationLink {
-                        PokerTableView(gameManager: SimplePreFlopManager())
+                        PokerTableView()
                             .toolbar(.hidden, for: .tabBar)
                             .onAppear {
                                 navState.showTabBar = false
@@ -41,7 +41,7 @@ struct MenuView: View {
                         MenuOption(gameName: "Basic Preflop", gameDescription: "Heads-up preflop decision training", gradientColor: Color(red: 80/255, green: 15/255, blue: 25/255).opacity(0.7))
                     }
                     NavigationLink {
-                        PokerTableView(gameManager: GameManager())
+                        PokerTableView()
                             .toolbar(.hidden, for: .tabBar)
                             .onAppear {
                                 navState.showTabBar = false

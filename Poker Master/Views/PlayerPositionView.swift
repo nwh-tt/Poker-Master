@@ -50,7 +50,7 @@ struct PlayerPositionView: View {
                 )
             if (player.lastMove != Move.none) {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.blue)
+                    .fill(Color.black)
                     .frame(width: 60, height: 20)
                     .overlay(
                         Text(player.isReRaise ? "ReRaise" : player.lastMove.rawValue)

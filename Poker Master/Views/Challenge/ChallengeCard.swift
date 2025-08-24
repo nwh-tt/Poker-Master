@@ -6,10 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ChallengeCard: View {
+    @Query<HandLog>(sort: []) var handLogs: [HandLog]
+    @Query<Game>(sort: []) var games: [Game]
+    
     let challenge: Challenges
-    let progress: Int = 0
+    var progress: Int {
+           getProgress()
+       }
     
     // Get the current tier color
     var currentTier: ChallengeTier {
@@ -26,6 +32,56 @@ struct ChallengeCard: View {
         // If progress is greater than the last goal, return the next goal
         return challenge.goals[min(tierIndex + 1, challenge.goals.count - 1)]
     }
+    
+    func getProgress() -> Int {
+        if (challenge.title == "Volume Player") {
+            print(handLogs.count)
+            return handLogs.count
+        }
+        else if (challenge.title == "Poker IQ") {
+            return handLogs.reduce(0) { $0 + ($1.isCorrect ? 1 : 0) }
+        }
+        else if (challenge.title == "Pocket Rockets") {
+            return handLogs.reduce(0) { $0 + ($1.pair ? 1 : 0) }
+        } 
+        else if (challenge.title == "Hot Hand") {
+            return countStreaksOf(atLeast: 3, in: handLogs)
+        } 
+        else if (challenge.title == "Closer") {
+            return games.count
+        } 
+        else if (challenge.title == "Perfect Game") {
+            return games.filter { game in
+                !game.hands.isEmpty && game.hands.allSatisfy { $0.isCorrect }
+            }.count
+        }
+            
+    
+        return 0
+    }
+        
+        func countStreaksOf(atLeast streakLength: Int, in hands: [HandLog]) -> Int {
+            var count = 0
+            var currentStreak = 0
+            
+            for hand in hands {
+                if hand.isCorrect {
+                    currentStreak += 1
+                } else {
+                    if currentStreak >= streakLength {
+                        count += 1
+                    }
+                    currentStreak = 0
+                }
+            }
+            
+            // Check at the end in case the last streak reaches the requirement
+            if currentStreak >= streakLength {
+                count += 1
+            }
+            
+            return count
+        }
         
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
