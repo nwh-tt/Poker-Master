@@ -12,6 +12,14 @@ struct ChallengesView: View {
     @Query(sort: [SortDescriptor(\Challenges.title, order: .forward)])
         var challenges: [Challenges]
     
+    var sortedChallenges: [Challenges] {
+            challenges.sorted { c1, c2 in
+                let tier1 = c1.claimed.lastIndex(of: true) ?? -1
+                let tier2 = c2.claimed.lastIndex(of: true) ?? -1
+                return tier1 > tier2
+            }
+        }
+    
     
         
         var body: some View {
@@ -24,7 +32,7 @@ struct ChallengesView: View {
                         .shadow(color: .purple.opacity(0.6), radius: 4, x: 0, y: 2)
                         
                     
-                    ForEach(challenges) { challenge in
+                    ForEach(sortedChallenges) { challenge in
                         ChallengeCard(challenge: challenge)
                     }
                     
@@ -65,8 +73,11 @@ struct ChallengesView: View {
     // Add in sample game and sample hands
     let sampleGame = Game(date: Date(), totalHands: 0, duration: 0.0)
     context.insert(sampleGame)
-    let sampleHandLog = HandLog(typeOfHand: "Preflop", position: "SB", hand: "AsAs", pair: true, action: "Call", raiseType: "", betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
-    context.insert(sampleHandLog)
+    // Loop through and add 21 hands to the handlog
+    for _ in 1...250 {
+        let sampleHandLog = HandLog(typeOfHand: "Preflop", position: "SB", hand: "AsAs", pair: true, action: "Call", raiseType: "", betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
+        context.insert(sampleHandLog)
+    }
     
     return ChallengesView()
         .modelContainer(container)

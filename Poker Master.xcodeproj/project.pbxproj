@@ -32,7 +32,6 @@
 		B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */; };
 		B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */; };
 		B67C5E672E591EF20017ECBF /* ChallengeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E662E591EF20017ECBF /* ChallengeCard.swift */; };
-		B67C5E692E5943A30017ECBF /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E682E5943A30017ECBF /* Challenge.swift */; };
 		B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E6D2E59F3B40017ECBF /* Models.swift */; };
 		B67C5E742E5A092C0017ECBF /* ChallengeDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */; };
 		B67C5E762E5A143E0017ECBF /* HandLogDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E752E5A143E0017ECBF /* HandLogDataManager.swift */; };
@@ -101,7 +100,6 @@
 		B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPreflopManager.swift; sourceTree = "<group>"; };
 		B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedDecisionMaker.swift; sourceTree = "<group>"; };
 		B67C5E662E591EF20017ECBF /* ChallengeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCard.swift; sourceTree = "<group>"; };
-		B67C5E682E5943A30017ECBF /* Challenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
 		B67C5E6D2E59F3B40017ECBF /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeDataManager.swift; sourceTree = "<group>"; };
 		B67C5E752E5A143E0017ECBF /* HandLogDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandLogDataManager.swift; sourceTree = "<group>"; };
@@ -163,7 +161,6 @@
 				B649ED502BD6DA6500157267 /* Card.swift */,
 				B649ED522BD6E78200157267 /* Deck.swift */,
 				B6D403692D8DBEAD008A83E8 /* User.swift */,
-				B67C5E682E5943A30017ECBF /* Challenge.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -573,7 +570,6 @@
 				B67C5E432E208A950017ECBF /* MenuView.swift in Sources */,
 				B67C5E452E208AD70017ECBF /* MenuOption.swift in Sources */,
 				B649ED4A2BD1B0C900157267 /* Player.swift in Sources */,
-				B67C5E692E5943A30017ECBF /* Challenge.swift in Sources */,
 				B67C5E782E5A14840017ECBF /* GameDataManager.swift in Sources */,
 				B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */,
 				B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */,
