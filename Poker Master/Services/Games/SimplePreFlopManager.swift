@@ -338,12 +338,20 @@ class SimplePreFlopManager: ObservableObject {
             let userDecision = await waitForUserInput()
             waitingForUserInput = false
             
-            let raiseTypeValue = (userDecision == .raise) ? getRaiseType() : ""
+            let raiseType = getRaiseType()
             let betAmountValue = (userDecision == .raise || userDecision == .call) ? players[turn].currentBetAmount : 0
             if game.modelContext == nil {
                 context?.insert(game)
             }
-            let handLog = HandLog(typeOfHand: .preflop, position: user?.position ?? "", hand: user?.getHand() ?? "", pair: user?.handIsPair() ?? false, action: userDecision.rawValue, raiseType: raiseTypeValue, betAmount: betAmountValue, pot: pot, xpEarned: 0, isCorrect: false, game: game)
+            
+            // turn position string into enum
+            guard let pos = Position(rawValue: user?.position.lowercased() ?? ""),
+                  let action = Action(rawValue: userDecision.rawValue.lowercased()) else {
+                // handle invalid case here, e.g., return or throw
+                return
+            }
+            
+            let handLog = HandLog(typeOfHand: .preflop, position: pos, hand: user?.getHand() ?? "", pair: user?.handIsPair() ?? false, action: action, raiseType: raiseType, betAmount: betAmountValue, pot: pot, xpEarned: 0, isCorrect: false, game: game)
             context?.insert(handLog)
             if userDecision == idealDecision {
                 players[turn] = playerCopy
@@ -370,15 +378,21 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     // returns open, vsRaise, "3bet, 4bet", "5bet"
-    func getRaiseType() -> String {
+    func getRaiseType() -> RaiseType {
         if (betNumber == 1) {
-            return "open"
+            return .open
         }
         else if (betNumber == 2) {
-            return "vsRaise"
+            return .vsRaise
+        }
+        else if (betNumber == 3) {
+            return .threeBet
+        }
+        else if (betNumber == 4) {
+            return .fourBet
         }
         else {
-            return String(betNumber) + "bet"
+            return .fiveBet
         }
     }
     
