@@ -87,14 +87,14 @@ class Game {
 class HandLog {
     @Attribute(.unique) var id: UUID
     
-    var typeOfHand: String // "preFlop", "flop", "turn", "river"
-    var position: String
+    var typeOfHand: TypeOfHand // "preFlop", "flop", "turn", "river"
+    var position: Position
     var hand: String
     var pair: Bool
     
     
-    var action: String // "raise", "call", "fold"
-    var raiseType: String // open, vsRaise, "3bet, 4bet", "5bet"
+    var action: Action // "raise", "call", "fold"
+    var raiseType: RaiseType // open, vsRaise, "3bet, 4bet", "5bet"
     var betAmount: Double
     var pot: Double
     
@@ -105,7 +105,7 @@ class HandLog {
     
     var game: Game?
     
-    init(typeOfHand: String, position: String, hand: String, pair: Bool, action: String = "open", raiseType: String, betAmount: Double, pot: Double = 0, xpEarned: Int, isCorrect: Bool, date: Date = Date(), game: Game) {
+    init(typeOfHand: TypeOfHand, position: Position, hand: String, pair: Bool, action: Action, raiseType: RaiseType, betAmount: Double, pot: Double = 0, xpEarned: Int, isCorrect: Bool, date: Date = Date(), game: Game) {
         self.id = UUID()
         self.typeOfHand = typeOfHand
         self.position = position
@@ -120,4 +120,26 @@ class HandLog {
         self.date = date
         self.game = game
     }
+}
+
+// MARK: - Enums
+
+enum TypeOfHand: String, Codable, CaseIterable {
+    case preflop, flop, turn, river
+}
+
+enum Position: String, Codable, CaseIterable {
+    case utg, mp, co, btn, sb, bb
+}
+
+enum Action: String, Codable, CaseIterable {
+    case fold, call, raise
+}
+
+enum RaiseType: String, Codable, CaseIterable {
+    case open
+    case vsRaise
+    case threeBet = "3bet"
+    case fourBet = "4bet"
+    case fiveBet = "5bet"
 }

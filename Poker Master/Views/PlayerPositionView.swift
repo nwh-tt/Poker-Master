@@ -13,7 +13,7 @@ struct PlayerPositionView: View {
     let direction: String
     let isUser: Bool
     
-    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.5)
+    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     
     var body: some View {
         let textOffset = direction == "right" ? 10 : -10

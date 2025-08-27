@@ -22,16 +22,15 @@ struct ChallengesView: View {
     
     
         
-        var body: some View {
+    var body: some View {
+        VStack {
+            Text("Challenges")
+                .font(.custom("Exo2-Regular", size: 32))
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .shadow(color: .purple.opacity(0.6), radius: 4, x: 0, y: 2)
             ScrollView {
                 VStack(spacing: 16) {
-                    Text("Challenges")
-                        .font(.custom("Exo2-Regular", size: 32))
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .shadow(color: .purple.opacity(0.6), radius: 4, x: 0, y: 2)
-                        
-                    
                     ForEach(sortedChallenges) { challenge in
                         ChallengeCard(challenge: challenge)
                     }
@@ -40,10 +39,11 @@ struct ChallengesView: View {
                 }
                 .padding()
             }
-            .padding(.bottom, 8)
-            .background(Color.black.ignoresSafeArea())
             
-        }
+            
+        }.padding(.bottom, 8)
+            .background(Color.black.ignoresSafeArea())
+    }
 }
 
 #Preview {
@@ -75,7 +75,7 @@ struct ChallengesView: View {
     context.insert(sampleGame)
     // Loop through and add 21 hands to the handlog
     for _ in 1...250 {
-        let sampleHandLog = HandLog(typeOfHand: "Preflop", position: "SB", hand: "AsAs", pair: true, action: "Call", raiseType: "", betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
+        let sampleHandLog = HandLog(typeOfHand: .preflop, position: .sb, hand: "AsAs", pair: true, action: .call, raiseType: .open, betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
         context.insert(sampleHandLog)
     }
     

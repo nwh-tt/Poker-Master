@@ -343,7 +343,7 @@ class SimplePreFlopManager: ObservableObject {
             if game.modelContext == nil {
                 context?.insert(game)
             }
-            let handLog = HandLog(typeOfHand: "Preflop", position: user?.position ?? "", hand: user?.getHand() ?? "", pair: user?.handIsPair() ?? false, action: userDecision.rawValue, raiseType: raiseTypeValue, betAmount: betAmountValue, pot: pot, xpEarned: 0, isCorrect: false, game: game)
+            let handLog = HandLog(typeOfHand: .preflop, position: user?.position ?? "", hand: user?.getHand() ?? "", pair: user?.handIsPair() ?? false, action: userDecision.rawValue, raiseType: raiseTypeValue, betAmount: betAmountValue, pot: pot, xpEarned: 0, isCorrect: false, game: game)
             context?.insert(handLog)
             if userDecision == idealDecision {
                 players[turn] = playerCopy

@@ -12,7 +12,7 @@ import ConfettiSwiftUI
 struct PokerTableView: View {
     let darkGreen = Color(red: 0, green: 0.15, blue: 0)
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
-    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.5)
+    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     let padding = 40.0
     @StateObject private var gameManager = SimplePreFlopManager()
     @Environment(\.modelContext) private var context
@@ -80,7 +80,7 @@ struct PokerTableView: View {
                         .padding(.trailing, 16)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .padding(.top, 8)
+                .padding(.top, 32)
                 .padding(.trailing, 12)
                 
                 
