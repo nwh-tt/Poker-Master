@@ -16,13 +16,14 @@ struct PokerTableView: View {
     let padding = 40.0
     @StateObject private var gameManager = SimplePreFlopManager()
     @Environment(\.modelContext) private var context
+    @EnvironmentObject var userProfile: UserProfileState
     
     @State private var triggerMoneyConfetti: Int = 0
     // @State private var pulseAnimation: Bool = false
-    @State private var correctMoveMade: Move = .none
+    @State private var correctMoveMade: Action = .none
     
     // function to trigger confetti and turn buttons green
-    private func buttonClicked(buttonClicked: Move) {
+    private func buttonClicked(buttonClicked: Action) {
         let isCorrect = gameManager.userMadeMove(decision: buttonClicked)
         
         if (isCorrect) {
@@ -73,7 +74,7 @@ struct PokerTableView: View {
                                 .fill(Color.black.opacity(0.4))
                                 .overlay(
                                     Capsule()
-                                        .stroke(Color.white.opacity(0.4), lineWidth: 2)
+                                        .stroke(borderColor, lineWidth: 2)
                                 )
                         )
                         .padding(.top, 16)
@@ -119,7 +120,7 @@ struct PokerTableView: View {
                     Spacer()
                     HStack {
                         Button(action:{
-                            buttonClicked(buttonClicked: Move.call)
+                            buttonClicked(buttonClicked: Action.call)
                         }) {
                             Text("Call")
                                     .frame(maxWidth: .infinity)
@@ -130,7 +131,7 @@ struct PokerTableView: View {
                                     .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
                         }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
-                            buttonClicked(buttonClicked: Move.raise)
+                            buttonClicked(buttonClicked: Action.raise)
                         }) {
                             Text("Raise")
                                 .frame(maxWidth: .infinity)
@@ -141,7 +142,7 @@ struct PokerTableView: View {
                                     .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
                         }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
-                            buttonClicked(buttonClicked: Move.fold)
+                            buttonClicked(buttonClicked: Action.fold)
                         }) {
                             Text("Fold")
                                 .frame(maxWidth: .infinity)
@@ -165,6 +166,7 @@ struct PokerTableView: View {
             .edgesIgnoringSafeArea(.all)
             .onAppear {
                 gameManager.setContext(context)
+                gameManager.setProfile(profile: userProfile.user)
                 Task {
                     await gameManager.startGame()
                 }
@@ -178,7 +180,8 @@ struct PokerTableView: View {
             Game.self,
             HandLog.self,
             Challenges.self,
-            Item.self
+            Item.self,
+            User.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
@@ -186,8 +189,11 @@ struct PokerTableView: View {
         let context = ModelContext(container)
 
         // Add some mock data so the preview isn't empty
+        let user = User(username: "Ned Whittleton")
+        context.insert(user)
 
         return PokerTableView()
             .modelContainer(container)
             .environment(\.modelContext, context)
+            .environmentObject(UserProfileState(context: context))
 }

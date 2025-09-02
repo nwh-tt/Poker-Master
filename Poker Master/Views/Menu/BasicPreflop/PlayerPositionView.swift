@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+extension String {
+    var capitalizeFirst: String {
+        guard let first = first else { return self }
+        return String(first).uppercased() + dropFirst()
+    }
+}
+
 struct PlayerPositionView: View {
     let player: Player
     // set default position to right
@@ -20,7 +27,7 @@ struct PlayerPositionView: View {
         let rectangleOffset = direction == "right" ? 48 : -48
         let cardOffsets = direction == "right" ? [45, 67] : [-67, -45]
         // let amount = player.folded ? "Fold" : "\(Int(player.stack)) BB"
-        let textColor = player.lastMove == Move.fold ? Color.gray : Color.white
+        let textColor = player.lastMove == Action.fold ? Color.gray : Color.white
         
         ZStack {
             RoundedRectangle(cornerRadius: 5)
@@ -48,19 +55,19 @@ struct PlayerPositionView: View {
                         .fontWeight(.bold)
                         .foregroundColor(textColor)
                 )
-            if (player.lastMove != Move.none) {
+            if (player.lastMove != Action.none) {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color.black)
                     .frame(width: 60, height: 20)
                     .overlay(
-                        Text(player.isReRaise ? "ReRaise" : player.lastMove.rawValue)
+                        Text(player.isReRaise ? "ReRaise" : player.lastMove.rawValue.capitalizeFirst)
                             .font(.system(size: 12))
                             .fontWeight(.heavy)
                             .foregroundColor(Color.white)
                     )
                     .offset(CGSize(width: 0, height: 30))
             }
-            if (!isUser && player.lastMove != Move.fold) {
+            if (!isUser && player.lastMove != Action.fold) {
                 CardBackView()
                     .offset(CGSize(width: cardOffsets[0], height: -30))
                 CardBackView()
