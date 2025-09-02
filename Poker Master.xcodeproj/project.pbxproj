@@ -34,8 +34,6 @@
 		B67C5E672E591EF20017ECBF /* ChallengeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E662E591EF20017ECBF /* ChallengeCard.swift */; };
 		B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E6D2E59F3B40017ECBF /* Models.swift */; };
 		B67C5E742E5A092C0017ECBF /* ChallengeDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */; };
-		B67C5E762E5A143E0017ECBF /* HandLogDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E752E5A143E0017ECBF /* HandLogDataManager.swift */; };
-		B67C5E782E5A14840017ECBF /* GameDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E772E5A14840017ECBF /* GameDataManager.swift */; };
 		B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */; };
 		B67C5E7F2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */; };
 		B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7742BC849E700191C7A /* Poker_MasterApp.swift */; };
@@ -49,13 +47,16 @@
 		B6ADA4252C06490E00358F34 /* DecisionMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6ADA4242C06490E00358F34 /* DecisionMaker.swift */; };
 		B6ADA4272C2B241400358F34 /* DecisionMakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6ADA4262C2B241400358F34 /* DecisionMakerTests.swift */; };
 		B6D403682D8A09D3008A83E8 /* PlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403672D8A09D3008A83E8 /* PlayerTests.swift */; };
-		B6D4036A2D8DBEAD008A83E8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403692D8DBEAD008A83E8 /* User.swift */; };
 		B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */; };
 		B6D4036F2D9340A3008A83E8 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B6D4036E2D9340A3008A83E8 /* ConfettiSwiftUI */; };
 		B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */; };
 		B6D403762DA07098008A83E8 /* Ranges.json in Resources */ = {isa = PBXBuildFile; fileRef = B6D403752DA07098008A83E8 /* Ranges.json */; };
 		B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403772DA07150008A83E8 /* RangesFileManager.swift */; };
 		B6D4037A2DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403792DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift */; };
+		B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */; };
+		B6EC8AC42E61FA3100C1AC9B /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC32E61FA3100C1AC9B /* UserDataManager.swift */; };
+		B6EC8AC62E621C1C00C1AC9B /* UserProfileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */; };
+		B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,8 +105,6 @@
 		B67C5E662E591EF20017ECBF /* ChallengeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCard.swift; sourceTree = "<group>"; };
 		B67C5E6D2E59F3B40017ECBF /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeDataManager.swift; sourceTree = "<group>"; };
-		B67C5E752E5A143E0017ECBF /* HandLogDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandLogDataManager.swift; sourceTree = "<group>"; };
-		B67C5E772E5A14840017ECBF /* GameDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDataManager.swift; sourceTree = "<group>"; };
 		B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinPercentageDetailView.swift; sourceTree = "<group>"; };
 		B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandsPlayedDetailView.swift; sourceTree = "<group>"; };
 		B697E7712BC849E700191C7A /* Poker Master.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Poker Master.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,12 +122,15 @@
 		B6ADA4242C06490E00358F34 /* DecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionMaker.swift; sourceTree = "<group>"; };
 		B6ADA4262C2B241400358F34 /* DecisionMakerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionMakerTests.swift; sourceTree = "<group>"; };
 		B6D403672D8A09D3008A83E8 /* PlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTests.swift; sourceTree = "<group>"; };
-		B6D403692D8DBEAD008A83E8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncorrectSelectionView.swift; sourceTree = "<group>"; };
 		B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManager.swift; sourceTree = "<group>"; };
 		B6D403752DA07098008A83E8 /* Ranges.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Ranges.json; sourceTree = "<group>"; };
 		B6D403772DA07150008A83E8 /* RangesFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesFileManager.swift; sourceTree = "<group>"; };
 		B6D403792DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManagerTests.swift; sourceTree = "<group>"; };
+		B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		B6EC8AC32E61FA3100C1AC9B /* UserDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
+		B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileState.swift; sourceTree = "<group>"; };
+		B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,7 +166,6 @@
 				B649ED492BD1B0C900157267 /* Player.swift */,
 				B649ED502BD6DA6500157267 /* Card.swift */,
 				B649ED522BD6E78200157267 /* Deck.swift */,
-				B6D403692D8DBEAD008A83E8 /* User.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -191,6 +192,8 @@
 		B67C5E3F2E2088A70017ECBF /* Menu */ = {
 			isa = PBXGroup;
 			children = (
+				B6870FFE2D6E079000A1EAB1 /* Card */,
+				B6EC8AC72E63817000C1AC9B /* BasicPreflop */,
 				B67C5E422E208A950017ECBF /* MenuView.swift */,
 				B67C5E442E208AD70017ECBF /* MenuOption.swift */,
 			);
@@ -245,6 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				B67C5E5D2E41836C0017ECBF /* NavigationState.swift */,
+				B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -277,8 +281,7 @@
 			isa = PBXGroup;
 			children = (
 				B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */,
-				B67C5E752E5A143E0017ECBF /* HandLogDataManager.swift */,
-				B67C5E772E5A14840017ECBF /* GameDataManager.swift */,
+				B6EC8AC32E61FA3100C1AC9B /* UserDataManager.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -300,11 +303,7 @@
 				B67C5E492E2806230017ECBF /* Challenge */,
 				B67C5E482E2806190017ECBF /* Home */,
 				B67C5E3F2E2088A70017ECBF /* Menu */,
-				B6870FFE2D6E079000A1EAB1 /* Card */,
 				B697E7762BC849E700191C7A /* ContentView.swift */,
-				B672D7DC2BC87E6300E7F5F6 /* PokerTableView.swift */,
-				B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */,
-				B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */,
 				B67C5E462E2802D70017ECBF /* MainView.swift */,
 			);
 			path = Views;
@@ -330,6 +329,7 @@
 		B697E7682BC849E700191C7A = {
 			isa = PBXGroup;
 			children = (
+				B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */,
 				B6D403752DA07098008A83E8 /* Ranges.json */,
 				B697E7732BC849E700191C7A /* Poker Master */,
 				B697E7862BC849E800191C7A /* Poker MasterTests */,
@@ -414,6 +414,17 @@
 				B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */,
 			);
 			path = Games;
+			sourceTree = "<group>";
+		};
+		B6EC8AC72E63817000C1AC9B /* BasicPreflop */ = {
+			isa = PBXGroup;
+			children = (
+				B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */,
+				B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */,
+				B672D7DC2BC87E6300E7F5F6 /* PokerTableView.swift */,
+				B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */,
+			);
+			path = BasicPreflop;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -532,6 +543,7 @@
 				B67C5E582E283F600017ECBF /* Exo2-VariableFont_wght.ttf in Resources */,
 				B67C5E572E283F600017ECBF /* Exo2-Italic-VariableFont_wght.ttf in Resources */,
 				B67C5E5B2E28423F0017ECBF /* Audiowide-Regular.ttf in Resources */,
+				B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -556,12 +568,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6D4036A2D8DBEAD008A83E8 /* User.swift in Sources */,
 				B67C5E5E2E41836C0017ECBF /* NavigationState.swift in Sources */,
 				B672D7DD2BC87E6300E7F5F6 /* PokerTableView.swift in Sources */,
 				B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */,
 				B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */,
-				B67C5E762E5A143E0017ECBF /* HandLogDataManager.swift in Sources */,
+				B6EC8AC42E61FA3100C1AC9B /* UserDataManager.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
 				B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */,
 				B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */,
@@ -576,6 +587,7 @@
 				B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */,
 				B6ADA4252C06490E00358F34 /* DecisionMaker.swift in Sources */,
 				B67C5E742E5A092C0017ECBF /* ChallengeDataManager.swift in Sources */,
+				B6EC8AC62E621C1C00C1AC9B /* UserProfileState.swift in Sources */,
 				B631BA472BD0968F00F9FCAA /* PlayerPositionView.swift in Sources */,
 				B697E7772BC849E700191C7A /* ContentView.swift in Sources */,
 				B649ED572BD70D6B00157267 /* CardBackView.swift in Sources */,
@@ -586,7 +598,7 @@
 				B67C5E7F2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift in Sources */,
 				B67C5E452E208AD70017ECBF /* MenuOption.swift in Sources */,
 				B649ED4A2BD1B0C900157267 /* Player.swift in Sources */,
-				B67C5E782E5A14840017ECBF /* GameDataManager.swift in Sources */,
+				B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */,
 				B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */,
 				B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */,
 				B672D7DF2BC88CB900E7F5F6 /* CardView.swift in Sources */,
@@ -765,6 +777,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -795,6 +808,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

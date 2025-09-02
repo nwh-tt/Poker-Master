@@ -15,23 +15,39 @@ struct ChallengeCard: View {
     @State private var showGlow = false
     @State private var confettiCounter = 0
     
-    @State private var currentTier: ChallengeTier = .bronze
+    var currentTier: ChallengeTier {
+        getCurrentTier()
+    }
     
     var challenge: Challenges
     var progress: Int {
            getProgress()
     }
     
-    // Get the current tier color
     init(challenge: Challenges) {
         self.challenge = challenge
-        self.currentTier = getCurrentTier()
+    }
+    
+    func getCurrentTier() -> ChallengeTier {
+        for (index, claimed) in challenge.claimed.enumerated() {
+            if !claimed {
+                return ChallengeTier.allCases[index]
+            }
+        }
+        // If all tiers claimed, return challenge.claimed.count
+        if challenge.claimed.firstIndex(of: false) == nil {
+            return ChallengeTier.allCases[challenge.claimed.count - 1]
+        }
+        // If no tiers claimed, return bronze
+        return .bronze
     }
     
     var currentGoal: Int {
-        let tierIndex = ChallengeTier.allCases.firstIndex(of: currentTier) ?? 0
-        // If progress is greater than the last goal, return the next goal
-        return challenge.goals[min(tierIndex + 1, challenge.goals.count - 1)]
+        guard let tierIndex = ChallengeTier.allCases.firstIndex(of: currentTier),
+                tierIndex < challenge.goals.count else {
+            return 0
+        }
+        return challenge.goals[tierIndex]
     }
     
     /// Whether the challenge is ready to be claimed
@@ -68,20 +84,6 @@ struct ChallengeCard: View {
     
         return 0
     }
-    
-    func getCurrentTier() -> ChallengeTier {
-        for (index, claimed) in challenge.claimed.enumerated() {
-            if !claimed {
-                return ChallengeTier.allCases[index]
-            }
-        }
-        // If all tiers claimed, return challenge.claimed.count
-        if challenge.claimed.firstIndex(of: false) == nil {
-            return ChallengeTier.allCases[challenge.claimed.count - 1]
-        }
-        // If no tiers claimed, return bronze
-        return .bronze
-    }
         
     func countStreaksOf(atLeast streakLength: Int, in hands: [HandLog]) -> Int {
         var count = 0
@@ -111,7 +113,7 @@ struct ChallengeCard: View {
         withAnimation(.easeInOut(duration: 0.6)) {
             // Mark as claimed
             challenge.markTierClaimed(currentTier)
-            currentTier = getCurrentTier()
+            // currentTier = getCurrentTier()
             // Trigger glow
             showGlow = true
         }
@@ -129,7 +131,9 @@ struct ChallengeCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: challenge.icon)
-                    .font(.title2)
+                    .resizable()                   // make it resizable
+                    .scaledToFit()                 // maintain aspect ratio
+                    .frame(width: 24, height: 24)
                     .foregroundColor(currentTier.color)
                 
                 Text(challenge.title)
@@ -182,7 +186,7 @@ struct ChallengeCard: View {
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.systemGray6).opacity(0.15))
-                .shadow(color: currentTier.color.opacity(0.8), radius: 4, x: 0, y: 2)
+                .shadow(color: currentTier.color.opacity(0.8), radius: 0, x: 0, y: 2)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(currentTier.color, lineWidth: showGlow ? 6 : 0)

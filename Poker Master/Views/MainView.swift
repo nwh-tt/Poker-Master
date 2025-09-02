@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainView: View {
     @State private var selectedTab = 2
@@ -69,5 +70,26 @@ struct MainView: View {
 }
 
 #Preview {
+    let schema = Schema([
+            Game.self,
+            HandLog.self,
+            Challenges.self,
+            Item.self,
+            User.self
+        ])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+        let container = try! ModelContainer(for: schema, configurations: [config])
+        let context = ModelContext(container)
+
+        // Add some mock data so the preview isn't empty
+        let user = User(username: "Ned Whittleton")
+        context.insert(user)
+
+        return
+    
     MainView()
+        .modelContainer(container)
+        .environment(\.modelContext, context)
+        .environmentObject(UserProfileState(context: context))
 }

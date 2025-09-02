@@ -51,7 +51,8 @@ struct ChallengesView: View {
             Game.self,
             HandLog.self,
             Challenges.self,
-            Item.self
+            Item.self,
+            User.self
         ])
         let container = try! ModelContainer(
             for: schema,
@@ -66,8 +67,9 @@ struct ChallengesView: View {
         Challenges(title: "Pocket Rockets", description: "Hit pocket pairs", icon: "die.face.2.fill", goals: [5, 20, 100, 300, 800, 1500]),
         Challenges(title: "Hot Hand", description: "Correct 3 times in a row", icon: "flame.fill", goals: [5, 20, 100, 300, 800, 1500]),
         Challenges(title: "Closer", description: "Finish full matches", icon: "target", goals: [5, 20, 100, 300, 800, 1500]),
-        Challenges(title: "Perfect Game", description: "Games without errors", icon: "target", goals: [5, 20, 100, 300, 800, 1500])
+        Challenges(title: "Perfect Game", description: "Games without errors", icon: "crown.fill", goals: [5, 20, 100, 300, 800, 1500])
     ]
+    sampleChallenges[0].claimed = [true, true, false]
     sampleChallenges.forEach { context.insert($0) }
     
     // Add in sample game and sample hands

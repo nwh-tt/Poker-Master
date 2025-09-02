@@ -9,10 +9,12 @@ import XCTest
 
 @testable import Poker_Master
 
+
 final class SimplePreFlopManagerTests: XCTestCase {
     var simpleManager: SimplePreFlopManager!
     var ranges: [String: [String]]!
 
+    @MainActor
     override func setUpWithError() throws {
         ranges = RangesFileManager.loadRanges()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -35,11 +37,13 @@ final class SimplePreFlopManagerTests: XCTestCase {
         await simpleManager.executeLoop()
     }
     
+    @MainActor
     func testFailure() {
         simpleManager.betToStopOn = 2
         simpleManager.setUserHand(hero: "SB", villian: "MP")
     }
     
+    @MainActor
     func testStageTheGame_SetsVillainPosition() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         simpleManager.user?.position = "CO"
@@ -49,6 +53,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertNotNil(villainPosition, "Villain position should be set.")
     }
     
+    @MainActor
     func testStageTheGame_SetsUserHand() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         simpleManager.user?.position = "BTN"
@@ -59,6 +64,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertFalse(userHand!.isEmpty, "User hand should not be empty.")
     }
     
+    @MainActor
     func testStageTheGame_SetsCorrectBetToStopOn() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         simpleManager.user?.position = "MP"
@@ -68,6 +74,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertTrue((1...5).contains(stopBet), "betToStopOn should be between 1 and 5.")
     }
     
+    @MainActor
     func testSetUserHand_Open_DoesNotChangeHand() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
@@ -78,6 +85,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertEqual(simpleManager.user?.getHand(), originalHand, "Hand should not change when betToStopOn is 2")
     }
     
+    @MainActor
     func testSetUserHand_VsRaise_DoesNotChangeHand() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
@@ -88,6 +96,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertEqual(simpleManager.user?.getHand(), originalHand, "Hand should not change when betToStopOn is 2")
     }
     
+    @MainActor
     func testSetUserHand_VsRaiseMPvCO_DoesNotChangeHand() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         
@@ -99,6 +108,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertEqual(simpleManager.user?.getHand(), originalHand, "Hand should not change when betToStopOn is 2")
     }
     
+    @MainActor
     func testSetUserHand_3bet() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
@@ -112,6 +122,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertTrue(possibleHands.contains(userHand), "User's hand \(userHand) is not in the expected possible hands.")
     }
     
+    @MainActor
     func testSetUserHand_4bet() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
@@ -125,6 +136,7 @@ final class SimplePreFlopManagerTests: XCTestCase {
         XCTAssertTrue(possibleHands.contains(userHand), "User's hand \(userHand) is not in the expected possible hands.")
     }
     
+    @MainActor
     func testSetUserHand_5bet() {
         simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true)
         // Given
@@ -139,18 +151,21 @@ final class SimplePreFlopManagerTests: XCTestCase {
     }
     
     
+    @MainActor
     func testExtractVillainPosition_StandardKey() {
             let key = "bet3_CO_v_BTN_call"
             let result = simpleManager.extractVillainPosition(from: key)
             XCTAssertEqual(result, "BTN")
         }
         
-        func testExtractVillainPosition_TwoLetterPosition() {
-            let key = "bet2_MP_v_BB_raise"
-            let result = simpleManager.extractVillainPosition(from: key)
-            XCTAssertEqual(result, "BB")
-        }
+    @MainActor
+    func testExtractVillainPosition_TwoLetterPosition() {
+        let key = "bet2_MP_v_BB_raise"
+        let result = simpleManager.extractVillainPosition(from: key)
+        XCTAssertEqual(result, "BB")
+    }
     
+    @MainActor
     func testExtractVillainPosition_Open() {
         let key = "open_SB_raise"
         let result = simpleManager.extractVillainPosition(from: key)

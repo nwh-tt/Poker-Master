@@ -10,13 +10,12 @@ import SwiftData
 
 @main
 struct Poker_MasterApp: App {
-    init() {
-        RangesFileManager.loadInitialRangesIfNeeded()  // Ensure the file is copied from bundle to Documents directory
-    }
+    @StateObject var userProfile: UserProfileState
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
+            User.self,
             Challenges.self,
             Game.self,
             HandLog.self
@@ -29,15 +28,23 @@ struct Poker_MasterApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    init() {
+        RangesFileManager.loadInitialRangesIfNeeded()  // Ensure the file is copied from bundle to Documents directory
+        let context = ModelContext(sharedModelContainer)
+        _userProfile = StateObject(wrappedValue: UserProfileState(context: context))
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.dark)
                 .environment(\.font, .custom("Exo2-Regular", size: 18))
+                .environmentObject(userProfile)
                 .task {    // This runs once when ContentView appears
                     let context = ModelContext(sharedModelContainer)
-                    await ChallengeDataManager.preloadChallengesIfNeeded(context: context)
+                    await ChallengeDataManager.syncDefaultChallenges(context: context)
+                    // await UserDataManager.createUserIfNotExist(context: context)
                 }
         }
         .modelContainer(sharedModelContainer)

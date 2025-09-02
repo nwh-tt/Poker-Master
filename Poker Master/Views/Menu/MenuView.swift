@@ -44,10 +44,10 @@ struct MenuView: View {
                         PokerTableView()
                             .toolbar(.hidden, for: .tabBar)
                             .onAppear {
-                                navState.showTabBar = false
+                                //navState.showTabBar = false
                             }
                             .onDisappear {
-                                navState.showTabBar = true
+                                //navState.showTabBar = true
                             }
                     } label: {
                         MenuOption(gameName: "Advanced Preflop (WIP)", gameDescription: "Multiway preflop with EV", gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7))

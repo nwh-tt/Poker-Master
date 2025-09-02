@@ -25,7 +25,7 @@ class DecisionMaker {
         self.loadedRanges = RangesFileManager.loadRanges()
     }
     
-    func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> Move {
+    func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> Action {
         var raiseHands: [String] = []
         var callHands: [String] = []
 

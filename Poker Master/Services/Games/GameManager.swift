@@ -33,8 +33,8 @@ class GameManager: ObservableObject {
     let decisionMaker: DecisionMaker
     var activePlayers: Int = 6
     
-    var correctMove: Move = .none // used to check if the user made the correct move and update ui
-    var pendingUserMoveContinuation: CheckedContinuation<Move, Never>?
+    var correctMove: Action = .none // used to check if the user made the correct move and update ui
+    var pendingUserMoveContinuation: CheckedContinuation<Action, Never>?
     
     var gameplaySpeed: Int
     var testingMode: Bool
@@ -117,7 +117,7 @@ class GameManager: ObservableObject {
             }
             
             // check if the cpu player has folded
-            if (players[turn].lastMove == Move.fold) {
+            if (players[turn].lastMove == Action.fold) {
                 turn = (turn + 1) % 6
                 continue
             }
@@ -170,7 +170,7 @@ class GameManager: ObservableObject {
                 print("Player \(playerCopy.position) has called ---------- Pot Now: " + String(pot))
             }
             else {
-                playerCopy.lastMove = Move.fold
+                playerCopy.lastMove = Action.fold
                 activePlayers -= 1
                 print("Player \(playerCopy.position) has folded leaving \(activePlayers) players remaining")
             }
@@ -197,15 +197,15 @@ class GameManager: ObservableObject {
     }
     
     @MainActor
-    func waitForUserInput() async -> Move {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<Move, Never>) in
+    func waitForUserInput() async -> Action {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Action, Never>) in
             // Save the continuation so it can be resumed when the user makes a move
             self.pendingUserMoveContinuation = continuation
         }
     }
     
     @MainActor
-    func userMadeMove(decision: Move) -> Bool {
+    func userMadeMove(decision: Action) -> Bool {
         guard let continuation = pendingUserMoveContinuation else { return false }
         continuation.resume(returning: decision)
         pendingUserMoveContinuation = nil
@@ -271,7 +271,7 @@ class GameManager: ObservableObject {
         pot += potIncrease
     }
 
-    func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: Move) async {
+    func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: Action) async {
         if !testingMode {
             waitingForUserInput = true
             let userDecision = await waitForUserInput()

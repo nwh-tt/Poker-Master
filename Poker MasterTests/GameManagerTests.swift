@@ -10,10 +10,10 @@ import XCTest
 @testable import Poker_Master
 
 class MockDecisionMaker: DecisionMaker {
-    var moveSequence: [Move] = []
+    var moveSequence: [Action] = []
     private var moveIndex = 0
     
-    override func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> Move {
+    override func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> Action {
         guard moveIndex < moveSequence.count else { return .fold }
         let move = moveSequence[moveIndex]
         moveIndex += 1
@@ -242,7 +242,7 @@ final class GameManagerTests: XCTestCase {
     
     func testWaitForUserInput() async {
         gameManager.testingMode = false
-        let expectedMove: Move = .call
+        let expectedMove: Action = .call
         let expectation = expectation(description: "User input should be received")
         
         print(gameManager.testingMode)

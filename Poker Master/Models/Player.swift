@@ -7,24 +7,17 @@
 
 import Foundation
 
-// make an enum for last move
-enum Move: String {
-    case call = "Call"
-    case raise = "Raise"
-    case fold = "Fold"
-    case none = "None"
-}
 
 class Player {
     var position: String
     var stack: Double
     var hand: [Card]
-    var lastMove: Move
+    var lastMove: Action
     var currentBetAmount: Double
     var isReRaise: Bool = false
     
     
-    init(position: String, stack: Double, betAmount: Double = 0.0, hand: [Card] = [], lastMove: Move = Move.none) {
+    init(position: String, stack: Double, betAmount: Double = 0.0, hand: [Card] = [], lastMove: Action = Action.none) {
         self.position = position
         self.stack = stack
         self.currentBetAmount = betAmount
@@ -34,20 +27,20 @@ class Player {
     
     // amount is the amount to raise to (need to account for the current bet amount)
     func raise(amountRaisingTo: Double) -> Double {
-        if (lastMove == Move.raise) {
+        if (lastMove == Action.raise) {
             isReRaise = true // variable used for ui display
         }
             
         let difference = amountRaisingTo - currentBetAmount
         bet(amount: difference)
-        lastMove = Move.raise
+        lastMove = Action.raise
         return difference
     }
     
     func call(amountCallingTo: Double) -> Double {
         let difference = amountCallingTo - currentBetAmount
         bet(amount: difference)
-        lastMove = Move.call
+        lastMove = Action.call
         return difference
     }
     

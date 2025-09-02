@@ -20,6 +20,7 @@ let heroBetMapping6player = [
 ]
 
 
+@MainActor
 class SimplePreFlopManager: ObservableObject {
     @Published var players: [Player] = []
     @Published var user: Player? = nil
@@ -35,6 +36,7 @@ class SimplePreFlopManager: ObservableObject {
     
     // Database values
     var game: Game
+    var profile: User? = nil
     
     let deck: Deck = Deck()
     var turn: Int = 0
@@ -42,10 +44,9 @@ class SimplePreFlopManager: ObservableObject {
     var lastRaise: Double = 0.0
     var villain: Player? = nil
     let decisionMaker: DecisionMaker
-    var activePlayers: Int = 6
     
-    var correctMove: Move = .none // used to check if the user made the correct move and update ui
-    var pendingUserMoveContinuation: CheckedContinuation<Move, Never>?
+    var correctMove: Action = .none // used to check if the user made the correct move and update ui
+    var pendingUserMoveContinuation: CheckedContinuation<Action, Never>?
     
     var gameplaySpeed: Int
     var testingMode: Bool
@@ -76,12 +77,20 @@ class SimplePreFlopManager: ObservableObject {
         stageTheGame()
     }
     
+    func setProfile(profile: User) {
+        self.profile = profile
+        print("Profile set to: \(profile.username)")
+    }
+    
     // sets villian bet number and determines hand
     func stageTheGame() {
         let allKeys = Array(ranges.keys)
         guard let heroPosition = user?.position else { return }
         // take user position and use heroBetMapping to select random bet number
-        let betNumber = heroBetMapping6player[heroPosition]?.randomElement() ?? "1"
+        guard let betNumber = heroBetMapping6player[heroPosition]?.randomElement() else {
+            fatalError("No bet mapping found for hero position: \(heroPosition)")
+        }
+        
         betToStopOn = betNumber == "open" ? 1 : Int(betNumber)!
         
         // filter out all keys that don't contain "bet(betNumber)_userPosition"
@@ -89,7 +98,7 @@ class SimplePreFlopManager: ObservableObject {
         
         // select a random key from the filtered keys
         guard let randomKey = filteredKeys.randomElement() else {
-            return
+            fatalError("No valid keys found for bet number: \(betNumber) and hero position: \(heroPosition)")
         }
         
         // set villian position
@@ -98,6 +107,8 @@ class SimplePreFlopManager: ObservableObject {
         
         // set user hand
         setUserHand(hero: heroPosition, villian: villainPosition)
+        
+        // set utg to go first
         turn = players.firstIndex(where: { $0.position == "UTG" })!
         print("Hero: \(user?.position ?? "") Villian: \(villain?.position ?? "") BetToStopOn: \(betToStopOn)")
     }
@@ -123,19 +134,19 @@ class SimplePreFlopManager: ObservableObject {
         }
          
         
-        let possibleHands = ranges[key] ?? []
-        user?.setHand(hand: possibleHands.randomElement() ?? "")
+        guard let possibleHands = ranges[key] else {
+            fatalError("No hands found for key: \(key)")
+        }
+        if let hand = possibleHands.randomElement() {
+            user?.setHand(hand: hand)
+        } else {
+            fatalError("No possible hands to assign")
+        }
     }
     
     func startGame() async {
         print("Game has started")
-        for player in players {
-            print(player.toString())
-        }
-        
         try? await Task.sleep(nanoseconds: 500_000_000) // Wait 0.5 seconds
-        
-        
         await executeLoop()
     }
     
@@ -154,7 +165,7 @@ class SimplePreFlopManager: ObservableObject {
             //       - For this case we can just auto fold
             
             // Skip any player who already folded
-            if (players[turn].lastMove == Move.fold) {
+            if (players[turn].lastMove == Action.fold) {
                 turn = (turn + 1) % 6
                 continue
             }
@@ -185,7 +196,6 @@ class SimplePreFlopManager: ObservableObject {
             }
             else if (players[turn].position != villain?.position) { // Case 3: Everyone else folds
                 playerCopy.lastMove = .fold
-                activePlayers -= 1
             }
             
             
@@ -238,7 +248,6 @@ class SimplePreFlopManager: ObservableObject {
         waitingForUserInput = false
         showIncorrectPopup = false
         adviceText = ""
-        activePlayers = 6
         stageTheGame()
         // Optionally delay before starting the game again
         Task {
@@ -317,7 +326,7 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     @MainActor
-    func userMadeMove(decision: Move) -> Bool {
+    func userMadeMove(decision: Action) -> Bool {
         guard let continuation = pendingUserMoveContinuation else { return false }
         continuation.resume(returning: decision)
         pendingUserMoveContinuation = nil
@@ -325,14 +334,14 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     @MainActor
-    func waitForUserInput() async -> Move {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<Move, Never>) in
+    func waitForUserInput() async -> Action {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Action, Never>) in
             // Save the continuation so it can be resumed when the user makes a move
             self.pendingUserMoveContinuation = continuation
         }
     }
     
-    func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: Move) async {
+    func handleUserDecision(playerCopy: Player, turn: Int, idealDecision: Action) async {
         if !testingMode {
             waitingForUserInput = true
             let userDecision = await waitForUserInput()
@@ -357,8 +366,8 @@ class SimplePreFlopManager: ObservableObject {
                 players[turn] = playerCopy
                 handLog.isCorrect = true
                 handLog.xpEarned = 10
-                
-                
+                // give profile xp
+                profile?.addXP(amount: 10)
                 
                 // Makes sure they update in sync on the ui
                 await MainActor.run {
@@ -373,7 +382,6 @@ class SimplePreFlopManager: ObservableObject {
             }
         } else {
             playerCopy.lastMove = .fold
-            activePlayers -= 1
         }
     }
     
