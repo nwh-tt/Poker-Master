@@ -23,27 +23,24 @@ struct ChallengesView: View {
     
         
     var body: some View {
-        VStack {
-            Text("Challenges")
-                .font(.custom("Exo2-Regular", size: 32))
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-                .shadow(color: .purple.opacity(0.6), radius: 4, x: 0, y: 2)
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(sortedChallenges) { challenge in
-                        ChallengeCard(challenge: challenge)
-                    }
+            NavigationStack {
+                        
+                        // Scrollable challenge cards
+                        ScrollView {
+                            VStack(spacing: 16) {
+                                ForEach(sortedChallenges) { challenge in
+                                    ChallengeCard(challenge: challenge)
+                                }
+                                Spacer(minLength: 16)
+                            }
+                            .padding(.horizontal)
+                            .padding(.bottom, 40) // leave room for tab bar
+                        }
                     
-                    Spacer()
-                }
-                .padding()
+                .navigationTitle("Challenges")
             }
-            
-            
-        }.padding(.bottom, 8)
-            .background(Color.black.ignoresSafeArea())
-    }
+            .preferredColorScheme(.dark)
+        }
 }
 
 #Preview {

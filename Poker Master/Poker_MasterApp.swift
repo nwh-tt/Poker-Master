@@ -44,7 +44,6 @@ struct Poker_MasterApp: App {
                 .task {    // This runs once when ContentView appears
                     let context = ModelContext(sharedModelContainer)
                     await ChallengeDataManager.syncDefaultChallenges(context: context)
-                    // await UserDataManager.createUserIfNotExist(context: context)
                 }
         }
         .modelContainer(sharedModelContainer)

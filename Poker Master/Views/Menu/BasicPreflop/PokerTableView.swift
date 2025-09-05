@@ -10,17 +10,41 @@ import SwiftData
 import ConfettiSwiftUI
 
 struct PokerTableView: View {
+    // MARK: - Properties
     let darkGreen = Color(red: 0, green: 0.15, blue: 0)
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     let padding = 40.0
-    @StateObject private var gameManager = SimplePreFlopManager()
+    
+    // MARK: - Environment objects
     @Environment(\.modelContext) private var context
     @EnvironmentObject var userProfile: UserProfileState
     
+    // MARK: - Parameters from Options view
+    let speed: Double
+    let heroPosition: String
+    let action: String   // or `Action` if you have a custom enum already
+    
+    // MARK: - State
     @State private var triggerMoneyConfetti: Int = 0
-    // @State private var pulseAnimation: Bool = false
     @State private var correctMoveMade: Action = .none
+    @StateObject private var gameManager: SimplePreFlopManager
+
+    // MARK: - Init
+    init(speed: Double, heroPosition: String, action: String) {
+        self.speed = speed
+        self.heroPosition = heroPosition
+        self.action = action
+
+        // initialize GameManager with passed-in options
+        _gameManager = StateObject(
+            wrappedValue: SimplePreFlopManager(
+                gameplaySpeed: speed,
+                selectedPosition: heroPosition,
+                selectedAction: action
+            )
+        )
+    }
     
     // function to trigger confetti and turn buttons green
     private func buttonClicked(buttonClicked: Action) {
@@ -78,10 +102,10 @@ struct PokerTableView: View {
                                 )
                         )
                         .padding(.top, 16)
-                        .padding(.trailing, 16)
+                        .padding(.trailing, 8)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .padding(.top, 32)
+                .padding(.top, 40)
                 .padding(.trailing, 12)
                 
                 
@@ -192,7 +216,7 @@ struct PokerTableView: View {
         let user = User(username: "Ned Whittleton")
         context.insert(user)
 
-        return PokerTableView()
+    return PokerTableView(speed: 4.5, heroPosition: "any", action: "4")
             .modelContainer(container)
             .environment(\.modelContext, context)
             .environmentObject(UserProfileState(context: context))

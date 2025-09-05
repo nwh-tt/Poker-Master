@@ -27,7 +27,6 @@
 		B67C5E572E283F600017ECBF /* Exo2-Italic-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E552E283F600017ECBF /* Exo2-Italic-VariableFont_wght.ttf */; };
 		B67C5E582E283F600017ECBF /* Exo2-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E562E283F600017ECBF /* Exo2-VariableFont_wght.ttf */; };
 		B67C5E5B2E28423F0017ECBF /* Audiowide-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E5A2E28423F0017ECBF /* Audiowide-Regular.ttf */; };
-		B67C5E5E2E41836C0017ECBF /* NavigationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E5D2E41836C0017ECBF /* NavigationState.swift */; };
 		B67C5E602E43D9A20017ECBF /* PokerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */; };
 		B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */; };
 		B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */; };
@@ -98,7 +97,6 @@
 		B67C5E562E283F600017ECBF /* Exo2-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Exo2-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		B67C5E592E283FED0017ECBF /* Poker-Master-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Poker-Master-Info.plist"; sourceTree = SOURCE_ROOT; };
 		B67C5E5A2E28423F0017ECBF /* Audiowide-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Audiowide-Regular.ttf"; sourceTree = "<group>"; };
-		B67C5E5D2E41836C0017ECBF /* NavigationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationState.swift; sourceTree = "<group>"; };
 		B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerAPI.swift; sourceTree = "<group>"; };
 		B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPreflopManager.swift; sourceTree = "<group>"; };
 		B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedDecisionMaker.swift; sourceTree = "<group>"; };
@@ -247,7 +245,6 @@
 		B67C5E5C2E4183170017ECBF /* State */ = {
 			isa = PBXGroup;
 			children = (
-				B67C5E5D2E41836C0017ECBF /* NavigationState.swift */,
 				B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */,
 			);
 			path = State;
@@ -568,7 +565,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B67C5E5E2E41836C0017ECBF /* NavigationState.swift in Sources */,
 				B672D7DD2BC87E6300E7F5F6 /* PokerTableView.swift in Sources */,
 				B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */,
 				B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */,

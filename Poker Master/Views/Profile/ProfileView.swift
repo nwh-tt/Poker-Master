@@ -8,17 +8,46 @@ import SwiftUI
 import SwiftData
 
 struct ProfileView: View {
-    
     @EnvironmentObject var userProfileState: UserProfileState
+    @Query var games: [Game]
+    
     var currentUser: User {
         userProfileState.user
     }
     // MARK: - Mock Data
     @State private var nextLevelXP: Double = 500
-    @State private var streak: Int = 7
+    var streak: Int {
+        currentStreak()
+    }
     @State private var selectedTheme: String = "Default"
-    
     @State private var didLevelUp: Bool = false
+    
+    
+    func currentStreak() -> Int {
+            // Sort games by most recent date first
+            let sortedGames = games.sorted { $0.date > $1.date }
+            guard let mostRecent = sortedGames.first else { return 0 }
+            
+            var streak = 1
+            var lastDate = Calendar.current.startOfDay(for: mostRecent.date)
+            
+            for game in sortedGames.dropFirst() {
+                let gameDay = Calendar.current.startOfDay(for: game.date)
+                
+                // Check if gameDay is exactly 1 day before lastDate
+                if let diff = Calendar.current.dateComponents([.day], from: gameDay, to: lastDate).day {
+                    if diff == 1 {
+                        streak += 1
+                        lastDate = gameDay
+                    } else if diff > 1 {
+                        // Streak broken
+                        break
+                    }
+                }
+            }
+            
+            return streak
+        }
 
 
     var body: some View {
@@ -121,6 +150,19 @@ struct ProfileView: View {
     // Seed with some test data
     let sampleUser = User(username: "Ned Whittleton")
     sampleUser.addXP(amount: 140)
+    
+    // insert one game from yesterday
+    let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+    let sampleGame = Game()
+    sampleGame.duration = 1000
+    sampleGame.date = yesterday
+    context.insert(sampleGame)
+    
+    // insert one game from today
+    let sampleGame2 = Game()
+    sampleGame2.duration = 1000
+    sampleGame2.date = Date()
+    
     context.insert(sampleUser)
     
     return ProfileView()

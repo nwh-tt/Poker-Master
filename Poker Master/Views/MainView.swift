@@ -10,7 +10,6 @@ import SwiftData
 
 struct MainView: View {
     @State private var selectedTab = 2
-    @StateObject private var navState = NavigationState()
     
     init() {
            let tabBarAppearance = UITabBar.appearance()
@@ -61,7 +60,6 @@ struct MainView: View {
                    }
                    .accentColor(.white)
                    .background(Color.black.edgesIgnoringSafeArea(.bottom))
-                   .environmentObject(navState)
                
                
            }

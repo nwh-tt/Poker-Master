@@ -53,7 +53,6 @@ class RangesFileManager {
     }
     
     static func reloadRangesFromBundle() {
-        let fileManager = FileManager.default
         let destinationURL = getRangesFileURL()
         
         if let bundleURL = Bundle.main.url(forResource: "Ranges", withExtension: "json"),

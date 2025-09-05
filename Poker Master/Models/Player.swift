@@ -74,7 +74,7 @@ class Player {
 
         let suits = ["heart", "diamond", "club", "spade"]
 
-        var suit1 = suits.randomElement()!
+        let suit1 = suits.randomElement()!
         var suit2 = suits.randomElement()!
 
         if suitedness == "s" {

@@ -62,29 +62,22 @@ struct StatsView: View {
         NavigationStack {
             VStack {
                 HStack {
-                    HStack {
-                        NavigationLink {
-                            WinPercentageDetailView(overallWinPct: winPercentage)
-                        } label: {
-                            VStack {
-                                Text("Total Time")
-                                    .font(.headline)
-                                    .foregroundColor(.gray)
-                                
-                                Text("\(hoursPlayed, specifier: "%.1d")h")
-                                    .font(.system(size: 40, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                
-                            }
-                            .padding()
-                            .padding(.bottom, 10)
-                            .frame(maxWidth: .infinity)
-                            .background(Color(.secondarySystemBackground))
-                            .cornerRadius(16)
-                        }
+                    VStack {
+                        Text("Total Time")
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                        
+                        Text("\(hoursPlayed, specifier: "%.1d")h")
+                            .font(.system(size: 40, weight: .bold))
+                            .foregroundColor(.white)
+                        
                         
                     }
+                    .padding()
+                    .padding(.bottom, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(16)
                     NavigationLink {
                         WinPercentageDetailView(overallWinPct: winPercentage)
                     } label: {
