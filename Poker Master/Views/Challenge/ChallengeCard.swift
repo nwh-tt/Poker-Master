@@ -73,8 +73,9 @@ struct ChallengeCard: View {
             return countStreaksOf(atLeast: 3, in: handLogs)
         } 
         else if (challenge.title == "Closer") {
-            return games.count
-        } 
+            // only count games > 8 hands
+            return games.filter { $0.hands.count > 8 }.count
+        }
         else if (challenge.title == "Perfect Game") {
             return games.filter { game in
                 !game.hands.isEmpty && game.hands.allSatisfy { $0.isCorrect }

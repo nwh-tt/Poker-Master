@@ -39,7 +39,6 @@ struct Poker_MasterApp: App {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.dark)
-                .environment(\.font, .custom("Exo2-Regular", size: 18))
                 .environmentObject(userProfile)
                 .task {    // This runs once when ContentView appears
                     let context = ModelContext(sharedModelContainer)

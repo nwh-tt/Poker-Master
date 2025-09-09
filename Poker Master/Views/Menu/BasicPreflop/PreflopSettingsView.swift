@@ -9,22 +9,22 @@ import SwiftUI
 
 struct PreflopSettingsView: View {
     let heroBetMapping6player = [
-        "BTN": ["Any", "Open", "vsRaise", "3Bet", "4Bet", "5Bet"],
-        "SB": ["Any", "Open", "vsRaise", "3Bet", "4Bet", "5Bet"],
-        "BB": ["Any", "vsRaise", "4Bet"],
-        "UTG": ["Any", "Open", "3Bet", "5Bet"],
-        "MP": ["Any", "Open", "vsRaise", "3Bet", "4Bet", "5Bet"],
-        "CO": ["Any", "Open", "vsRaise", "3Bet", "4Bet", "5Bet"],
-        "Any": ["Any", "Open", "vsRaise", "3Bet", "4Bet", "5Bet"]
+        "BTN": ["Any", "open", "2", "3", "4", "5"],
+        "SB": ["Any", "open", "2", "3", "4", "5"],
+        "BB": ["Any", "2", "4"],
+        "UTG": ["Any", "open", "3", "5"],
+        "MP": ["Any", "open", "2", "3", "4", "5"],
+        "CO": ["Any", "open", "2", "3", "4", "5"],
+        "Any": ["Any", "open", "2", "3", "4", "5"]
     ]
     
     let betDisplayMapping: [String: String] = [
         "Any": "Any",
-        "Open": "Open",
-        "vsRaise": "2",
-        "3Bet": "3",
-        "4Bet": "4",
-        "5Bet": "5"
+        "open": "Open",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5"
     ]
     
     @State private var selectedSpeed: Double = 3
@@ -47,7 +47,7 @@ struct PreflopSettingsView: View {
                     Slider(value: $selectedSpeed, in: 1...5, step: 0.1) {
                         Text("Speed")
                     }
-                    .tint(.purple)
+                    .tint(Color(red: 50/255, green: 130/255, blue: 80/255))
                 }.padding(.bottom)
                 
                 // Position
@@ -96,10 +96,12 @@ struct PreflopSettingsView: View {
                         .padding()
                         .background(
                             LinearGradient(
-                            gradient: Gradient(colors: [Color.blue, Color.purple]),
-                                startPoint: .leading,
-                                endPoint: .trailing
+                                colors: [Color(red: 19/255, green: 70/255, blue: 50/255),
+                                         Color(red: 50/255, green: 130/255, blue: 80/255)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             )
+                                
                         )
                                 .foregroundColor(.white)
                                 .cornerRadius(12)

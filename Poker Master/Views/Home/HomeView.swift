@@ -39,7 +39,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
                 ScrollView {
-                    VStack(spacing: 24) {
+                    LazyVStack(spacing: 24) {
                         
                         // MARK: - Level & XP Card
                         VStack(alignment: .leading, spacing: 12) {
@@ -49,7 +49,7 @@ struct HomeView: View {
                                 .foregroundColor(.white)
                             
                             ProgressView(value: Double(userProfile.xp), total: Double(userProfile.xpNeededForNextLevel))
-                                .progressViewStyle(LinearProgressViewStyle(tint: .purple))
+                                .progressViewStyle(LinearProgressViewStyle(tint: Color(red: 50/255, green: 130/255, blue: 80/255)))
                                 .scaleEffect(x: 1, y: 1.5, anchor: .center)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                             
@@ -65,7 +65,7 @@ struct HomeView: View {
                         // MARK: - Quick Actions
                         HStack(spacing: 16) {
                             NavigationLink(destination: PreflopSettingsView()) {
-                                ActionButton(title: "Play Game", color1: .blue, color2: .purple, icon: "play.fill")
+                                ActionButton(title: "Play Game", icon: "play.fill")
                             }
                         }
                         .padding(.horizontal)
@@ -82,7 +82,7 @@ struct HomeView: View {
                                             .foregroundColor(.white)
                                         Spacer()
                                         Image(systemName: expandedCategories.contains(category) ? "chevron.down" : "chevron.right")
-                                            .foregroundColor(.purple)
+                                            .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
                                     }
                                     .contentShape(Rectangle())
                                     .onTapGesture {
@@ -109,7 +109,7 @@ struct HomeView: View {
                                                         }
                                                         Spacer()
                                                         Image(systemName: "arrow.up.right.square")
-                                                            .foregroundColor(.purple)
+                                                            .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
                                                     }
                                                     .padding()
                                                     .background(Color.gray.opacity(0.15))
@@ -138,8 +138,6 @@ struct HomeView: View {
 // MARK: - Action Button
 struct ActionButton: View {
     let title: String
-    let color1: Color
-    let color2: Color
     let icon: String
     
     var body: some View {
@@ -153,7 +151,8 @@ struct ActionButton: View {
         .padding()
         .frame(maxWidth: .infinity)
         .background(
-            LinearGradient(colors: [color1, color2], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(colors: [Color(red: 19/255, green: 70/255, blue: 50/255),
+                                    Color(red: 50/255, green: 130/255, blue: 80/255)], startPoint: .topLeading, endPoint: .bottomTrailing)
         )
         .cornerRadius(16)
         .shadow(radius: 4)

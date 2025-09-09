@@ -28,11 +28,13 @@ class SimplePreFlopManager: ObservableObject {
     @Published var waitingForUserInput: Bool = false
     @Published var score: Int = 0
     @Published var handsPlayed: Int = 0
+    @Published var isGameOver: Bool = false
     var context: ModelContext?
     
     // variables needed for incorrect or correct move
     @Published var showIncorrectPopup: Bool = false
     @Published var adviceText: String = ""
+    var rangesUsed: String = ""
     
     // Database values
     var game: Game
@@ -92,6 +94,7 @@ class SimplePreFlopManager: ObservableObject {
     // sets villian bet number and determines hand
     func stageTheGame() {
         let allKeys = Array(ranges.keys)
+        isGameOver = false
         
         guard let user = user else {
             fatalError("User must not be nil when starting game")
@@ -112,8 +115,6 @@ class SimplePreFlopManager: ObservableObject {
         
         betToStopOn = betNumber == "open" ? 1 : Int(betNumber)!
         
-        // print betToStopOn and heroPosition
-        print("betToStopOn: \(betToStopOn) heroPosition: \(heroPosition)")
         // filter out all keys that don't contain "bet(betNumber)_userPosition"
         let filteredKeys = allKeys.filter { $0.contains("bet\(betNumber)_\(heroPosition)") || $0.contains("\(betNumber)_\(heroPosition)") }
         
@@ -121,6 +122,8 @@ class SimplePreFlopManager: ObservableObject {
         guard let randomKey = filteredKeys.randomElement() else {
             fatalError("No valid keys found for bet number: \(betNumber) and hero position: \(heroPosition)")
         }
+        
+        rangesUsed = randomKey
         
         // set villian position
         let villainPosition = extractVillainPosition(from: randomKey)
@@ -131,7 +134,6 @@ class SimplePreFlopManager: ObservableObject {
         
         // set utg to go first
         turn = players.firstIndex(where: { $0.position == "UTG" })!
-        print("Hero: \(user.position) Villian: \(villain?.position ?? "") BetToStopOn: \(betToStopOn)")
     }
     
     func setUserHand(hero: String, villian: String) {
@@ -243,9 +245,6 @@ class SimplePreFlopManager: ObservableObject {
         
         
         
-        
-        
-        // TODO: Add exit for when 10 hands have been played
         if (handsPlayed >= 10) {
             // Determine game duration using game.date to current Date
             game.duration = Date().timeIntervalSince(game.date)
@@ -256,6 +255,7 @@ class SimplePreFlopManager: ObservableObject {
             } catch {
                 print("Failed to save game: \(error)")
             }
+            isGameOver = true
             return
         }
         
@@ -277,6 +277,14 @@ class SimplePreFlopManager: ObservableObject {
         }
     }
     
+    func completeReset() {
+        score = 0
+        handsPlayed = 0
+        isGameOver = false
+        game = Game(date: Date(), totalHands: 0, duration: 0.0)
+        resetAndStartNewGame()
+    }
+    
     func extractVillainPosition(from key: String) -> String {
         let parts = key.split(separator: "_")
         
@@ -289,8 +297,9 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     func createRandomPlayers() -> [Player] {
-        let positionList = ["BTN", "SB", "BB", "UTG", "MP", "CO"]
-        let userPosition = selectedPosition.lowercased() == "any" ? positionList.randomElement()! : selectedPosition.uppercased()
+        guard let userPosition = pickUserPosition() else {
+            fatalError("No valid user position found for \(selectedPosition) with action \(selectedAction)")
+        }
         
         return createAndReorderPlayers(playerPosition: userPosition)
     }
@@ -319,6 +328,36 @@ class SimplePreFlopManager: ObservableObject {
         }
          
         return playersReordered
+    }
+    
+    func pickUserPosition() -> String? {
+        
+        let positionList = Array(heroBetMapping6player.keys)
+        if selectedPosition.lowercased() == "any" {
+            if selectedAction.lowercased() == "any" {
+                // any random position
+                return positionList.randomElement()
+            } else {
+                // only positions that contain this action
+                let validPositions = positionList.filter {
+                    heroBetMapping6player[$0]?.contains(selectedAction.lowercased()) == true
+                }
+                return validPositions.randomElement()
+            }
+        } else {
+            let chosen = selectedPosition.uppercased()
+            if selectedAction.lowercased() == "any" {
+                return chosen
+            } else {
+                // make sure this position supports the action
+                if heroBetMapping6player[chosen]?.contains(selectedAction.lowercased()) == true {
+                    return chosen
+                } else {
+                    // no valid match
+                    return nil
+                }
+            }
+        }
     }
     
     func raise(player: Player) {
@@ -397,7 +436,7 @@ class SimplePreFlopManager: ObservableObject {
                 }
             } else {
                 showIncorrectPopup = true
-                adviceText = "Correct Move: " + idealDecision.rawValue
+                adviceText = "Needed to " + idealDecision.rawValue.capitalizeFirst
                 players[turn] = playerCopy
                 handsPlayed += 1
             }

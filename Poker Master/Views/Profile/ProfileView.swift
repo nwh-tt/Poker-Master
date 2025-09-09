@@ -8,7 +8,11 @@ import SwiftUI
 import SwiftData
 
 struct ProfileView: View {
+    @Environment(\.modelContext) private var context
     @EnvironmentObject var userProfileState: UserProfileState
+
+    @State private var tempUsername: String = ""
+    @State private var isEditing: Bool = false
     @Query var games: [Game]
     
     var currentUser: User {
@@ -51,85 +55,183 @@ struct ProfileView: View {
 
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 32) {
-                
-                // MARK: - Avatar
-                VStack {
-                    Circle()
-                        .fill(Color.gray.opacity(0.4))
-                        .frame(width: 100, height: 100)
-                        .overlay(
-                            Text("👤")
-                                .font(.largeTitle)
-                        )
-                    Text(currentUser.username)
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.white)
-                }
-                .padding(.top, 40)
-                
-                // MARK: - Level + XP
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Level \(currentUser.level)")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        Spacer()
-                        Text("\(Int(currentUser.xp))/\(Int(currentUser.xpNeededForNextLevel)) XP")
-                            .foregroundColor(.gray)
-                            .font(.subheadline)
+        ZStack {
+            ScrollView {
+                VStack(spacing: 32) {
+                    
+                    // MARK: - Avatar
+                    VStack(spacing: 12) {
+                        Circle()
+                            .strokeBorder(.white, lineWidth: 4)
+                            .background(
+                                Circle().fill(Color.gray.opacity(0.2))
+                            )
+                            .frame(width: 100, height: 100)
+                            .overlay(
+                                Image(systemName: "suit.spade.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.white.opacity(0.5))
+                            )
+                        
+                        HStack(spacing: 8) {
+                            if isEditing {
+                                TextField("Enter username", text: $tempUsername)
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .textFieldStyle(PlainTextFieldStyle())
+                                    .padding(6)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color.white.opacity(0.1))
+                                    )
+                                    .submitLabel(.done)
+                                
+                                Button(action: {
+                                    tempUsername = userProfileState.user.username
+                                    isEditing = false
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.red)
+                                        .font(.title3)
+                                }
+                                
+                                Button(action: {
+                                    userProfileState.user.username = tempUsername
+                                    isEditing = false
+                                    try? context.save()
+                                }) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                        .font(.title3)
+                                }
+                                
+                            } else {
+                                Text(userProfileState.user.username)
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                
+                                Button(action: {
+                                    tempUsername = userProfileState.user.username
+                                    isEditing = true
+                                }) {
+                                    Image(systemName: "pencil")
+                                        .foregroundColor(.white.opacity(0.8))
+                                        .font(.title3)
+                                }
+                            }
+                        }
+
                     }
-                    ProgressView(
-                        value: Double(currentUser.xp),
-                        total: Double(currentUser.xpNeededForNextLevel)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.black.opacity(0.4))
+                            .shadow(radius: 6)
                     )
-                        .progressViewStyle(LinearProgressViewStyle(tint: .green))
+                    .padding(.top, 40)
+
+
+
+                    
+                    // MARK: - Level + XP
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Level \(currentUser.level)")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Spacer()
+                            Text("\(Int(currentUser.xp))/\(Int(currentUser.xpNeededForNextLevel)) XP")
+                                .foregroundColor(.gray)
+                                .font(.subheadline)
+                        }
+                        ProgressView(
+                            value: Double(currentUser.xp),
+                            total: Double(currentUser.xpNeededForNextLevel)
+                        )
+                        .progressViewStyle(LinearProgressViewStyle(tint: Color(red: 50/255, green: 130/255, blue: 80/255)))
                         .scaleEffect(x: 1, y: 2, anchor: .center)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
-                }
-                .padding(.horizontal)
-                
-                // MARK: - Theme Selector Scaffold
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Theme")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    HStack {
-                        Text(selectedTheme)
-                            .foregroundColor(.gray)
-                        Spacer()
-                        Button("Change") {
-                            // action to change theme
+                    }
+                    .padding(.horizontal)
+                    
+                    // MARK: - Theme Selector Scaffold
+                    //                VStack(alignment: .leading, spacing: 8) {
+                    //                    Text("Theme")
+                    //                        .font(.headline)
+                    //                        .foregroundColor(.white)
+                    //                    HStack {
+                    //                        Text(selectedTheme)
+                    //                            .foregroundColor(.gray)
+                    //                        Spacer()
+                    //                        Button("Change") {
+                    //                            // action to change theme
+                    //                        }
+                    //                        .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
+                    //                        .padding(6)
+                    //                        .background(Color.white.opacity(0.1))
+                    //                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    //                    }
+                    //                }
+                    //                .padding(.horizontal)
+                    
+                    // MARK: - Streak Tracker
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Streak")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        HStack {
+                            Image(systemName: "flame.fill")
+                                .foregroundColor(.red)
+                            Text("\(streak) days in a row")
+                                .foregroundColor(.gray)
                         }
-                        .foregroundColor(.green)
-                        .padding(6)
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
                     }
+                    .padding(.horizontal)
+                    
+                    Spacer()
                 }
-                .padding(.horizontal)
-                
-                // MARK: - Streak Tracker
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Streak")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    HStack {
-                        Image(systemName: "flame.fill")
-                            .foregroundColor(.red)
-                        Text("\(streak) days in a row")
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding(.horizontal)
-                
-                Spacer()
+                .padding(.bottom, 40)
             }
-            .padding(.bottom, 40)
+            .background(Color.black.edgesIgnoringSafeArea(.all))
+            
+            if currentUser.leveledUP {
+                    LevelUpOverlay(level: currentUser.level)
+                        .transition(.opacity.combined(with: .scale))
+                        .zIndex(1)
+                        .onAppear {
+                            // auto-dismiss after 2 seconds
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                withAnimation {
+                                    currentUser.leveledUP = false
+                                }
+                            }
+                        }
+                }
         }
-        .background(Color.black.edgesIgnoringSafeArea(.all))
+    }
+    
+    struct LevelUpOverlay: View {
+        let level: Int
+        
+        var body: some View {
+            VStack {
+                Text("Level Up!")
+                    .font(.largeTitle)
+                    .bold()
+                    .foregroundColor(.yellow)
+                    .shadow(radius: 10)
+                Text("You reached Level \(level)")
+                    .font(.title2)
+                    .foregroundColor(.white)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black.opacity(0.6))
+            .edgesIgnoringSafeArea(.all)
+        }
     }
 }
 

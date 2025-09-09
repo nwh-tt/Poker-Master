@@ -171,6 +171,18 @@ final class SimplePreFlopManagerTests: XCTestCase {
         let result = simpleManager.extractVillainPosition(from: key)
         XCTAssertEqual(result, "")
     }
+    
+    @MainActor
+    func testPickUserPosition() {
+        // initialize a simplePreflopManager in testing mode with selectedAction of "open" and position of any
+        simpleManager = SimplePreFlopManager(gameplaySpeed: 5, testingMode: true, selectedAction: "open")
+        
+        // run this test 1000 times
+        for _ in 0...10000 {
+            let result = simpleManager.pickUserPosition()
+            XCTAssertNotNil(result, "User position should not be nil")
+        }
+    }
 
 
 }

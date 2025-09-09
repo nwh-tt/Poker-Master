@@ -74,6 +74,13 @@ struct PokerTableView: View {
     
     var body: some View {
             ZStack {
+                if (gameManager.isGameOver) {
+                        GameOverView(correctDecisions: gameManager.score, totalHands: gameManager.handsPlayed, startNewGame: {
+                            gameManager.completeReset()
+                        })
+                            .ignoresSafeArea()
+                            .zIndex(1)
+                }
                 
                 EllipticalGradient(colors: [darkBlue, Color.black], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.9)
                 
@@ -147,34 +154,34 @@ struct PokerTableView: View {
                             buttonClicked(buttonClicked: Action.call)
                         }) {
                             Text("Call")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(correctMoveMade == .call ? Color.green : darkBlue)
-                                    .foregroundColor(.white)  // Set the text color to white
-                                    .clipShape(Capsule())
-                                    .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(correctMoveMade == .call ? Color.green : darkBlue)
+                                .foregroundColor(.white)  // Set the text color to white
+                                .clipShape(Capsule())
+                                .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
                         }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
                             buttonClicked(buttonClicked: Action.raise)
                         }) {
                             Text("Raise")
                                 .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(correctMoveMade == .raise ? Color.green :darkBlue)
-                                    .foregroundColor(.white)  // Set the text color to white
-                                    .clipShape(Capsule())
-                                    .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
+                                .padding()
+                                .background(correctMoveMade == .raise ? Color.green :darkBlue)
+                                .foregroundColor(.white)  // Set the text color to white
+                                .clipShape(Capsule())
+                                .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
                         }.disabled(!gameManager.waitingForUserInput)
                         Button(action:{
                             buttonClicked(buttonClicked: Action.fold)
                         }) {
                             Text("Fold")
                                 .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(correctMoveMade == .fold ? Color.green : darkBlue)
-                                    .foregroundColor(.white)  // Set the text color to white
-                                    .clipShape(Capsule())
-                                    .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
+                                .padding()
+                                .background(correctMoveMade == .fold ? Color.green : darkBlue)
+                                .foregroundColor(.white)  // Set the text color to white
+                                .clipShape(Capsule())
+                                .opacity(gameManager.waitingForUserInput ? 1.0 : 0.5) // Dim when disabled
                         }.disabled(!gameManager.waitingForUserInput)
                     }.padding()
                         .confettiCannon(trigger: $triggerMoneyConfetti, num: 50, confettis: [.text("💵"), .text("💰")])
@@ -183,9 +190,12 @@ struct PokerTableView: View {
                     .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2 - 60)
                     .colorInvert()
             }
-            .sheet(isPresented: $gameManager.showIncorrectPopup) {
-                IncorrectSelectionView(showPopup: $gameManager.showIncorrectPopup, adviceText: gameManager.adviceText, resetGame: { gameManager.resetAndStartNewGame() })
-                                .presentationBackground(.ultraThinMaterial)
+            .sheet(isPresented: $gameManager.showIncorrectPopup, onDismiss: {
+                // This will run when the sheet is dismissed by any means
+                gameManager.resetAndStartNewGame()
+            }) {
+                IncorrectSelectionView(showPopup: $gameManager.showIncorrectPopup, adviceText: gameManager.adviceText, resetGame: { gameManager.resetAndStartNewGame() }, keyUsed: gameManager.rangesUsed, hand: gameManager.user?.getHand() ?? "")
+                    .presentationBackground(.ultraThinMaterial)
             }
             .edgesIgnoringSafeArea(.all)
             .onAppear {
@@ -195,7 +205,6 @@ struct PokerTableView: View {
                     await gameManager.startGame()
                 }
             }
-            
     }
 }
 
