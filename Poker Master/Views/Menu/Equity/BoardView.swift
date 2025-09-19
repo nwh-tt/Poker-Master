@@ -40,7 +40,7 @@ struct BoardView: View {
                 }
                 
                 // Step 2: after animation delay, update displayedBoard and flip in
-                let resetDelay = 0.75
+                let resetDelay = 0.9
                 DispatchQueue.main.asyncAfter(deadline: .now() + resetDelay) {
                     displayedBoard = newBoard
                     for i in 0..<displayedBoard.count {

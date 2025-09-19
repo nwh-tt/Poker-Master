@@ -10,7 +10,7 @@ import ActivityIndicatorView
 
 let darkGreen = Color(red: 0, green: 0.15, blue: 0)
 let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
-let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
+let borderColor = Color(red: 1,green: 1, blue: 0.95)
 let padding = 40.0
 
 struct EquityTable: View {
@@ -56,13 +56,18 @@ struct EquityTable: View {
             
             EllipticalGradient(colors: [darkBlue, Color.black], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.9)
             
-            Capsule()
-                .fill(darkGreen)
-                .frame(width: 300, height: 590)
-                .overlay(
-                    Capsule()
-                        .stroke(borderColor, lineWidth: 3)
-                ).padding(.bottom, 60)
+            EllipticalGradient(colors: [darkBlue, Color.black], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.9)
+            VStack {
+                Capsule()
+                    .fill(darkGreen)
+                    .overlay(
+                        Capsule()
+                            .stroke(borderColor, lineWidth: 2)
+                    )
+            }
+            .padding(.horizontal, 50)
+            .padding(.bottom, 170)
+            .padding(.top, 90)
             
             EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
             
@@ -152,7 +157,7 @@ struct EquityTable: View {
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                     )
-            }.padding(.bottom, 138)
+            }.padding(.bottom, 148)
             
             VStack {
                 Spacer()
@@ -276,7 +281,9 @@ struct EquityTable: View {
                                         .clipShape(Capsule())
                                 }
                             }
-                        }.padding()
+                        }
+                        .padding()
+                        .padding(.bottom)
                     }
                 } else {
                     VStack(spacing: 12) {

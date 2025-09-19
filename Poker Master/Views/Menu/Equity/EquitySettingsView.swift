@@ -75,7 +75,7 @@ struct EquitySettingsView: View {
                     Spacer()
                 }
                 .padding()
-                .navigationTitle("Equity Options")
+                .navigationTitle("Options")
                 .background(Color.black.edgesIgnoringSafeArea(.all))
                 .preferredColorScheme(.dark)
             }

@@ -93,14 +93,17 @@ struct PokerTableView: View {
                 }
                 
                 EllipticalGradient(colors: [darkBlue, Color.black], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.9)
+                VStack {
+                    Capsule()
+                        .fill(darkGreen)
+                        .overlay(
+                            Capsule()
+                                .stroke(borderColor, lineWidth: 2)
+                        )
+                }
+                .padding(.horizontal, 48)
+                .padding(.vertical, 128)
                 
-                Capsule()
-                    .fill(darkGreen)
-                    .frame(width: 300, height: 590)
-                    .overlay(
-                        Capsule()
-                            .stroke(borderColor, lineWidth: 3)
-                    )
                 EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
                 // add a score in the top right corner
                 HStack {
@@ -128,7 +131,6 @@ struct PokerTableView: View {
                 
                 VStack(alignment: .center)
                 {
-                    Spacer()
                     PlayerPositionView(player: gameManager.players[3], direction: "right", isUser: false).padding(.top, 14)
                     Spacer()
                     HStack(alignment: .center)
@@ -150,13 +152,16 @@ struct PokerTableView: View {
                     .padding(.bottom, padding)
                     Spacer()
                     PlayerPositionView(player: gameManager.players[0], direction: "right", isUser: true).padding(.bottom, 14)
-                    Spacer()
                     
                 }.padding(4)
-                HStack(spacing: -10) {
-                    CardView(card: gameManager.players[0].hand[0])
-                    CardView(card: gameManager.players[0].hand[1])
-                }.offset(x: 0, y: 220)
+                .padding(.vertical, 90)
+                VStack {
+                    Spacer()
+                    HStack(spacing: -10) {
+                        CardView(card: gameManager.players[0].hand[0])
+                        CardView(card: gameManager.players[0].hand[1])
+                    }
+                }.padding(.bottom, 170)
                 VStack {
                     Spacer()
                     HStack {
@@ -247,7 +252,7 @@ extension View {
     }
 }
 
-#Preview {
+#Preview("iPhone 15 Plus") {
     let schema = Schema([
             Game.self,
             HandLog.self,
