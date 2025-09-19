@@ -58,6 +58,15 @@
 		B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */; };
 		B6EC8ACB2E6B3B6400C1AC9B /* RangesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8ACA2E6B3B6400C1AC9B /* RangesView.swift */; };
 		B6EC8ACD2E6B629800C1AC9B /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8ACC2E6B629800C1AC9B /* GameOverView.swift */; };
+		B6EC8AD02E70883300C1AC9B /* EquityTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8ACF2E70883300C1AC9B /* EquityTable.swift */; };
+		B6EC8AD22E70924100C1AC9B /* VillainRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AD12E70924100C1AC9B /* VillainRangeView.swift */; };
+		B6EC8AD42E70AF6200C1AC9B /* EquityDrillManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AD32E70AF6200C1AC9B /* EquityDrillManager.swift */; };
+		B6EC8AD82E735C4F00C1AC9B /* EquitySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AD72E735C4F00C1AC9B /* EquitySettingsView.swift */; };
+		B6EC8ADB2E738E3A00C1AC9B /* ActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = B6EC8ADA2E738E3A00C1AC9B /* ActivityIndicatorView */; };
+		B6EC8ADD2E7392D500C1AC9B /* CardBackViewScaled.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8ADC2E7392D500C1AC9B /* CardBackViewScaled.swift */; };
+		B6EC8ADF2E739BC300C1AC9B /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8ADE2E739BC300C1AC9B /* BoardView.swift */; };
+		B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AE02E78A71600C1AC9B /* Auth.swift */; };
+		B6EC8AE32E7B89D600C1AC9B /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AE22E7B89D600C1AC9B /* StoreManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +142,14 @@
 		B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopSettingsView.swift; sourceTree = "<group>"; };
 		B6EC8ACA2E6B3B6400C1AC9B /* RangesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesView.swift; sourceTree = "<group>"; };
 		B6EC8ACC2E6B629800C1AC9B /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
+		B6EC8ACF2E70883300C1AC9B /* EquityTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquityTable.swift; sourceTree = "<group>"; };
+		B6EC8AD12E70924100C1AC9B /* VillainRangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VillainRangeView.swift; sourceTree = "<group>"; };
+		B6EC8AD32E70AF6200C1AC9B /* EquityDrillManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquityDrillManager.swift; sourceTree = "<group>"; };
+		B6EC8AD72E735C4F00C1AC9B /* EquitySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquitySettingsView.swift; sourceTree = "<group>"; };
+		B6EC8ADC2E7392D500C1AC9B /* CardBackViewScaled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardBackViewScaled.swift; sourceTree = "<group>"; };
+		B6EC8ADE2E739BC300C1AC9B /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		B6EC8AE02E78A71600C1AC9B /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
+		B6EC8AE22E7B89D600C1AC9B /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +157,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6EC8ADB2E738E3A00C1AC9B /* ActivityIndicatorView in Frameworks */,
 				B6D4036F2D9340A3008A83E8 /* ConfettiSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -180,6 +198,8 @@
 				B67C5E632E50D8F10017ECBF /* DecisionMakers */,
 				B6D403722D9D74F1008A83E8 /* Games */,
 				B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */,
+				B6EC8AE02E78A71600C1AC9B /* Auth.swift */,
+				B6EC8AE22E7B89D600C1AC9B /* StoreManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -194,6 +214,7 @@
 		B67C5E3F2E2088A70017ECBF /* Menu */ = {
 			isa = PBXGroup;
 			children = (
+				B6EC8ACE2E707D9300C1AC9B /* Equity */,
 				B6870FFE2D6E079000A1EAB1 /* Card */,
 				B6EC8AC72E63817000C1AC9B /* BasicPreflop */,
 				B67C5E422E208A950017ECBF /* MenuView.swift */,
@@ -323,6 +344,7 @@
 			children = (
 				B672D7DE2BC88CB900E7F5F6 /* CardView.swift */,
 				B649ED562BD70D6B00157267 /* CardBackView.swift */,
+				B6EC8ADC2E7392D500C1AC9B /* CardBackViewScaled.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -413,6 +435,7 @@
 				B649ED4C2BD1B2E100157267 /* GameManager.swift */,
 				B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */,
 				B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */,
+				B6EC8AD32E70AF6200C1AC9B /* EquityDrillManager.swift */,
 			);
 			path = Games;
 			sourceTree = "<group>";
@@ -428,6 +451,17 @@
 				B6EC8ACC2E6B629800C1AC9B /* GameOverView.swift */,
 			);
 			path = BasicPreflop;
+			sourceTree = "<group>";
+		};
+		B6EC8ACE2E707D9300C1AC9B /* Equity */ = {
+			isa = PBXGroup;
+			children = (
+				B6EC8ACF2E70883300C1AC9B /* EquityTable.swift */,
+				B6EC8AD12E70924100C1AC9B /* VillainRangeView.swift */,
+				B6EC8AD72E735C4F00C1AC9B /* EquitySettingsView.swift */,
+				B6EC8ADE2E739BC300C1AC9B /* BoardView.swift */,
+			);
+			path = Equity;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -448,6 +482,7 @@
 			name = "Poker Master";
 			packageProductDependencies = (
 				B6D4036E2D9340A3008A83E8 /* ConfettiSwiftUI */,
+				B6EC8ADA2E738E3A00C1AC9B /* ActivityIndicatorView */,
 			);
 			productName = "Poker Master";
 			productReference = B697E7712BC849E700191C7A /* Poker Master.app */;
@@ -523,6 +558,7 @@
 			mainGroup = B697E7682BC849E700191C7A;
 			packageReferences = (
 				B6D4036D2D9340A3008A83E8 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
+				B6EC8AD92E738E3A00C1AC9B /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 			);
 			productRefGroup = B697E7722BC849E700191C7A /* Products */;
 			projectDirPath = "";
@@ -577,16 +613,22 @@
 				B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */,
 				B6EC8AC42E61FA3100C1AC9B /* UserDataManager.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
+				B6EC8AD82E735C4F00C1AC9B /* EquitySettingsView.swift in Sources */,
 				B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */,
 				B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */,
 				B67C5E512E2806F30017ECBF /* HomeView.swift in Sources */,
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
+				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
 				B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */,
 				B67C5E4F2E2806DD0017ECBF /* StatsView.swift in Sources */,
 				B67C5E472E2802D70017ECBF /* MainView.swift in Sources */,
+				B6EC8AD22E70924100C1AC9B /* VillainRangeView.swift in Sources */,
+				B6EC8AD02E70883300C1AC9B /* EquityTable.swift in Sources */,
 				B6EC8ACB2E6B3B6400C1AC9B /* RangesView.swift in Sources */,
 				B67C5E672E591EF20017ECBF /* ChallengeCard.swift in Sources */,
+				B6EC8ADF2E739BC300C1AC9B /* BoardView.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,
+				B6EC8AE32E7B89D600C1AC9B /* StoreManager.swift in Sources */,
 				B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */,
 				B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */,
 				B6ADA4252C06490E00358F34 /* DecisionMaker.swift in Sources */,
@@ -603,7 +645,9 @@
 				B67C5E452E208AD70017ECBF /* MenuOption.swift in Sources */,
 				B649ED4A2BD1B0C900157267 /* Player.swift in Sources */,
 				B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */,
+				B6EC8AD42E70AF6200C1AC9B /* EquityDrillManager.swift in Sources */,
 				B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */,
+				B6EC8ADD2E7392D500C1AC9B /* CardBackViewScaled.swift in Sources */,
 				B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */,
 				B672D7DF2BC88CB900E7F5F6 /* CardView.swift in Sources */,
 			);
@@ -954,6 +998,14 @@
 				minimumVersion = 2.0.2;
 			};
 		};
+		B6EC8AD92E738E3A00C1AC9B /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/ActivityIndicatorView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -961,6 +1013,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B6D4036D2D9340A3008A83E8 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
 			productName = ConfettiSwiftUI;
+		};
+		B6EC8ADA2E738E3A00C1AC9B /* ActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6EC8AD92E738E3A00C1AC9B /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */;
+			productName = ActivityIndicatorView;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -60,110 +60,138 @@ struct StatsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                HStack {
+            ZStack {
+                VStack(spacing: 0) {
+                        // Top gradient bar
+                    LinearGradient(
+                        colors: [
+                            Color.teal.opacity(0.2),
+                            Color.mint.opacity(0.2)
+                        ],
+                        startPoint: .leading,   // left side
+                        endPoint: .trailing     // right side
+                    )
+                    .frame(height: 400)
+                        .overlay {
+                            LinearGradient(
+                                colors: [Color.clear, Color.black],
+                                startPoint: .top,
+                                endPoint: .bottom
+                                )
+                        }
+                        
+                        
+                        Spacer() // pushes the rest of the content below
+                }.ignoresSafeArea()
+                
+                ScrollView {
                     VStack {
-                        Text("Total Time")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                        
-                        Text("\(hoursPlayed, specifier: "%.1d")h")
-                            .font(.system(size: 40, weight: .bold))
-                            .foregroundColor(.white)
-                        
-                        
-                    }
-                    .padding()
-                    .padding(.bottom, 10)
-                    .frame(maxWidth: .infinity)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(16)
-                    NavigationLink {
-                        WinPercentageDetailView(overallWinPct: winPercentage)
-                    } label: {
-                        VStack {
-                            Text("Win %")
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                            
-                            Text("\(winPercentage, specifier: "%.1f")%")
-                                .font(.system(size: 40, weight: .bold))
-                                .foregroundColor(.white)
-                            HStack {
-                                Spacer()
-                    
-                                Image(systemName: "chevron.right")
+                        HStack {
+                            VStack {
+                                Text("Total Time")
+                                    .font(.headline)
                                     .foregroundColor(.gray)
-                                    .font(.system(size: 12))
+                                
+                                Text("\(hoursPlayed, specifier: "%.1d")h")
+                                    .font(.system(size: 40, weight: .bold))
+                                    .foregroundColor(.white)
+                                
+                                
+                            }
+                            .padding()
+                            .padding(.bottom, 10)
+                            .frame(maxWidth: .infinity)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(16)
+                            .shadow(radius: 1)
+                            
+                            NavigationLink {
+                                WinPercentageDetailView(overallWinPct: winPercentage)
+                            } label: {
+                                VStack {
+                                    Text("Win %")
+                                        .font(.headline)
+                                        .foregroundColor(.gray)
+                                    
+                                    Text("\(winPercentage, specifier: "%.1f")%")
+                                        .font(.system(size: 40, weight: .bold))
+                                        .foregroundColor(.white)
+                                    HStack {
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .foregroundColor(.gray)
+                                            .font(.system(size: 12))
+                                    }
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(16)
+                                .shadow(radius: 1)
+                            }
+                            
+                        }
+                        NavigationLink {
+                            HandsPlayedDetailView(handsPlayed: totalHandsPlayed, handsWon: totalHandsWon, handsLost: totalHandsLost)
+                        } label: {
+                            VStack(spacing: 16) {
+                                // Main header
+                                VStack(spacing: 4) {
+                                    Text("Hands Played")
+                                        .font(.headline)
+                                        .foregroundColor(.gray)
+                                    
+                                    Text("\(totalHandsPlayed, specifier: "%.1d")")
+                                        .font(.system(size: 40, weight: .bold))
+                                        .foregroundColor(.white)
+                                }
+                                
+                                Divider()
+                                    .background(Color.gray.opacity(0.5))
+                                
+                                // Won / Lost section
+                                HStack(spacing: 0) {
+                                    VStack {
+                                        Text("Hands Won")
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                        Text("\(totalHandsWon, specifier: "%.1d")")
+                                            .font(.title2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    
+                                    VStack {
+                                        Text("Hands Lost")
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                        Text("\(totalHandsLost, specifier: "%.1d")")
+                                            .font(.title2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(Color(red: 130/255, green: 50/255, blue: 60/255))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                }
+                                HStack {
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.system(size: 12))
+                                }
                             }
                         }
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color(.secondarySystemBackground))
+                        .background(.ultraThinMaterial)
                         .cornerRadius(16)
                         .shadow(radius: 4)
-                    }
-                    
-                }
-                NavigationLink {
-                    HandsPlayedDetailView(handsPlayed: totalHandsPlayed, handsWon: totalHandsWon, handsLost: totalHandsLost)
-                } label: {
-                    VStack(spacing: 16) {
-                        // Main header
-                        VStack(spacing: 4) {
-                            Text("Hands Played")
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                            
-                            Text("\(totalHandsPlayed, specifier: "%.1d")")
-                                .font(.system(size: 40, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-                        
-                        Divider()
-                            .background(Color.gray.opacity(0.5))
-                        
-                        // Won / Lost section
-                        HStack(spacing: 0) {
-                            VStack {
-                                Text("Hands Won")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                                Text("\(totalHandsWon, specifier: "%.1d")")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.green)
-                            }
-                            .frame(maxWidth: .infinity)
-                            
-                            VStack {
-                                Text("Hands Lost")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                                Text("\(totalHandsLost, specifier: "%.1d")")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.red)
-                            }
-                            .frame(maxWidth: .infinity)
-                        }
-                        HStack {
-                            Spacer()
-                
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.gray)
-                                .font(.system(size: 12))
-                        }
-                    }
-                }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(16)
-                    .shadow(radius: 4)
-                Spacer()
-                // Put total time played, total pots seen
-                VStack(alignment: .leading) {
+                        .padding(.bottom, 12)
+                        Spacer()
+                        // Put total time played, total pots seen
+                        VStack(alignment: .leading) {
                             Text("Win % Over Time")
                                 .font(.headline)
                             
@@ -173,22 +201,18 @@ struct StatsView: View {
                                     y: .value("Win %", stat.winPct)
                                 )
                                 .foregroundStyle(.white.gradient)
-                                .symbol(Circle())
                                 
-                                PointMark(
-                                    x: .value("Date", stat.date),
-                                    y: .value("Win %", stat.winPct)
-                                ).foregroundStyle(.white.gradient)
                             }
                             .frame(height: 220)
                             .chartYScale(domain: 0...100)
                         }
-                Spacer()
+                        Spacer()
+                    }
+                    .padding()
+                    .preferredColorScheme(.dark)
+                .navigationTitle("Stats")
+                }
             }
-            .padding()
-            .preferredColorScheme(.dark)
-            .navigationTitle("Stats")
-            
         }
     }
 }

@@ -21,6 +21,7 @@ struct CardView: View {
             RoundedRectangle(cornerRadius: 5)
                 .fill(Color.white)
                 .frame(width: 50, height: 70)
+                .shadow(color: .black.opacity(0.5), radius: 3, x: 2, y: 2)
             VStack {
                 Text(card.rank)
                     .frame(width: 57, alignment: .leading)

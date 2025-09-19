@@ -66,7 +66,7 @@ struct HandsPlayedDetailView: View {
                             Text("\(handsWon, specifier: "%.1d")")
                                 .font(.title2)
                                 .fontWeight(.bold)
-                                .foregroundColor(.green)
+                                .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
                         }
                         .frame(maxWidth: .infinity)
                         
@@ -77,7 +77,7 @@ struct HandsPlayedDetailView: View {
                             Text("\(handsLost, specifier: "%.1d")")
                                 .font(.title2)
                                 .fontWeight(.bold)
-                                .foregroundColor(.red)
+                                .foregroundColor(Color(red: 130/255, green: 50/255, blue: 60/255))
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -93,13 +93,13 @@ struct HandsPlayedDetailView: View {
                             x: .value("Position", pos.rawValue),
                             y: .value("Wins", wins)
                         )
-                        .foregroundStyle(.green.gradient)
+                        .foregroundStyle(Color(red: 50/255, green: 130/255, blue: 80/255))
                         
                         BarMark(
                             x: .value("Position", pos.rawValue),
                             y: .value("Wins", losses)
                         )
-                        .foregroundStyle(.red.gradient)
+                        .foregroundStyle(Color(red: 130/255, green: 50/255, blue: 60/255))
                     }
                     .frame(height: 150)
                 }

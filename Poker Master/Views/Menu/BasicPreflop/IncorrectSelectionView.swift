@@ -13,7 +13,7 @@ struct IncorrectSelectionView: View {
     var resetGame: () -> Void  // Closure to reset game
     let keyUsed: String
     let hand: String
-        
+    
     var body: some View {
             VStack(spacing: 10) {
                         Text(adviceText)
@@ -25,7 +25,6 @@ struct IncorrectSelectionView: View {
                     
                         Button("Got it") {
                             showPopup = false
-                            resetGame()
                         }
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -49,5 +48,5 @@ struct IncorrectSelectionView: View {
 }
 
 #Preview {
-    IncorrectSelectionView(showPopup: .constant(true), adviceText: "Should have called", resetGame: {}, keyUsed: "open_BTN_raise", hand: "AA")
+    IncorrectSelectionView(showPopup: .constant(true), adviceText: "Should have called", resetGame: {}, keyUsed: "open_BTN_raise", hand: "T6s")
 }

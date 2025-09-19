@@ -7,8 +7,9 @@ struct RangesView: View {
     
     init(key: String, hand: String) {
         self.key = key
-        self.hand = hand
+        self.hand = hand.replacingOccurrences(of: "10", with: "T")
         self.ranges = RangesFileManager.loadRanges()
+        
     }
     
     private let ranks = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
@@ -104,5 +105,5 @@ struct RangesView: View {
 }
 
 #Preview {
-    RangesView(key: "bet4_BB_v_SB", hand: "KK")
+    RangesView(key: "open_MP", hand: "102s")
 }

@@ -38,97 +38,120 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack {
+            ZStack {
+                VStack(spacing: 0) {
+                        // Top gradient bar
+                    LinearGradient(
+                        colors: [
+                            Color.teal.opacity(0.2),
+                            Color.mint.opacity(0.2)
+                        ],
+                        startPoint: .leading,   // left side
+                        endPoint: .trailing     // right side
+                    )
+                    .frame(height: 400)
+                        .overlay {
+                            LinearGradient(
+                                colors: [Color.clear, Color.black],
+                                startPoint: .top,
+                                endPoint: .bottom
+                                )
+                        }
+                        
+                        
+                        Spacer() // pushes the rest of the content below
+                }.ignoresSafeArea()
                 ScrollView {
-                    LazyVStack(spacing: 24) {
-                        
-                        // MARK: - Level & XP Card
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Level \(userProfile.level)")
-                                .font(.title2)
-                                .bold()
-                                .foregroundColor(.white)
+                        LazyVStack(spacing: 24) {
                             
-                            ProgressView(value: Double(userProfile.xp), total: Double(userProfile.xpNeededForNextLevel))
-                                .progressViewStyle(LinearProgressViewStyle(tint: Color(red: 50/255, green: 130/255, blue: 80/255)))
-                                .scaleEffect(x: 1, y: 1.5, anchor: .center)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            
-                            Text("\(userProfile.xp)/\(userProfile.xpNeededForNextLevel) XP")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(radius: 4)
-                        
-                        // MARK: - Quick Actions
-                        HStack(spacing: 16) {
-                            NavigationLink(destination: PreflopSettingsView()) {
-                                ActionButton(title: "Play Game", icon: "play.fill")
+                            // MARK: - Level & XP Card
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Level \(userProfile.level)")
+                                    .font(.title2)
+                                    .bold()
+                                    .foregroundColor(.white)
+                                
+                                ProgressView(value: Double(userProfile.xp), total: Double(userProfile.xpNeededForNextLevel))
+                                    .progressViewStyle(LinearProgressViewStyle(tint: Color(red: 50/255, green: 130/255, blue: 80/255)))
+                                    .scaleEffect(x: 1, y: 1.5, anchor: .center)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                
+                                Text("\(userProfile.xp)/\(userProfile.xpNeededForNextLevel) XP")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
                             }
-                        }
-                        .padding(.horizontal)
-                        
-                        // MARK: - Collapsible Learning Resources
-                        VStack(alignment: .leading, spacing: 16) {
-                            ForEach(categoryOrder, id: \.self) { category in
-                                VStack(alignment: .leading, spacing: 8) {
-                                    // Category header
-                                    HStack {
-                                        Text(category)
-                                            .font(.title2)
-                                            .bold()
-                                            .foregroundColor(.white)
-                                        Spacer()
-                                        Image(systemName: expandedCategories.contains(category) ? "chevron.down" : "chevron.right")
-                                            .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        if expandedCategories.contains(category) {
-                                            expandedCategories.remove(category)
-                                        } else {
-                                            expandedCategories.insert(category)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .shadow(radius: 1)
+                            
+                            // MARK: - Quick Actions
+                            HStack(spacing: 16) {
+                                NavigationLink(destination: PreflopSettingsView()) {
+                                    ActionButton(title: "Play Game", icon: "play.fill")
+                                }
+                            }
+                            .padding(.horizontal)
+                            
+                            // MARK: - Collapsible Learning Resources
+                            VStack(alignment: .leading, spacing: 16) {
+                                ForEach(categoryOrder, id: \.self) { category in
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        // Category header
+                                        HStack {
+                                            Text(category)
+                                                .font(.title2)
+                                                .bold()
+                                                .foregroundColor(.white)
+                                            Spacer()
+                                            Image(systemName: expandedCategories.contains(category) ? "chevron.down" : "chevron.right")
+                                                .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
                                         }
-                                    }
-                                    
-                                    // Article cards
-                                    if expandedCategories.contains(category) {
-                                        VStack(spacing: 12) {
-                                            ForEach(categorizedArticles[category]!, id: \.url) { article in
-                                                Link(destination: URL(string: article.url)!) {
-                                                    HStack {
-                                                        VStack(alignment: .leading, spacing: 4) {
-                                                            Text(article.title)
-                                                                .font(.headline)
-                                                                .foregroundColor(.white)
-                                                            Text(article.subtitle)
-                                                                .font(.subheadline)
-                                                                .foregroundColor(.gray)
-                                                        }
-                                                        Spacer()
-                                                        Image(systemName: "arrow.up.right.square")
-                                                            .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
-                                                    }
-                                                    .padding()
-                                                    .background(Color.gray.opacity(0.15))
-                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                                }
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            if expandedCategories.contains(category) {
+                                                expandedCategories.remove(category)
+                                            } else {
+                                                expandedCategories.insert(category)
                                             }
                                         }
-                                        .transition(.opacity.combined(with: .slide))
+                                        
+                                        // Article cards
+                                        if expandedCategories.contains(category) {
+                                            VStack(spacing: 12) {
+                                                ForEach(categorizedArticles[category]!, id: \.url) { article in
+                                                    Link(destination: URL(string: article.url)!) {
+                                                        HStack {
+                                                            VStack(alignment: .leading, spacing: 4) {
+                                                                Text(article.title)
+                                                                    .font(.headline)
+                                                                    .foregroundColor(.white)
+                                                                Text(article.subtitle)
+                                                                    .font(.subheadline)
+                                                                    .foregroundColor(.gray)
+                                                            }
+                                                            Spacer()
+                                                            Image(systemName: "arrow.up.right.square")
+                                                                .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
+                                                        }
+                                                        .padding()
+                                                        .background(Color.gray.opacity(0.15))
+                                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                                    }
+                                                }
+                                            }
+                                            .transition(.opacity.combined(with: .slide))
+                                        }
                                     }
+                                    .animation(.easeInOut, value: expandedCategories)
                                 }
-                                .animation(.easeInOut, value: expandedCategories)
                             }
                         }
+                        
+                        .padding()
                     }
-                    
-                    .padding()
-                }
-                .background(Color.black.edgesIgnoringSafeArea(.all))
                 .navigationTitle("Home")
+            }
             
         }
         .preferredColorScheme(.dark)

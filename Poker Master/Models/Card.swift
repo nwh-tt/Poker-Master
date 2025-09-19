@@ -17,6 +17,10 @@ class Card: Equatable {
     }
     
     func toString() -> String {
+        // convert rank from 10 to T if applicable
+        if rank == "10" {
+            return "T\(suit.prefix(1))"
+        }
         return "\(rank)\(suit.prefix(1))"
     }
     

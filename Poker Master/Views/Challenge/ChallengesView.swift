@@ -24,7 +24,6 @@ struct ChallengesView: View {
         
     var body: some View {
             NavigationStack {
-                        
                         // Scrollable challenge cards
                         ScrollView {
                             VStack(spacing: 16) {
@@ -35,7 +34,7 @@ struct ChallengesView: View {
                             }
                             .padding(.horizontal)
                             .padding(.bottom, 40) // leave room for tab bar
-                        }
+                        }.padding(.top)
                     
                 .navigationTitle("Challenges")
             }

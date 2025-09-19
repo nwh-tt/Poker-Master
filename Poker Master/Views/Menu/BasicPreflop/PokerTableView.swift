@@ -23,12 +23,13 @@ struct PokerTableView: View {
     // MARK: - Parameters from Options view
     let speed: Double
     let heroPosition: String
-    let action: String   // or `Action` if you have a custom enum already
+    let action: String
     
     // MARK: - State
     @State private var triggerMoneyConfetti: Int = 0
     @State private var correctMoveMade: Action = .none
     @StateObject private var gameManager: SimplePreFlopManager
+    @State private var showGameOver: Bool = false // for animations
 
     // MARK: - Init
     init(speed: Double, heroPosition: String, action: String) {
@@ -78,6 +79,15 @@ struct PokerTableView: View {
                         GameOverView(correctDecisions: gameManager.score, totalHands: gameManager.handsPlayed, startNewGame: {
                             gameManager.completeReset()
                         })
+                            .scaleEffect(showGameOver ? 1 : 0.8)
+                            .opacity(showGameOver ? 1 : 0)
+                            .animation(.easeOut(duration: 0.5), value: showGameOver)
+                            .onAppear {
+                                // Slight delay before animating in
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                    showGameOver = true
+                                }
+                            }
                             .ignoresSafeArea()
                             .zIndex(1)
                 }
@@ -186,9 +196,11 @@ struct PokerTableView: View {
                     }.padding()
                         .confettiCannon(trigger: $triggerMoneyConfetti, num: 50, confettis: [.text("💵"), .text("💰")])
                 }.padding()
-                Text("\(String(format: "%.1f", gameManager.pot)) BB")
-                    .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2 - 60)
-                    .colorInvert()
+                Text("")
+                    .countingText(to: gameManager.pot)
+                    .position(x: UIScreen.main.bounds.width / 2,
+                              y: UIScreen.main.bounds.height / 2 - 30)
+                    .animation(.easeOut(duration: 0.3), value: gameManager.pot)
             }
             .sheet(isPresented: $gameManager.showIncorrectPopup, onDismiss: {
                 // This will run when the sheet is dismissed by any means
@@ -205,6 +217,33 @@ struct PokerTableView: View {
                     await gameManager.startGame()
                 }
             }
+    }
+}
+
+struct CountingText: AnimatableModifier {
+    var value: Double
+    
+    var animatableData: Double {
+        get { value }
+        set { value = newValue }
+    }
+    
+    func body(content: Content) -> some View {
+        Text("\(String(format: "%.1f", value)) BB")
+            .font(.system(size: 20, weight: .semibold))
+            .foregroundColor(.white)
+            .padding(12)
+            .background(
+                Capsule()
+                    .fill(Color.green.opacity(0.25))
+            )
+            .shadow(color: .black.opacity(0.4), radius: 4, x: 0, y: 2)
+    }
+}
+
+extension View {
+    func countingText(to value: Double) -> some View {
+        self.modifier(CountingText(value: value))
     }
 }
 

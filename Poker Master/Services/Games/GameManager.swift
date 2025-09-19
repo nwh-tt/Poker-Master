@@ -277,9 +277,9 @@ class GameManager: ObservableObject {
             let userDecision = await waitForUserInput()
             waitingForUserInput = false
             
-            let raiseTypeValue = (userDecision == .raise) ? getRaiseType() : ""
-            let betAmountValue = (userDecision == .raise || userDecision == .call) ? players[turn].currentBetAmount : 0
-            
+//            let raiseTypeValue = (userDecision == .raise) ? getRaiseType() : ""
+//            let betAmountValue = (userDecision == .raise || userDecision == .call) ? players[turn].currentBetAmount : 0
+//            
             // let handLog = HandLog(typeOfHand: "Preflop", position: user?.position ?? "", hand: user?.getHand() ?? "", pair: user?.handIsPair() ?? false, action: userDecision.rawValue, raiseType: raiseTypeValue, betAmount: betAmountValue, pot: pot, xpEarned: 0, isCorrect: false, game: game)
                 
             if userDecision == idealDecision {

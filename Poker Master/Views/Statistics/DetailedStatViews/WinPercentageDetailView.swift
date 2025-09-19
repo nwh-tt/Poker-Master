@@ -96,7 +96,7 @@ struct WinPercentageDetailView: View {
                             x: .value("Position", pos.rawValue),
                             y: .value("Win %", pct)
                         )
-                        .foregroundStyle(.purple.gradient)
+                        .foregroundStyle(Color(red: 50/255, green: 130/255, blue: 80/255))
                     }
                     .frame(height: 150)
                     .chartYScale(domain: 0...100)
@@ -120,7 +120,7 @@ struct WinPercentageDetailView: View {
                             x: .value("Action", action.rawValue),
                             y: .value("Win %", pct)
                         )
-                        .foregroundStyle(.purple.gradient)
+                        .foregroundStyle(Color(red: 50/255, green: 130/255, blue: 80/255))
                         
                     }
                     .frame(height: 150)
@@ -146,7 +146,7 @@ struct WinPercentageDetailView: View {
                                 x: .value("Action", action.rawValue),
                                 y: .value("Win %", pct)
                             )
-                            .foregroundStyle(.purple.gradient)
+                            .foregroundStyle(Color(red: 50/255, green: 130/255, blue: 80/255))
                         }
                         .frame(height: 150)
                         .chartYScale(domain: 0...100)

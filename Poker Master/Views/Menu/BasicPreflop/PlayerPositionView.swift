@@ -38,11 +38,9 @@ struct PlayerPositionView: View {
                         .stroke(borderColor, lineWidth: 2)
                 )
                 .overlay(
-                    Text("\(String(format: "%.1f", player.stack)) BB")
-                        .font(.system(size: 12))
-                        .fontWeight(.bold)
-                        .foregroundColor(textColor)
-                        .offset(CGSize(width: textOffset, height: 0))
+                    Text("")
+                        .countingPlayerText(to: player.stack, color: textColor, offset: textOffset)
+                        .animation(.easeOut(duration: 0.3), value: player.stack)
                 )
                 .offset(CGSize(width: rectangleOffset, height: 0))
             Circle()
@@ -75,6 +73,31 @@ struct PlayerPositionView: View {
             }
             
         }
+    }
+}
+
+struct CountingPlayerText: AnimatableModifier {
+    var value: Double
+    var textColor: Color
+    var textOffset: Int
+    
+    var animatableData: Double {
+        get { value }
+        set { value = newValue }
+    }
+    
+    func body(content: Content) -> some View {
+        Text("\(String(format: "%.1f", value)) BB")
+            .font(.system(size: 12))
+            .fontWeight(.bold)
+            .foregroundColor(textColor)
+            .offset(CGSize(width: textOffset, height: 0))
+    }
+}
+
+extension View {
+    func countingPlayerText(to value: Double, color: Color, offset: Int) -> some View {
+        self.modifier(CountingPlayerText(value: value, textColor: color, textOffset: offset))
     }
 }
 
