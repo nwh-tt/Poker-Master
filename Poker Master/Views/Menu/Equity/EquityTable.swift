@@ -10,7 +10,7 @@ import ActivityIndicatorView
 
 let darkGreen = Color(red: 0, green: 0.15, blue: 0)
 let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
-let borderColor = Color(red: 1,green: 1, blue: 0.95)
+let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.2)
 let padding = 40.0
 
 struct EquityTable: View {
@@ -62,10 +62,10 @@ struct EquityTable: View {
                     .fill(darkGreen)
                     .overlay(
                         Capsule()
-                            .stroke(borderColor, lineWidth: 2)
+                            .stroke(borderColor, lineWidth: 5)
                     )
             }
-            .padding(.horizontal, 50)
+            .padding(.horizontal, 32)
             .padding(.bottom, 170)
             .padding(.top, 90)
             
@@ -150,7 +150,7 @@ struct EquityTable: View {
                 Circle()
                     .fill(Color.black.opacity(1))
                     .frame(width: 50, height: 50)
-                    .overlay(Circle().stroke(borderColor, lineWidth: 2))
+                    .overlay(Circle().stroke(.white, lineWidth: 2))
                     .overlay(
                         Text("Hero")
                             .font(.system(size: 16))

@@ -13,7 +13,7 @@ struct PokerTableView: View {
     // MARK: - Properties
     let darkGreen = Color(red: 0, green: 0.15, blue: 0)
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
-    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
+    let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.2)
     let padding = 40.0
     
     // MARK: - Environment objects
@@ -98,7 +98,7 @@ struct PokerTableView: View {
                         .fill(darkGreen)
                         .overlay(
                             Capsule()
-                                .stroke(borderColor, lineWidth: 2)
+                                .stroke(borderColor, lineWidth: 5)
                         )
                 }
                 .padding(.horizontal, 48)
