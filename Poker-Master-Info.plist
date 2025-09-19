@@ -2,6 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3669400819520799~3827099053</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>cstr6suwn9.skadnetwork</string>
+        </dict>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Exo2-VariableFont_wght.ttf</string>

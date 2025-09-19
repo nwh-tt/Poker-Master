@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import GoogleMobileAds
 
 @main
 struct Poker_MasterApp: App {
@@ -33,6 +34,7 @@ struct Poker_MasterApp: App {
         RangesFileManager.loadInitialRangesIfNeeded()  // Ensure the file is copied from bundle to Documents directory
         let context = ModelContext(sharedModelContainer)
         _userProfile = StateObject(wrappedValue: UserProfileState(context: context))
+        MobileAds.shared.start()
     }
 
     var body: some Scene {
