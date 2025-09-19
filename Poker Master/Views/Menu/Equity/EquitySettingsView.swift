@@ -54,6 +54,7 @@ struct EquitySettingsView: View {
                     NavigationLink(
                         destination: EquityTable(street: selectedStreet) // example
                             .toolbar(.hidden, for: .tabBar)
+                            .id(UUID())
                     ) {
                         Text("Start Equity Drill")
                             .font(.headline)

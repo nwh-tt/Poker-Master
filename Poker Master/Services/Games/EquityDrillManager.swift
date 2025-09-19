@@ -5,6 +5,7 @@
 //  Created by Ned Whittleton on 9/9/25.
 //
 import Foundation
+import SwiftData
 
 @MainActor
 class EquityDrillManager: ObservableObject {
@@ -13,6 +14,7 @@ class EquityDrillManager: ObservableObject {
     @Published var roundsPlayed: Int = 0
     @Published var equityReady: Bool = false
     @Published var currentScenario: EquityScenario? = nil
+    var context: ModelContext?
     
     var betNumber: Int = 1
     

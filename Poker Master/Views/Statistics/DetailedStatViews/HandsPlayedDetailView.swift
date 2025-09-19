@@ -11,6 +11,13 @@ import Charts
 
 struct HandsPlayedDetailView: View {
     @Query var handLogs: [HandLog]
+    
+    
+    var preflopHands: [HandLog] {
+        handLogs.filter { $0.typeOfHand == .preflop }
+    }
+        
+    
     var handsPlayed: Int
     var handsWon: Int
     var handsLost: Int
@@ -19,7 +26,7 @@ struct HandsPlayedDetailView: View {
     @State private var selectedPct: Double? = nil
     
     var positionStats: [(Position, Int, Int)] {
-        getPositionPct(from: handLogs)
+        getPositionPct(from: preflopHands)
     }
     
     func getPositionPct(from handLogs: [HandLog]) -> [(position: Position, wins: Int, losses: Int)] {

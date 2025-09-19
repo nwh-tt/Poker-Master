@@ -13,17 +13,21 @@ import Charts
 struct WinPercentageDetailView: View {
     @Query var handLogs: [HandLog]
     
+    var preflopHands: [HandLog] {
+        handLogs.filter { $0.typeOfHand == .preflop }
+    }
+    
     
     
     let overallWinPct: Double
     var positionWinPcts: [(position: Position, winPct: Double)] {
-        winPercentageByPosition(from: handLogs)
+        winPercentageByPosition(from: preflopHands)
     }
     var actionWinPcts: [(action: Action, winPct: Double)] {
-        winPercentageByAction(from: handLogs)
+        winPercentageByAction(from: preflopHands)
     }
     var raiseTypeWinPcts: [(raiseType: RaiseType, winPct: Double)] {
-        winPercentageByRaiseType(from: handLogs)
+        winPercentageByRaiseType(from: preflopHands)
     }
     
     func winPercentageByPosition(from handLogs: [HandLog]) -> [(position: Position, winPct: Double)] {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import ActivityIndicatorView
 
 let darkGreen = Color(red: 0, green: 0.15, blue: 0)
@@ -17,15 +18,19 @@ struct EquityTable: View {
     @State private var selectedEquity: String? = nil
     @StateObject private var equityDrillManager: EquityDrillManager
     @State private var showResult: Bool = false
+    @Environment(\.modelContext) private var context
     
     @State private var cardAnimations: [Bool] = [false, false]
     @State private var showGameOver: Bool = false
     
     let street: String
+    let game: Game
     
     init(street: String) {
         self.street = street
+        self.game = Game()
         _equityDrillManager = StateObject(wrappedValue: EquityDrillManager(street: street))
+        
     }
     
     var body: some View {
@@ -167,24 +172,7 @@ struct EquityTable: View {
                         VStack {
                             HStack {
                                 Button(action: {
-                                    guard !showResult else { return } // prevent multiple taps
-                                    selectedEquity = currentScenario.options[0]
-                                    showResult = true
-                                    
-                                    // Update score if correct
-                                    if currentScenario.options[0] == currentScenario.correctEquityRange {
-                                        equityDrillManager.score += 1
-                                    }
-                                    
-                                    // Increment rounds played
-                                    equityDrillManager.roundsPlayed += 1
-                                    
-                                    // Short delay before loading next scenario
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                        equityDrillManager.stageNextScenario()
-                                        selectedEquity = nil
-                                        showResult = false
-                                    }
+                                    handleSelection(currentScenario.options[0], in: currentScenario)
                                 }) {
                                     Text(currentScenario.options[0])
                                         .frame(maxWidth: .infinity)
@@ -195,24 +183,7 @@ struct EquityTable: View {
                                         .clipShape(Capsule())
                                 }
                                 Button(action: {
-                                    guard !showResult else { return } // prevent multiple taps
-                                    selectedEquity = currentScenario.options[1]
-                                    showResult = true
-                                    
-                                    // Update score if correct
-                                    if currentScenario.options[1] == currentScenario.correctEquityRange {
-                                        equityDrillManager.score += 1
-                                    }
-                                    
-                                    // Increment rounds played
-                                    equityDrillManager.roundsPlayed += 1
-                                    
-                                    // Short delay before loading next scenario
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                        equityDrillManager.stageNextScenario()
-                                        selectedEquity = nil
-                                        showResult = false
-                                    }
+                                    handleSelection(currentScenario.options[1], in: currentScenario)
                                 }) {
                                     Text(currentScenario.options[1])
                                         .frame(maxWidth: .infinity)
@@ -225,24 +196,7 @@ struct EquityTable: View {
                             }
                             HStack {
                                 Button(action: {
-                                    guard !showResult else { return } // prevent multiple taps
-                                    selectedEquity = currentScenario.options[2]
-                                    showResult = true
-                                    
-                                    // Update score if correct
-                                    if currentScenario.options[2] == currentScenario.correctEquityRange {
-                                        equityDrillManager.score += 1
-                                    }
-                                    
-                                    // Increment rounds played
-                                    equityDrillManager.roundsPlayed += 1
-                                    
-                                    // Short delay before loading next scenario
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                        equityDrillManager.stageNextScenario()
-                                        selectedEquity = nil
-                                        showResult = false
-                                    }
+                                    handleSelection(currentScenario.options[2], in: currentScenario)
                                 }) {
                                     Text(currentScenario.options[2])
                                         .frame(maxWidth: .infinity)
@@ -253,24 +207,7 @@ struct EquityTable: View {
                                         .clipShape(Capsule())
                                 }
                                 Button(action: {
-                                    guard !showResult else { return } // prevent multiple taps
-                                    selectedEquity = currentScenario.options[3]
-                                    showResult = true
-                                    
-                                    // Update score if correct
-                                    if currentScenario.options[3] == currentScenario.correctEquityRange {
-                                        equityDrillManager.score += 1
-                                    }
-                                    
-                                    // Increment rounds played
-                                    equityDrillManager.roundsPlayed += 1
-                                    
-                                    // Short delay before loading next scenario
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                        equityDrillManager.stageNextScenario()
-                                        selectedEquity = nil
-                                        showResult = false
-                                    }
+                                    handleSelection(currentScenario.options[3], in: currentScenario)
                                 }) {
                                     Text(currentScenario.options[3])
                                         .frame(maxWidth: .infinity)
@@ -301,6 +238,38 @@ struct EquityTable: View {
             
         }
         .edgesIgnoringSafeArea(.all)
+        .onAppear() {
+            context.insert(game)
+        }
+    }
+    
+    private func handleSelection(_ option: String, in scenario: EquityScenario) {
+        guard !showResult else { return }
+        selectedEquity = option
+        showResult = true
+
+        if option == scenario.correctEquityRange {
+            equityDrillManager.score += 1
+        }
+
+        equityDrillManager.roundsPlayed += 1
+        
+        // add a hand log entry
+        let handLog = HandLog(typeOfHand: .equity, position: .bb, hand: equityDrillManager.user?.getHand() ?? "", pair: false, action: .none, raiseType: .open, betAmount: 0, pot: 0, xpEarned: 0, isCorrect: option == scenario.correctEquityRange, game: game)
+        
+        context.insert(handLog)
+        
+        do {
+            try context.save()
+        } catch {
+            print("Failed to save HandLog: \(error)")
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            equityDrillManager.stageNextScenario()
+            selectedEquity = nil
+            showResult = false
+        }
     }
     
     private func buttonColor(for option: String) -> Color {
@@ -313,5 +282,24 @@ struct EquityTable: View {
 
 
 #Preview {
-    EquityTable(street: "Any")
+    let schema = Schema([
+            Game.self,
+            HandLog.self,
+            Challenges.self,
+            Item.self,
+            User.self
+        ])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+        let container = try! ModelContainer(for: schema, configurations: [config])
+        let context = ModelContext(container)
+
+        // Add some mock data so the preview isn't empty
+        let user = User(username: "Ned Whittleton")
+        context.insert(user)
+    
+    return EquityTable(street: "Any")
+        .environment(\.modelContext, context)
+        .environmentObject(UserProfileState(context: context))
 }
+
