@@ -40,6 +40,7 @@
 		B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */; };
 		B67C5E7F2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */; };
 		B690E22A2E7DE52F007C601E /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = B690E2292E7DE52F007C601E /* GoogleMobileAds */; };
+		B690E22F2E7EFBBF007C601E /* SubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E22E2E7EFBBF007C601E /* SubscribeView.swift */; };
 		B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7742BC849E700191C7A /* Poker_MasterApp.swift */; };
 		B697E7772BC849E700191C7A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7762BC849E700191C7A /* ContentView.swift */; };
 		B697E7792BC849E700191C7A /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7782BC849E700191C7A /* Item.swift */; };
@@ -124,6 +125,7 @@
 		B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeDataManager.swift; sourceTree = "<group>"; };
 		B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinPercentageDetailView.swift; sourceTree = "<group>"; };
 		B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandsPlayedDetailView.swift; sourceTree = "<group>"; };
+		B690E22E2E7EFBBF007C601E /* SubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeView.swift; sourceTree = "<group>"; };
 		B697E7712BC849E700191C7A /* Poker Master.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Poker Master.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B697E7742BC849E700191C7A /* Poker_MasterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Poker_MasterApp.swift; sourceTree = "<group>"; };
 		B697E7762BC849E700191C7A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -340,6 +342,7 @@
 		B6870FFB2D6E05F400A1EAB1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B690E22B2E7EFA47007C601E /* Subscribe */,
 				B645C6C32E7DA47D005F78BA /* AccountCreation */,
 				B67C5E4B2E28064A0017ECBF /* Profile */,
 				B67C5E4A2E2806370017ECBF /* Statistics */,
@@ -368,6 +371,14 @@
 				B6EC8ADC2E7392D500C1AC9B /* CardBackViewScaled.swift */,
 			);
 			path = Card;
+			sourceTree = "<group>";
+		};
+		B690E22B2E7EFA47007C601E /* Subscribe */ = {
+			isa = PBXGroup;
+			children = (
+				B690E22E2E7EFBBF007C601E /* SubscribeView.swift */,
+			);
+			path = Subscribe;
 			sourceTree = "<group>";
 		};
 		B697E7682BC849E700191C7A = {
@@ -656,6 +667,7 @@
 				B6EC8ADF2E739BC300C1AC9B /* BoardView.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,
 				B6EC8AE32E7B89D600C1AC9B /* StoreManager.swift in Sources */,
+				B690E22F2E7EFBBF007C601E /* SubscribeView.swift in Sources */,
 				B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */,
 				B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */,
 				B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */,

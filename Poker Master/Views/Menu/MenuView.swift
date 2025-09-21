@@ -13,11 +13,12 @@ struct MenuView: View {
     @State private var showLogin = false
     @AppStorage("isSignedIn") private var isSignedIn: Bool = false
     @State private var navigateToEquityDrill = false
+    @State private var showPremiumPopup = false
     @State private var rewardedAd: RewardedAd?
     @Query var handLogs: [HandLog]
     
     var needsAd: Bool {
-        let cutoff = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
         let recentEquityHands = handLogs.filter {
             $0.typeOfHand == .equity && $0.date >= cutoff
         }
@@ -53,28 +54,52 @@ struct MenuView: View {
                         )
                     }
                     
-                    // Equity Drill
-                    Button {
-                        presentEquityDrillFlow()
-                    } label: {
-                        MenuOption(
-                            gameName: "Equity Drill",
-                            gameDescription: "Learn Poker Equity Quickly",
-                            gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
-                            adLockedGame: needsAd
-                        )
+                    if (navigateToEquityDrill) {
+                        NavigationLink {
+                            EquitySettingsView()
+                                .onDisappear {
+                                    navigateToEquityDrill = !needsAd
+                                }
+                        } label: {
+                            MenuOption(
+                                gameName: "Equity Drill",
+                                gameDescription: "Learn Poker Equity Quickly",
+                                gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7)
+                            )
+                        }
+                    } else {
+                        Button {
+                            presentEquityDrillFlow()
+                        } label: {
+                            MenuOption(
+                                gameName: "Equity Drill",
+                                gameDescription: "Learn Poker Equity Quickly",
+                                gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
+                                adLockedGame: needsAd
+                            )
+                        }
                     }
                     
                     MenuOption(
-                        gameName: "Advanced Preflop (WIP)",
-                        gameDescription: "Multiway preflop with EV",
-                        gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9)
+                        gameName: "Post Flop",
+                        gameDescription: "Post Flop training with EV",
+                        gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9),
+                        comingSoon: true
                     )
-                }
-                
-                // Hidden NavigationLink for programmatic navigation
-                .navigationDestination(isPresented: $navigateToEquityDrill) {
-                    EquitySettingsView()
+                    
+                    Button {
+                           // Show premium paywall
+                           showPremiumPopup = true
+                       } label: {
+                           Text("Go Premium for no Ads")
+                               .font(.headline)
+                               .padding()
+                               .frame(maxWidth: .infinity)
+                               .background(.white.opacity(0.1))
+                               .foregroundColor(.white)
+                               .cornerRadius(12)
+                       }
+                       .padding(.top, 20)
                 }
             }
             .padding()
@@ -82,6 +107,9 @@ struct MenuView: View {
             .background(Color.black)
             .fullScreenCover(isPresented: $showLogin) {
                 LoginViewWrapper(isSignedIn: $isSignedIn, showLogin: $showLogin, navigate: $navigateToEquityDrill)
+            }
+            .fullScreenCover(isPresented: $showPremiumPopup) {
+                SubscribeView()
             }
         }
         .task {
@@ -172,30 +200,7 @@ struct LoginViewWrapper: View {
         // Add some mock data so the preview isn't empty
         let user = User(username: "Ned Whittleton")
     
-    let handLogs = [
-        HandLog(typeOfHand: .equity, position: .btn, hand: "AK", pair: false, action: .raise, raiseType: .open, betAmount: 10, xpEarned: 5, isCorrect: true, date: Calendar.current.date(byAdding: .day, value: -100, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .btn, hand: "AK", pair: false, action: .raise, raiseType: .open, betAmount: 10, xpEarned: 5, isCorrect: false, date: Calendar.current.date(byAdding: .day, value: -6, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .btn, hand: "QJ", pair: false, action: .call, raiseType: .vsRaise, betAmount: 15, xpEarned: 3, isCorrect: false, date: Calendar.current.date(byAdding: .day, value: -4, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .mp, hand: "99", pair: true, action: .raise, raiseType: .threeBet, betAmount: 20, xpEarned: 8, isCorrect: true, date: Calendar.current.date(byAdding: .day, value: -4, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .utg, hand: "22", pair: true, action: .call, raiseType: .vsRaise, betAmount: 5, xpEarned: 2, isCorrect: true, date: Calendar.current.date(byAdding: .day, value: -4, to: Date())!, game: Game()),
     
-        HandLog(typeOfHand: .equity, position: .sb, hand: "TT", pair: true, action: .call, raiseType: .open, betAmount: 12, xpEarned: 4, isCorrect: true, date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .sb, hand: "TT", pair: true, action: .call, raiseType: .open, betAmount: 12, xpEarned: 4, isCorrect: false, date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .sb, hand: "TT", pair: true, action: .call, raiseType: .open, betAmount: 12, xpEarned: 4, isCorrect: false, date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, game: Game()),
-    
-        HandLog(typeOfHand: .equity, position: .bb, hand: "AQ", pair: false, action: .raise, raiseType: .threeBet, betAmount: 18, xpEarned: 6, isCorrect: true, date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .bb, hand: "AQ", pair: false, action: .raise, raiseType: .threeBet, betAmount: 18, xpEarned: 6, isCorrect: true, date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .equity, position: .bb, hand: "AQ", pair: false, action: .raise, raiseType: .threeBet, betAmount: 18, xpEarned: 6, isCorrect: false, date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, game: Game()),
-        HandLog(typeOfHand: .preflop, position: .bb, hand: "AQ", pair: false, action: .raise, raiseType: .threeBet, betAmount: 18, xpEarned: 6, isCorrect: false, date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, game: Game()),
-    
-        HandLog(typeOfHand: .preflop, position: .btn, hand: "KQ", pair: false, action: .raise, raiseType: .fiveBet, betAmount: 10, xpEarned: 5, isCorrect: true, date: Date(), game: Game()),
-        HandLog(typeOfHand: .preflop, position: .btn, hand: "KQ", pair: false, action: .raise, raiseType: .fourBet, betAmount: 10, xpEarned: 5, isCorrect: true, date: Date(), game: Game()),
-        HandLog(typeOfHand: .preflop, position: .btn, hand: "KQ", pair: false, action: .raise, raiseType: .fourBet, betAmount: 10, xpEarned: 5, isCorrect: false, date: Date(), game: Game())
-    ]
-    
-    for handLog in handLogs {
-        context.insert(handLog)
-    }
     context.insert(user)
     
     return MenuView()

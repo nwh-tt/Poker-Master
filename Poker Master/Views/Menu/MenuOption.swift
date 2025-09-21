@@ -12,12 +12,14 @@ struct MenuOption: View {
     let gameDescription: String
     let gradientColor: Color
     let adLockedGame: Bool
+    let comingSoon: Bool
 
-    init(gameName: String, gameDescription: String, gradientColor: Color, adLockedGame: Bool = false) {
+    init(gameName: String, gameDescription: String, gradientColor: Color, adLockedGame: Bool = false, comingSoon: Bool = false) {
         self.gameName = gameName
         self.gameDescription = gameDescription
         self.gradientColor = gradientColor
         self.adLockedGame = adLockedGame
+        self.comingSoon = comingSoon
     }
     
     var body: some View {
@@ -31,23 +33,29 @@ struct MenuOption: View {
                     .foregroundColor(.white.opacity(0.7))
             }
             Spacer()
-                if adLockedGame {
-                    VStack {
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                        Text("Watch ad")
-                            .font(.caption2)
-                            .foregroundColor(.white.opacity(0.85))
-                    }
-                } else {
+            if adLockedGame {
+                VStack {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                    Text("Watch ad")
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.85))
+                }
+            }
+            else if comingSoon {
+                    Text("Coming\nsoon")
+                        .font(.caption2)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.white.opacity(0.85))
+            } else {
                     Image(systemName: "arrowtriangle.right.fill")
                         .resizable()
                         .frame(width: 15, height: 15)
                         .foregroundColor(.white)
                         .padding()
                     
-                }
+            }
         }
         .padding()
         .padding(.leading, 4)
@@ -82,6 +90,15 @@ struct MenuOption: View {
         gameDescription: "Watch an ad to unlock",
         gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
         adLockedGame: true
+    )
+}
+
+#Preview("Coming soon") {
+    MenuOption(
+        gameName: "Equity Drill",
+        gameDescription: "Watch an ad to unlock",
+        gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
+        comingSoon: true
     )
 }
 
