@@ -10,9 +10,9 @@ import SwiftData
 import Charts
 
 struct StatsView: View {
-    @Query var handLogs: [HandLog]   // automatically pulls from SwiftData
+    @Query var handLogs: [HandLog]
     @Query var games: [Game]
-        
+    
     var lastMonthLogs: [HandLog] {
         let oneMonthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
         return handLogs.filter { $0.date >= oneMonthAgo }

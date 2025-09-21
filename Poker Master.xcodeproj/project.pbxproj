@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		B631BA472BD0968F00F9FCAA /* PlayerPositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */; };
+		B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C42E7DA494005F78BA /* CreateAccountView.swift */; };
+		B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C62E7DA49D005F78BA /* LoginView.swift */; };
+		B645C6CA2E7DA626005F78BA /* AnimatedGradient in Frameworks */ = {isa = PBXBuildFile; productRef = B645C6C92E7DA626005F78BA /* AnimatedGradient */; };
+		B645C6CC2E7DA9B7005F78BA /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6CB2E7DA9B7005F78BA /* LoginService.swift */; };
 		B649ED4A2BD1B0C900157267 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED492BD1B0C900157267 /* Player.swift */; };
 		B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED4C2BD1B2E100157267 /* GameManager.swift */; };
 		B649ED4F2BD5E47300157267 /* GameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED4E2BD5E47300157267 /* GameManagerTests.swift */; };
@@ -35,6 +39,8 @@
 		B67C5E742E5A092C0017ECBF /* ChallengeDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */; };
 		B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */; };
 		B67C5E7F2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */; };
+		B690E22A2E7DE52F007C601E /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = B690E2292E7DE52F007C601E /* GoogleMobileAds */; };
+		B690E22F2E7EFBBF007C601E /* SubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E22E2E7EFBBF007C601E /* SubscribeView.swift */; };
 		B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7742BC849E700191C7A /* Poker_MasterApp.swift */; };
 		B697E7772BC849E700191C7A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7762BC849E700191C7A /* ContentView.swift */; };
 		B697E7792BC849E700191C7A /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7782BC849E700191C7A /* Item.swift */; };
@@ -88,6 +94,9 @@
 
 /* Begin PBXFileReference section */
 		B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPositionView.swift; sourceTree = "<group>"; };
+		B645C6C42E7DA494005F78BA /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
+		B645C6C62E7DA49D005F78BA /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		B645C6CB2E7DA9B7005F78BA /* LoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
 		B649ED492BD1B0C900157267 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		B649ED4C2BD1B2E100157267 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		B649ED4E2BD5E47300157267 /* GameManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManagerTests.swift; sourceTree = "<group>"; };
@@ -116,6 +125,7 @@
 		B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeDataManager.swift; sourceTree = "<group>"; };
 		B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinPercentageDetailView.swift; sourceTree = "<group>"; };
 		B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandsPlayedDetailView.swift; sourceTree = "<group>"; };
+		B690E22E2E7EFBBF007C601E /* SubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeView.swift; sourceTree = "<group>"; };
 		B697E7712BC849E700191C7A /* Poker Master.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Poker Master.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B697E7742BC849E700191C7A /* Poker_MasterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Poker_MasterApp.swift; sourceTree = "<group>"; };
 		B697E7762BC849E700191C7A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -157,8 +167,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B690E22A2E7DE52F007C601E /* GoogleMobileAds in Frameworks */,
 				B6EC8ADB2E738E3A00C1AC9B /* ActivityIndicatorView in Frameworks */,
 				B6D4036F2D9340A3008A83E8 /* ConfettiSwiftUI in Frameworks */,
+				B645C6CA2E7DA626005F78BA /* AnimatedGradient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +191,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B645C6C32E7DA47D005F78BA /* AccountCreation */ = {
+			isa = PBXGroup;
+			children = (
+				B645C6C42E7DA494005F78BA /* CreateAccountView.swift */,
+				B645C6C62E7DA49D005F78BA /* LoginView.swift */,
+			);
+			path = AccountCreation;
+			sourceTree = "<group>";
+		};
 		B649ED482BD1B09300157267 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -200,6 +221,7 @@
 				B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */,
 				B6EC8AE02E78A71600C1AC9B /* Auth.swift */,
 				B6EC8AE22E7B89D600C1AC9B /* StoreManager.swift */,
+				B645C6CB2E7DA9B7005F78BA /* LoginService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -320,6 +342,8 @@
 		B6870FFB2D6E05F400A1EAB1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B690E22B2E7EFA47007C601E /* Subscribe */,
+				B645C6C32E7DA47D005F78BA /* AccountCreation */,
 				B67C5E4B2E28064A0017ECBF /* Profile */,
 				B67C5E4A2E2806370017ECBF /* Statistics */,
 				B67C5E492E2806230017ECBF /* Challenge */,
@@ -347,6 +371,14 @@
 				B6EC8ADC2E7392D500C1AC9B /* CardBackViewScaled.swift */,
 			);
 			path = Card;
+			sourceTree = "<group>";
+		};
+		B690E22B2E7EFA47007C601E /* Subscribe */ = {
+			isa = PBXGroup;
+			children = (
+				B690E22E2E7EFBBF007C601E /* SubscribeView.swift */,
+			);
+			path = Subscribe;
 			sourceTree = "<group>";
 		};
 		B697E7682BC849E700191C7A = {
@@ -483,6 +515,8 @@
 			packageProductDependencies = (
 				B6D4036E2D9340A3008A83E8 /* ConfettiSwiftUI */,
 				B6EC8ADA2E738E3A00C1AC9B /* ActivityIndicatorView */,
+				B645C6C92E7DA626005F78BA /* AnimatedGradient */,
+				B690E2292E7DE52F007C601E /* GoogleMobileAds */,
 			);
 			productName = "Poker Master";
 			productReference = B697E7712BC849E700191C7A /* Poker Master.app */;
@@ -559,6 +593,8 @@
 			packageReferences = (
 				B6D4036D2D9340A3008A83E8 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 				B6EC8AD92E738E3A00C1AC9B /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
+				B645C6C82E7DA626005F78BA /* XCRemoteSwiftPackageReference "AnimatedGradient" */,
+				B690E2282E7DE52F007C601E /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			productRefGroup = B697E7722BC849E700191C7A /* Products */;
 			projectDirPath = "";
@@ -610,6 +646,7 @@
 				B6EC8ACD2E6B629800C1AC9B /* GameOverView.swift in Sources */,
 				B672D7DD2BC87E6300E7F5F6 /* PokerTableView.swift in Sources */,
 				B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */,
+				B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */,
 				B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */,
 				B6EC8AC42E61FA3100C1AC9B /* UserDataManager.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
@@ -619,6 +656,7 @@
 				B67C5E512E2806F30017ECBF /* HomeView.swift in Sources */,
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
 				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
+				B645C6CC2E7DA9B7005F78BA /* LoginService.swift in Sources */,
 				B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */,
 				B67C5E4F2E2806DD0017ECBF /* StatsView.swift in Sources */,
 				B67C5E472E2802D70017ECBF /* MainView.swift in Sources */,
@@ -629,6 +667,8 @@
 				B6EC8ADF2E739BC300C1AC9B /* BoardView.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,
 				B6EC8AE32E7B89D600C1AC9B /* StoreManager.swift in Sources */,
+				B690E22F2E7EFBBF007C601E /* SubscribeView.swift in Sources */,
+				B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */,
 				B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */,
 				B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */,
 				B6ADA4252C06490E00358F34 /* DecisionMaker.swift in Sources */,
@@ -990,6 +1030,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B645C6C82E7DA626005F78BA /* XCRemoteSwiftPackageReference "AnimatedGradient" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/AnimatedGradient";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.1;
+			};
+		};
+		B690E2282E7DE52F007C601E /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.11.0;
+			};
+		};
 		B6D4036D2D9340A3008A83E8 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
@@ -1009,6 +1065,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B645C6C92E7DA626005F78BA /* AnimatedGradient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B645C6C82E7DA626005F78BA /* XCRemoteSwiftPackageReference "AnimatedGradient" */;
+			productName = AnimatedGradient;
+		};
+		B690E2292E7DE52F007C601E /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B690E2282E7DE52F007C601E /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
 		B6D4036E2D9340A3008A83E8 /* ConfettiSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B6D4036D2D9340A3008A83E8 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;

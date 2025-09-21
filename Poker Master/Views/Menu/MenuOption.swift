@@ -11,7 +11,16 @@ struct MenuOption: View {
     let gameName: String
     let gameDescription: String
     let gradientColor: Color
-    
+    let adLockedGame: Bool
+    let comingSoon: Bool
+
+    init(gameName: String, gameDescription: String, gradientColor: Color, adLockedGame: Bool = false, comingSoon: Bool = false) {
+        self.gameName = gameName
+        self.gameDescription = gameDescription
+        self.gradientColor = gradientColor
+        self.adLockedGame = adLockedGame
+        self.comingSoon = comingSoon
+    }
     
     var body: some View {
         HStack {
@@ -24,17 +33,34 @@ struct MenuOption: View {
                     .foregroundColor(.white.opacity(0.7))
             }
             Spacer()
-            VStack {
-                Image(systemName: "arrowtriangle.right.fill")
-                    .resizable()
-                    .frame(width: 15, height: 15)
-                    .foregroundColor(.white)
-                    .padding()
+            if adLockedGame {
+                VStack {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                    Text("Watch ad")
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.85))
+                }
+            }
+            else if comingSoon {
+                    Text("Coming\nsoon")
+                        .font(.caption2)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.white.opacity(0.85))
+            } else {
+                    Image(systemName: "arrowtriangle.right.fill")
+                        .resizable()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(.white)
+                        .padding()
+                    
             }
         }
         .padding()
         .padding(.leading, 4)
-        .frame(maxWidth: .infinity) // <-- This makes the HStack fill available width
+        .frame(maxWidth: .infinity)
+        .frame(height: 80)
         .background(
             LinearGradient(
                 gradient: Gradient(stops: [
@@ -50,7 +76,6 @@ struct MenuOption: View {
             RoundedRectangle(cornerRadius: 15)
                 .stroke(Color.white.opacity(0.0), lineWidth: 3)
         )
-        .padding(.bottom, 8)
 
     }
 }
@@ -58,3 +83,22 @@ struct MenuOption: View {
 #Preview {
     MenuOption(gameName: "Preflop", gameDescription: "Basic Preflop", gradientColor: Color(red: 80/255, green: 15/255, blue: 25/255).opacity(0.9))
 }
+
+#Preview("Ad Locked") {
+    MenuOption(
+        gameName: "Equity Drill",
+        gameDescription: "Watch an ad to unlock",
+        gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
+        adLockedGame: true
+    )
+}
+
+#Preview("Coming soon") {
+    MenuOption(
+        gameName: "Equity Drill",
+        gameDescription: "Watch an ad to unlock",
+        gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
+        comingSoon: true
+    )
+}
+

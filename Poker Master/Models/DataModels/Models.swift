@@ -123,7 +123,7 @@ class Game {
 class HandLog {
     @Attribute(.unique) var id: UUID
     
-    var typeOfHand: TypeOfHand // "preFlop", "flop", "turn", "river"
+    var typeOfHand: TypeOfHand // "preFlop", "equity", "turn", "river", "equity"
     var position: Position
     var hand: String
     var pair: Bool
@@ -160,7 +160,7 @@ class HandLog {
 
 // MARK: - Enums
 enum TypeOfHand: String, Codable, CaseIterable {
-    case preflop, flop, turn, river
+    case preflop, flop, turn, river, equity
 }
 
 enum Position: String, Codable, CaseIterable {

@@ -35,7 +35,7 @@ struct PlayerPositionView: View {
                 .frame(width: 90, height: 25)
                 .overlay (
                     RoundedRectangle(cornerRadius: 5)
-                        .stroke(borderColor, lineWidth: 2)
+                        .stroke(textColor, lineWidth: 2)
                 )
                 .overlay(
                     Text("")
@@ -46,7 +46,7 @@ struct PlayerPositionView: View {
             Circle()
                 .fill(Color.black.opacity(1))
                 .frame(width: 50, height: 50)
-                .overlay(Circle().stroke(borderColor, lineWidth: 2)
+                .overlay(Circle().stroke(textColor, lineWidth: 2)
                 ).overlay(
                     Text(player.position)
                         .font(.system(size: 16))

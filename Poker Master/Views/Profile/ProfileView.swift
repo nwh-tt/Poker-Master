@@ -13,6 +13,8 @@ struct ProfileView: View {
 
     @State private var tempUsername: String = ""
     @State private var isEditing: Bool = false
+    @State private var showPremiumPopup: Bool = false
+    
     @Query var games: [Game]
     
     var currentUser: User {
@@ -191,11 +193,35 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal)
                     
+                    Button(action: {
+                            showPremiumPopup = true
+                    }) {
+                        Text("Go Premium")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 19/255, green: 70/255, blue: 50/255),
+                                        Color(red: 50/255, green: 130/255, blue: 80/255)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                    }.padding()
+                    
                     Spacer()
                 }
                 .padding(.bottom, 40)
             }
             .background(Color.black.edgesIgnoringSafeArea(.all))
+            .fullScreenCover(isPresented: $showPremiumPopup) {
+                        SubscribeView()
+                    }
             
             if currentUser.leveledUP {
                     LevelUpOverlay(level: currentUser.level)
