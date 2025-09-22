@@ -25,7 +25,6 @@ struct RangeViewer: View {
     
     // Ordered list of scenarios
     let scenarioOrder = ["open", "bet2", "bet3", "bet4", "bet5"]
-    let positionOrder = ["UTG", "MP", "CO", "BTN", "SB", "BB"]
     
     @State private var selectedScenario = "open"
     @State private var heroPosition = "UTG"
@@ -53,16 +52,20 @@ struct RangeViewer: View {
                         .onChange(of: selectedScenario) {
                             // Recompute valid heroes for the selected scenario
                             let availableHeros = rangeHelper.getHeros(scenario: selectedScenario)
-                            
-                            // Update the state variable
                             heros = availableHeros
                             
                             // Default heroPosition to the first hero if available
                             if let firstHero = availableHeros.first {
                                 heroPosition = firstHero
+                                
+                                // ✅ Also recompute villains right away
+                                let availableVillains = rangeHelper.getVillains(scenario: selectedScenario, heroPosition: firstHero)
+                                villains = availableVillains
+                                villainPosition = availableVillains.first ?? ""
                             } else {
-                                // Fallback: if no heroes, maybe set to empty or first position in positions array
-                                heroPosition = heros.first ?? ""
+                                heroPosition = ""
+                                villains = []
+                                villainPosition = ""
                             }
                         }
                     }.padding(.bottom)

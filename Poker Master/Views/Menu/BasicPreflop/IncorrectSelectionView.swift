@@ -10,9 +10,9 @@ import SwiftUI
 struct IncorrectSelectionView: View {
     @Binding var showPopup: Bool
     var adviceText: String
-    var resetGame: () -> Void  // Closure to reset game
     let keyUsed: String
     let hand: String
+    
     
     var body: some View {
             VStack(spacing: 10) {
@@ -21,7 +21,7 @@ struct IncorrectSelectionView: View {
                             .padding(.bottom, 0)
                             .padding(.top, 16)
                             .foregroundColor(.white)
-                        RangesView(key: extractKeyUsed(), hand: hand)
+                        RangesView(key: keyUsed, hand: hand)
                     
                         Button("Got it") {
                             showPopup = false
@@ -37,16 +37,8 @@ struct IncorrectSelectionView: View {
                 .presentationDetents([.fraction(0.75)]) // 3/4 screen height
                 .presentationDragIndicator(.visible)
     }
-    
-    
-    func extractKeyUsed() -> String {
-        // split on underscore
-        let parts = keyUsed.split(separator: "_")
-        // drop off last part
-        return String(parts.dropLast().joined(separator: "_"))
-    }
 }
 
 #Preview {
-    IncorrectSelectionView(showPopup: .constant(true), adviceText: "Should have called", resetGame: {}, keyUsed: "open_BTN_raise", hand: "T6s")
+    IncorrectSelectionView(showPopup: .constant(true), adviceText: "Should have called", keyUsed: "open_BTN", hand: "T6s")
 }

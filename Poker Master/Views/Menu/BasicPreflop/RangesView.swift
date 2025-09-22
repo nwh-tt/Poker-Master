@@ -2,24 +2,38 @@ import SwiftUI
 
 struct RangesView: View {
     let key: String
-    var ranges: [String: [String]]
+    let rangeHelper = RangeHelper()
     var hand: String
+    let scenario: String
+    let hero: String
+    let villain: String
     
     init(key: String, hand: String) {
         self.key = key
         self.hand = hand.replacingOccurrences(of: "10", with: "T")
-        self.ranges = RangesFileManager.loadRanges()
         
+        let parsedKey = Self.parseKey(key: key)
+        self.scenario = parsedKey.scenario
+        self.hero = parsedKey.hero
+        self.villain = parsedKey.villain
+    }
+
+    // extract scenario, villain, and hero from a given key
+    private static func parseKey(key: String) -> (scenario: String, hero: String, villain: String) {
+        let parts = key.components(separatedBy: "_")
+        
+        if parts[0] == "open" {
+            return (scenario: parts[0], hero: parts[1], villain: "")
+        }
+        
+        return (scenario: parts[0], hero: parts[1], villain: parts[3])
     }
     
     private let ranks = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
     
     var body: some View {
-        let raiseKey = "\(key)_raise"
-        let callKey = "\(key)_call"
-        
-        let raiseHands = Set(ranges[raiseKey] ?? [])
-        let callHands = Set(ranges[callKey] ?? [])
+        let raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero, villain: villain)
+        let callHands = rangeHelper.callRanges(for: scenario, hero: hero, villain: villain)
         
         VStack(spacing: 2) {
             ForEach(Array(0..<13), id: \.self) { row in
@@ -105,5 +119,5 @@ struct RangesView: View {
 }
 
 #Preview {
-    RangesView(key: "open_MP", hand: "102s")
+    RangesView(key: "bet5_SB_v_BB", hand: "102s")
 }

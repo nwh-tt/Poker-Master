@@ -14,15 +14,11 @@ enum DecisionError: Error {
 // btn sb bb utg mp co
 // btn sb bb lj hj co
 class DecisionMaker {
-    var loadedRanges: [String: [String]] = [:]
+    let rangeHelper = RangeHelper()
+    let playerCount: String
     
-    init() {
-        loadRanges()
-    }
-    
-    // Load ranges once
-    private func loadRanges() {
-        self.loadedRanges = RangesFileManager.loadRanges()
+    init(playerCount: String = "6") {
+        self.playerCount = playerCount
     }
     
     func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> Action {
@@ -31,17 +27,14 @@ class DecisionMaker {
 
         switch betNumber {
         case 1:
-            let raiseKey = "open_\(hero.position)_raise"
-            raiseHands = loadedRanges[raiseKey] ?? []
-
+            let scenario = "open"
+            raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero.position, villain: "")
         case 2...5:
             guard let villianPosition = villian?.position else { return .fold }
-
-            let raiseKey = "bet\(betNumber)_\(hero.position)_v_\(villianPosition)_raise"
-            let callKey = "bet\(betNumber)_\(hero.position)_v_\(villianPosition)_call"
-
-            raiseHands = loadedRanges[raiseKey] ?? []
-            callHands = loadedRanges[callKey] ?? []
+            let scenario = "bet\(betNumber)"
+            
+            raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero.position, villain: villianPosition)
+            callHands = rangeHelper.callRanges(for: scenario, hero: hero.position, villain: villianPosition)
         default:
             return .fold
         }

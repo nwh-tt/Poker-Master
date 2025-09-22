@@ -11,7 +11,7 @@ import Foundation
 class RangeHelper {
     private var ranges: [String: [String]]
     
-    private let positionOrders: [String: [String]] = [
+    let positionOrders: [String: [String]] = [
             "6": ["UTG", "MP", "CO", "BTN", "SB", "BB"],
             "9": ["UTG", "UTG+1", "MP1", "MP2", "CO", "BTN", "SB", "BB"]
         ]
@@ -25,6 +25,10 @@ class RangeHelper {
             return "open_\(hero)"
         }
         return "\(scenario)_\(hero)_v_\(villain)"
+    }
+    
+    func rangesFromKey(key: String) -> [String] {
+        return ranges[key] ?? []
     }
     
     func callRanges(for scenario: String, hero: String, villain: String, size: String = "6") -> [String] {
@@ -97,7 +101,7 @@ class RangeHelper {
     func getBetOptions(heroPosition: String, size: String = "6") -> [String] {
         // Filter keys that contain the hero position
         let validKeys = self.getKeys().filter { key in
-            key.contains("_\(heroPosition)_") || key.contains("open_\(heroPosition)")
+            key.contains("\(heroPosition)_v") || key.contains("open_\(heroPosition)")
         }
         
         // Extract the scenario part from each key
@@ -108,8 +112,20 @@ class RangeHelper {
             return parts[0]
         }
         
-        // Return unique sorted scenarios
-        return Array(Set(scenarios)).sorted()
+        // Define desired order
+            let order = ["open", "bet2", "bet3", "bet4", "bet5"]
+            
+            // Keep unique scenarios
+            let uniqueScenarios = Array(Set(scenarios))
+            
+            // Sort according to order array
+            let sortedScenarios = uniqueScenarios.sorted { a, b in
+                let indexA = order.firstIndex(of: a) ?? Int.max
+                let indexB = order.firstIndex(of: b) ?? Int.max
+                return indexA < indexB
+            }
+            
+            return sortedScenarios
     }
 
 }

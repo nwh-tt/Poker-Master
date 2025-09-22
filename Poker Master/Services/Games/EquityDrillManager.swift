@@ -18,7 +18,7 @@ class EquityDrillManager: ObservableObject {
     
     var betNumber: Int = 1
     
-    var ranges: [String: [String]]
+    let rangeHelper = RangeHelper()
     
     // Queue of preloaded scenarios
     private var scenarioQueue: [EquityScenario] = []
@@ -27,7 +27,6 @@ class EquityDrillManager: ObservableObject {
     var street: String = "Any"
     
     init(street: String) {
-        self.ranges = RangesFileManager.loadRanges()
         self.street = street
         // Load in the first scenario
         Task { @MainActor in
@@ -56,7 +55,7 @@ class EquityDrillManager: ObservableObject {
     }
     
     private func createScenario() async -> EquityScenario? {
-        let allKeys = Array(ranges.keys)
+        let allKeys = rangeHelper.getKeys()
         guard let randomKey = allKeys.randomElement() else { return nil }
         
         let deck = Deck()
@@ -78,7 +77,11 @@ class EquityDrillManager: ObservableObject {
             }
         }
         
-        guard let villainRange = ranges[randomKey] else { return nil }
+        let villainRange = rangeHelper.rangesFromKey(key: randomKey)
+        
+        if villainRange.isEmpty {
+            fatalError("No range found for \(randomKey)")
+        }
         
         // Fetch equity asynchronously
         return await withCheckedContinuation { (continuation: CheckedContinuation<EquityScenario?, Never>) in

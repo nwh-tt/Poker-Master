@@ -10,7 +10,6 @@ import SwiftUI
 struct RangeEditorView: View {
     let callRanges: [String]
     let raiseRanges: [String]
-    let ranges = RangesFileManager.loadRanges()
     
     private let ranks = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
     

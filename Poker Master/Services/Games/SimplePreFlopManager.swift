@@ -57,14 +57,14 @@ class SimplePreFlopManager: ObservableObject {
     let selectedAction: String
     
     // variable for ranges
-    var ranges: [String: [String]]
     var betToStopOn: Int = 1
     
+    // Range helper
+    let rangeHelper = RangeHelper()
     
     
     
     init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Double = 3, testingMode: Bool = false, selectedPosition: String = "any", selectedAction: String = "any") {
-        self.ranges = RangesFileManager.loadRanges()
         self.gameplaySpeed = gameplaySpeed // Controls speed of play
         self.decisionMaker = decisionMaker
         self.testingMode = testingMode
@@ -93,7 +93,6 @@ class SimplePreFlopManager: ObservableObject {
     
     // sets villian bet number and determines hand
     func stageTheGame() {
-        let allKeys = Array(ranges.keys)
         isGameOver = false
         
         guard let user = user else {
@@ -105,7 +104,7 @@ class SimplePreFlopManager: ObservableObject {
         // take user position and use heroBetMapping to select random bet number
         let betNumber: String
         if selectedAction.lowercased() == "any" {
-            guard let randomBet = heroBetMapping6player[heroPosition]?.randomElement() else {
+            guard let randomBet = rangeHelper.getBetOptions(heroPosition: heroPosition).randomElement() else {
                 fatalError("No bet mapping found for hero position: \(heroPosition)")
             }
             betNumber = randomBet
@@ -113,20 +112,17 @@ class SimplePreFlopManager: ObservableObject {
             betNumber = selectedAction
         }
         
-        betToStopOn = betNumber == "open" ? 1 : Int(betNumber)!
+        let numberPart = String(betNumber.dropFirst(3))
+        betToStopOn = betNumber == "open" ? 1 : Int(numberPart)!
         
-        // filter out all keys that don't contain "bet(betNumber)_userPosition"
-        let filteredKeys = allKeys.filter { $0.contains("bet\(betNumber)_\(heroPosition)") || $0.contains("\(betNumber)_\(heroPosition)") }
         
-        // select a random key from the filtered keys
-        guard let randomKey = filteredKeys.randomElement() else {
-            fatalError("No valid keys found for bet number: \(betNumber) and hero position: \(heroPosition)")
+        guard let villainPosition = rangeHelper.getVillains(scenario: betNumber, heroPosition: heroPosition).randomElement() ?? (betNumber == "open" ? "" : nil) else {
+            fatalError("No villain position found for bet number: \(betNumber) and hero position: \(heroPosition)")
         }
         
-        rangesUsed = randomKey
         
-        // set villian position
-        let villainPosition = extractVillainPosition(from: randomKey)
+        rangesUsed = rangeHelper.buildKey(for: betNumber, hero: heroPosition, villain: villainPosition)
+        
         villain = Player(position: villainPosition, stack: 100.0, hand: [deck.dealCard(), deck.dealCard()])
         
         // set user hand
@@ -147,20 +143,14 @@ class SimplePreFlopManager: ObservableObject {
         // - For that we can select the previous matchup between this hero and villian
         // - If betnumber is a 3 then we take open hands, if its 5 then we take 3 bet range
         let betToUse = betToStopOn == 3 ? "open" : String(betToStopOn - 2)
-        
-        var key = ""
         if (betToUse == "open") {
-            key = "open_\(hero)_raise"
+            
         }
-        else {
-            key = "bet\(betToUse)_\(hero)_v_\(villian)_raise"
-        }
-         
+        let scenario = betToUse == "open" ? "open" : "bet\(betToUse)"
         
-        guard let possibleHands = ranges[key] else {
-            fatalError("No hands found for key: \(key)")
-        }
-        if let hand = possibleHands.randomElement() {
+        let rasieHands = rangeHelper.raiseRanges(for: scenario, hero: hero, villain: villian)
+        
+        if let hand = rasieHands.randomElement() {
             user?.setHand(hand: hand)
         } else {
             fatalError("No possible hands to assign")
@@ -305,7 +295,7 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     func createAndReorderPlayers(playerPosition: String) -> [Player] {
-        let positionList = ["BTN", "SB", "BB", "UTG", "MP", "CO"]
+        let positionList = rangeHelper.positionOrders["6"]!
         var playersReordered: [Player] = []
         var index = positionList.firstIndex(of: playerPosition)!
         
@@ -331,32 +321,15 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     func pickUserPosition() -> String? {
-        
-        let positionList = Array(heroBetMapping6player.keys)
         if selectedPosition.lowercased() == "any" {
             if selectedAction.lowercased() == "any" {
                 // any random position
-                return positionList.randomElement()
+                return rangeHelper.positionOrders["6"]?.randomElement()
             } else {
-                // only positions that contain this action
-                let validPositions = positionList.filter {
-                    heroBetMapping6player[$0]?.contains(selectedAction.lowercased()) == true
-                }
-                return validPositions.randomElement()
+                return rangeHelper.getHeros(scenario: selectedAction).randomElement()
             }
         } else {
-            let chosen = selectedPosition.uppercased()
-            if selectedAction.lowercased() == "any" {
-                return chosen
-            } else {
-                // make sure this position supports the action
-                if heroBetMapping6player[chosen]?.contains(selectedAction.lowercased()) == true {
-                    return chosen
-                } else {
-                    // no valid match
-                    return nil
-                }
-            }
+            return selectedPosition.uppercased()
         }
     }
     

@@ -6,33 +6,33 @@
 //
 
 import SwiftUI
-
 struct PreflopSettingsView: View {
-    let heroBetMapping6player = [
-        "BTN": ["Any", "open", "2", "3", "4", "5"],
-        "SB": ["Any", "open", "2", "3", "4", "5"],
-        "BB": ["Any", "2", "4"],
-        "UTG": ["Any", "open", "3", "5"],
-        "MP": ["Any", "open", "2", "3", "4", "5"],
-        "CO": ["Any", "open", "2", "3", "4", "5"],
-        "Any": ["Any", "open", "2", "3", "4", "5"]
-    ]
+    private let rangeHelper = RangeHelper() // instantiate your helper
     
     let betDisplayMapping: [String: String] = [
         "Any": "Any",
         "open": "Open",
-        "2": "2",
-        "3": "3",
-        "4": "4",
-        "5": "5"
+        "bet2": "2",
+        "bet3": "3",
+        "bet4": "4",
+        "bet5": "5"
     ]
     
     @State private var selectedSpeed: Double = 3
     @State private var selectedPosition: String = "Any"
     @State private var selectedBet: String = "Any"
     
+    var positions: [String] {
+        ["Any"] + rangeHelper.positionOrders["6"]! // keeps your position picker same
+    }
+    
     var availableBets: [String] {
-        heroBetMapping6player[selectedPosition] ?? []
+        // If hero is "Any", show all bets, otherwise use helper
+        if selectedPosition == "Any" {
+            return ["Any", "open", "bet2", "bet3", "bet4", "bet5"]
+        } else {
+            return ["Any"] + rangeHelper.getBetOptions(heroPosition: selectedPosition)
+        }
     }
     
     var body: some View {
@@ -44,20 +44,18 @@ struct PreflopSettingsView: View {
                         .foregroundColor(.gray)
                         .font(.headline)
                     
-                    Slider(value: $selectedSpeed, in: 1...5, step: 0.1) {
-                        Text("Speed")
-                    }
-                    .tint(Color(red: 50/255, green: 130/255, blue: 80/255))
+                    Slider(value: $selectedSpeed, in: 1...5, step: 0.1)
+                        .tint(Color(red: 50/255, green: 130/255, blue: 80/255))
                 }.padding(.bottom)
                 
-                // Position
+                // Position Picker
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Position")
                         .foregroundColor(.gray)
                         .font(.headline)
                     
                     Picker("Position", selection: $selectedPosition) {
-                        ForEach(heroBetMapping6player.keys.sorted(), id: \.self) { pos in
+                        ForEach(positions, id: \.self) { pos in
                             Text(pos).tag(pos)
                         }
                     }
@@ -65,7 +63,7 @@ struct PreflopSettingsView: View {
                     .tint(.green)
                 }
                 
-                // Bet Number
+                // Bet Number Picker
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Bet Number")
                         .foregroundColor(.gray)
@@ -78,7 +76,7 @@ struct PreflopSettingsView: View {
                     }
                     .pickerStyle(.segmented)
                     .tint(.blue)
-                    .onChange(of: selectedPosition) { oldValue, newValue in
+                    .onChange(of: selectedPosition) { newValue in
                         if !availableBets.contains(selectedBet) {
                             selectedBet = availableBets.first ?? "open"
                         }
@@ -101,12 +99,11 @@ struct PreflopSettingsView: View {
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
-                                
                         )
-                                .foregroundColor(.white)
-                                .cornerRadius(12)
-                        }
-                        .padding(.top, 40)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                .padding(.top, 40)
                 
                 Spacer()
             }
@@ -117,6 +114,7 @@ struct PreflopSettingsView: View {
         }
     }
 }
+
 
 #Preview {
     PreflopSettingsView()
