@@ -87,6 +87,21 @@ struct MenuView: View {
                         comingSoon: true
                     )
                     
+                    Text("Tools")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    
+                    NavigationLink {
+                        RangeViewer()
+                    } label: {
+                        MenuOption(
+                            gameName: "Ranges",
+                            gameDescription: "View and edit ranges",
+                            gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9)
+                        )
+                    }
+                    
                     Button {
                            // Show premium paywall
                            showPremiumPopup = true
