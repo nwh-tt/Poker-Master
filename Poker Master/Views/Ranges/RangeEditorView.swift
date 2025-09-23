@@ -88,9 +88,9 @@ struct RangeEditorView: View {
     private func colorFor(action: String) -> Color {
         switch action {
         case "raise":
-            return Color(red: 40/255, green: 130/255, blue: 90/255) // brighter green
+            return Color(.green) // brighter green
         case "call":
-            return Color(red: 160/255, green: 60/255, blue: 160/255) // brighter magenta/purple
+            return Color(.yellow) // brighter magenta/purple
         default: return .gray.opacity(0.8)
         }
     }

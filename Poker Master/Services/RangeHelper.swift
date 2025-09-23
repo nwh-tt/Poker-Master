@@ -9,15 +9,16 @@ import Foundation
 
 
 class RangeHelper {
-    private var ranges: [String: [String]]
+    private var ranges: [String: [String: [String]]]
     
     let positionOrders: [String: [String]] = [
             "6": ["UTG", "MP", "CO", "BTN", "SB", "BB"],
-            "9": ["UTG", "UTG+1", "MP1", "MP2", "CO", "BTN", "SB", "BB"]
+            "9": ["UTG", "UTG1", "UTG2", "MP1", "MP2", "CO", "BTN", "SB", "BB"]
         ]
     
-    init(ranges: [String: [String]] = RangesFileManager.loadRanges()) {
+    init(ranges: [String: [String: [String]]] = RangesFileManager.loadRanges()) {
             self.ranges = ranges
+        print(ranges)
     }
     
     func buildKey(for scenario: String, hero:String, villain: String = "") -> String {
@@ -27,33 +28,36 @@ class RangeHelper {
         return "\(scenario)_\(hero)_v_\(villain)"
     }
     
-    func rangesFromKey(key: String) -> [String] {
-        return ranges[key] ?? []
+    func rangesFromKey(key: String, size: String = "6") -> [String] {
+        return ranges[size]?[key] ?? []
     }
     
     func callRanges(for scenario: String, hero: String, villain: String, size: String = "6") -> [String] {
         let baseKey = self.buildKey(for: scenario, hero: hero, villain: villain)
         let callKey = "\(baseKey)_call"
-        return ranges[callKey] ?? []
+        return ranges[size]?[callKey] ?? []
     }
     
     func raiseRanges(for scenario: String, hero: String, villain: String, size: String = "6") -> [String] {
         let baseKey = self.buildKey(for: scenario, hero: hero, villain: villain)
         let raiseKey = "\(baseKey)_raise"
-        return ranges[raiseKey] ?? []
+        return ranges[size]?[raiseKey] ?? []
     }
     
-    func getKeys() -> [String] {
-        return Array(ranges.keys)
+    func getKeys(for size: String = "6") -> [String] {
+        if let dict = ranges[size] {
+            return Array(dict.keys)
+        }
+        return []
     }
     
     func getHeros(scenario: String, size: String = "6") -> [String] {
             let positionOrder = positionOrders[size] ?? positionOrders["6"]!
             
-            let validKeys = self.getKeys().filter { key in
+        let validKeys = self.getKeys(for: size).filter { key in
                 key.contains(scenario)
             }
-            
+        
             let filteredHeros: [String] = validKeys.compactMap { key in
                 let parts = key.components(separatedBy: "_")
                 if parts.count > 2 {
@@ -63,10 +67,9 @@ class RangeHelper {
             }
             
             let uniqueHeros = Array(Set(filteredHeros))
-            
+        
             // Sort by the correct position order for the table size
             let sortedHeros = uniqueHeros.sorted { positionOrder.firstIndex(of: $0) ?? 0 < positionOrder.firstIndex(of: $1) ?? 0 }
-            
             return sortedHeros
         }
     
@@ -77,7 +80,7 @@ class RangeHelper {
             return []
         }
         // Filter all keys to those that contain both the hero position and the scenario
-        let validKeys = self.getKeys().filter { key in
+        let validKeys = self.getKeys(for: size).filter { key in
             key.contains(heroPosition) && key.contains(scenario)
         }
         
@@ -100,7 +103,7 @@ class RangeHelper {
     
     func getBetOptions(heroPosition: String, size: String = "6") -> [String] {
         // Filter keys that contain the hero position
-        let validKeys = self.getKeys().filter { key in
+        let validKeys = self.getKeys(for: size).filter { key in
             key.contains("\(heroPosition)_v") || key.contains("open_\(heroPosition)")
         }
         

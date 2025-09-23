@@ -22,6 +22,7 @@ struct PokerTableView: View {
     
     // MARK: - Parameters from Options view
     let speed: Double
+    let size: String
     let heroPosition: String
     let action: String
     
@@ -32,10 +33,11 @@ struct PokerTableView: View {
     @State private var showGameOver: Bool = false // for animations
 
     // MARK: - Init
-    init(speed: Double, heroPosition: String, action: String) {
+    init(speed: Double, heroPosition: String, action: String, size: String) {
         self.speed = speed
         self.heroPosition = heroPosition
         self.action = action
+        self.size = size
 
         // initialize GameManager with passed-in options
         _gameManager = StateObject(

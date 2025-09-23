@@ -32,16 +32,16 @@ class RangesFileManager {
         }
     }
 
-    static func loadRanges() -> [String: [String]] {
+    static func loadRanges() -> [String: [String: [String]]] {
         let url = getRangesFileURL()
         if let data = try? Data(contentsOf: url),
-           let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) {
+           let decoded = try? JSONDecoder().decode([String: [String: [String]]].self, from: data) {
             return decoded
         }
         return [:]  // Return an empty dictionary if loading fails
     }
-    
-    static func saveRanges(_ ranges: [String: [String]]) {
+
+    static func saveRanges(_ ranges: [String: [String: [String]]]) {
         let url = getRangesFileURL()
         if let data = try? JSONEncoder().encode(ranges) {
             do {
