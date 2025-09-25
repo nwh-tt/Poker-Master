@@ -8,18 +8,6 @@
 import Foundation
 import SwiftData
 
-// Mapping between hero and possible bets they can face
-// hero -> [bet1, bet2, bet3, bet4, bet5]
-let heroBetMapping6player = [
-    "BTN": ["open", "2", "3", "4", "5"],
-    "SB": ["open", "2", "3", "4", "5"],
-    "BB": ["2", "4"],
-    "UTG": ["open", "3", "5"],
-    "MP": ["open", "2", "3", "4", "5"],
-    "CO": ["open", "2", "3", "4", "5"]
-]
-
-
 @MainActor
 class SimplePreFlopManager: ObservableObject {
     @Published var players: [Player] = []
@@ -53,6 +41,8 @@ class SimplePreFlopManager: ObservableObject {
     // user configs and parameters
     var gameplaySpeed: Double
     var testingMode: Bool
+    
+    let size: String
     let selectedPosition: String
     let selectedAction: String
     
@@ -64,13 +54,14 @@ class SimplePreFlopManager: ObservableObject {
     
     
     
-    init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Double = 3, testingMode: Bool = false, selectedPosition: String = "any", selectedAction: String = "any") {
-        self.gameplaySpeed = gameplaySpeed // Controls speed of play
+    init(decisionMaker: DecisionMaker = DecisionMaker(), gameplaySpeed: Double = 3, testingMode: Bool = false, selectedPosition: String = "any", selectedAction: String = "any", size: String) {
         self.decisionMaker = decisionMaker
+        self.gameplaySpeed = gameplaySpeed // Controls speed of play
         self.testingMode = testingMode
         self.selectedPosition = selectedPosition
         self.selectedAction = selectedAction.lowercased()
-        
+        self.size = size
+        print("Size: \(size)")
         // create game to later be inserted
         game = Game(date: Date(), totalHands: 0, duration: 0.0)
         
@@ -104,7 +95,7 @@ class SimplePreFlopManager: ObservableObject {
         // take user position and use heroBetMapping to select random bet number
         let betNumber: String
         if selectedAction.lowercased() == "any" {
-            guard let randomBet = rangeHelper.getBetOptions(heroPosition: heroPosition).randomElement() else {
+            guard let randomBet = rangeHelper.getBetOptions(heroPosition: heroPosition, size: size).randomElement() else {
                 fatalError("No bet mapping found for hero position: \(heroPosition)")
             }
             betNumber = randomBet
@@ -116,12 +107,12 @@ class SimplePreFlopManager: ObservableObject {
         betToStopOn = betNumber == "open" ? 1 : Int(numberPart)!
         
         
-        guard let villainPosition = rangeHelper.getVillains(scenario: betNumber, heroPosition: heroPosition).randomElement() ?? (betNumber == "open" ? "" : nil) else {
+        guard let villainPosition = rangeHelper.getVillains(scenario: betNumber, heroPosition: heroPosition, size: size).randomElement() ?? (betNumber == "open" ? "" : nil) else {
             fatalError("No villain position found for bet number: \(betNumber) and hero position: \(heroPosition)")
         }
         
         
-        rangesUsed = rangeHelper.buildKey(for: betNumber, hero: heroPosition, villain: villainPosition)
+        rangesUsed = rangeHelper.buildKey(for: betNumber, hero: heroPosition, villain: villainPosition) // size doesn't matter here
         
         villain = Player(position: villainPosition, stack: 100.0, hand: [deck.dealCard(), deck.dealCard()])
         
@@ -148,7 +139,7 @@ class SimplePreFlopManager: ObservableObject {
         }
         let scenario = betToUse == "open" ? "open" : "bet\(betToUse)"
         
-        let rasieHands = rangeHelper.raiseRanges(for: scenario, hero: hero, villain: villian)
+        let rasieHands = rangeHelper.raiseRanges(for: scenario, hero: hero, villain: villian, size: size)
         
         if let hand = rasieHands.randomElement() {
             user?.setHand(hand: hand)
@@ -179,7 +170,7 @@ class SimplePreFlopManager: ObservableObject {
             
             // Skip any player who already folded
             if (players[turn].lastMove == Action.fold) {
-                turn = (turn + 1) % 6
+                turn = (turn + 1) % Int(size)!
                 continue
             }
 
@@ -197,7 +188,7 @@ class SimplePreFlopManager: ObservableObject {
             else if (playerCopy.position == user?.position) { // Case 2: User
                 
                 if (betToStopOn == betNumber) { // Case 2a: BetToStopOn is reached - take user input
-                    let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villain ?? nil, betNumber: betNumber)
+                    let idealDecision = decisionMaker.determineMovePreFlop(hero: players[turn], villian: villain ?? nil, betNumber: betNumber, playerCount: size)
                     correctMove = idealDecision
                     await handleUserDecision(playerCopy: playerCopy, turn: turn, idealDecision: idealDecision)
                     break
@@ -213,7 +204,7 @@ class SimplePreFlopManager: ObservableObject {
             
             
             players[turn] = playerCopy // this updates the ui
-            turn = (turn + 1) % 6
+            turn = (turn + 1) % Int(size)!
             
             let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
             try? await Task.sleep(nanoseconds: sleepTime)
@@ -295,11 +286,12 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     func createAndReorderPlayers(playerPosition: String) -> [Player] {
-        let positionList = rangeHelper.positionOrders["6"]!
+        let positionList = rangeHelper.positionOrders[size]!
         var playersReordered: [Player] = []
         var index = positionList.firstIndex(of: playerPosition)!
+        let playerCount = Int(size)!
         
-        for _ in 1...6 {
+        for _ in 1...playerCount {
             let player: Player = Player(position: positionList[index], stack: 100.0)
             if positionList[index] == "SB" {
                 player.currentBetAmount = 0.5
@@ -313,7 +305,7 @@ class SimplePreFlopManager: ObservableObject {
             }
             
             playersReordered.append(player)
-            index = (index + 1) % 6
+            index = (index + 1) % playerCount
             
         }
          
@@ -324,9 +316,9 @@ class SimplePreFlopManager: ObservableObject {
         if selectedPosition.lowercased() == "any" {
             if selectedAction.lowercased() == "any" {
                 // any random position
-                return rangeHelper.positionOrders["6"]?.randomElement()
+                return rangeHelper.positionOrders[size]?.randomElement()
             } else {
-                return rangeHelper.getHeros(scenario: selectedAction).randomElement()
+                return rangeHelper.getHeros(scenario: selectedAction, size: size).randomElement()
             }
         } else {
             return selectedPosition.uppercased()

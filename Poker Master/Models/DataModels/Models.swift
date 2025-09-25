@@ -164,7 +164,7 @@ enum TypeOfHand: String, Codable, CaseIterable {
 }
 
 enum Position: String, Codable, CaseIterable {
-    case utg, mp, co, btn, sb, bb
+    case utg, utg1, utg2, mp, mp1, mp2, co, btn, sb, bb
 }
 
 enum Action: String, Codable, CaseIterable {

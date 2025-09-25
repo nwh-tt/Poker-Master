@@ -9,21 +9,48 @@ import SwiftUI
 import SwiftData
 import Charts
 
+enum TableType: String, CaseIterable, Identifiable {
+    case all = "All"
+    case sixMax = "6 Player"
+    case nineMax = "9 Player"
+    
+    var id: String { self.rawValue }
+}
+
 struct HandsPlayedDetailView: View {
     @Query var handLogs: [HandLog]
+    let rangeHelper: RangeHelper
+    
+    init () {
+        rangeHelper = RangeHelper()
+    }
     
     
     var preflopHands: [HandLog] {
-        handLogs.filter { $0.typeOfHand == .preflop }
-    }
+        if (selectedTableType == .all) {
+            return handLogs.filter { $0.typeOfHand == .preflop }
+        } else if (selectedTableType == .sixMax) {
+            let sixMaxHands = rangeHelper.positionOrders["6"]!
+            return handLogs.filter { $0.typeOfHand == .preflop && sixMaxHands.contains($0.position.rawValue.uppercased()) }
+        } else if (selectedTableType == .nineMax) {
+            let nineMaxHands = rangeHelper.positionOrders["9"]!
+            return handLogs.filter { $0.typeOfHand == .preflop && nineMaxHands.contains($0.position.rawValue.uppercased()) }
+        }
         
+        return handLogs.filter { $0.typeOfHand == .preflop }
+    }
     
-    var handsPlayed: Int
-    var handsWon: Int
-    var handsLost: Int
+    var handsPlayed: Int {
+        preflopHands.count
+    }
+    var handsWon: Int {
+        preflopHands.filter { $0.isCorrect }.count
+    }
+    var handsLost: Int {
+        preflopHands.filter { !$0.isCorrect }.count
+    }
     
-    @State private var selectedBar: String? = nil
-    @State private var selectedPct: Double? = nil
+    @State private var selectedTableType: TableType = .all
     
     var positionStats: [(Position, Int, Int)] {
         getPositionPct(from: preflopHands)
@@ -49,8 +76,16 @@ struct HandsPlayedDetailView: View {
     
     var body: some View {
         ScrollView {
+            // Table type selector
+                            
             VStack(spacing: 24) {
-                
+                Picker("Table Type", selection: $selectedTableType) {
+                    ForEach(TableType.allCases) { type in
+                        Text(type.rawValue).tag(type)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal)
                 // Header metric
                 VStack(spacing: 16) {
                     // Main header
@@ -112,7 +147,7 @@ struct HandsPlayedDetailView: View {
                 }
             }
             .padding()
-            .padding(.top, 80)
+            .padding(.top, 100)
         }
         .ignoresSafeArea(edges: .top)
         .preferredColorScheme(.dark)
@@ -149,13 +184,13 @@ struct HandsPlayedDetailView: View {
         HandLog(typeOfHand: .preflop, position: .bb, hand: "AQ", pair: false, action: .raise, raiseType: .threeBet, betAmount: 18, xpEarned: 6, isCorrect: false, date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, game: Game()),
     
         HandLog(typeOfHand: .preflop, position: .btn, hand: "KQ", pair: false, action: .raise, raiseType: .fiveBet, betAmount: 10, xpEarned: 5, isCorrect: true, date: Date(), game: Game()),
-        HandLog(typeOfHand: .preflop, position: .btn, hand: "KQ", pair: false, action: .raise, raiseType: .fourBet, betAmount: 10, xpEarned: 5, isCorrect: true, date: Date(), game: Game()),
-        HandLog(typeOfHand: .preflop, position: .btn, hand: "KQ", pair: false, action: .raise, raiseType: .fourBet, betAmount: 10, xpEarned: 5, isCorrect: false, date: Date(), game: Game())
+        HandLog(typeOfHand: .preflop, position: .utg2, hand: "KQ", pair: false, action: .raise, raiseType: .fourBet, betAmount: 10, xpEarned: 5, isCorrect: true, date: Date(), game: Game()),
+        HandLog(typeOfHand: .preflop, position: .utg1, hand: "KQ", pair: false, action: .raise, raiseType: .fourBet, betAmount: 10, xpEarned: 5, isCorrect: false, date: Date(), game: Game())
     ]
     
     for handLog in handLogs {
         context.insert(handLog)
     }
     
-    return HandsPlayedDetailView(handsPlayed: 15, handsWon: 8, handsLost: 7).modelContainer(container)
+    return HandsPlayedDetailView().modelContainer(container)
 }

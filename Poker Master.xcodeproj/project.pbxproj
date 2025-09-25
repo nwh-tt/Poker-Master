@@ -54,6 +54,7 @@
 		B697E7942BC849E800191C7A /* Poker_MasterUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7932BC849E800191C7A /* Poker_MasterUITestsLaunchTests.swift */; };
 		B6ADA4252C06490E00358F34 /* DecisionMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6ADA4242C06490E00358F34 /* DecisionMaker.swift */; };
 		B6ADA4272C2B241400358F34 /* DecisionMakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6ADA4262C2B241400358F34 /* DecisionMakerTests.swift */; };
+		B6D205162E82FD0A00E12C49 /* PlayerLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D205152E82FCF700E12C49 /* PlayerLayoutView.swift */; };
 		B6D403682D8A09D3008A83E8 /* PlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403672D8A09D3008A83E8 /* PlayerTests.swift */; };
 		B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */; };
 		B6D4036F2D9340A3008A83E8 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B6D4036E2D9340A3008A83E8 /* ConfettiSwiftUI */; };
@@ -146,6 +147,7 @@
 		B6ADA4232C0135B700358F34 /* BTN_strategy_chart.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BTN_strategy_chart.json; sourceTree = "<group>"; };
 		B6ADA4242C06490E00358F34 /* DecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionMaker.swift; sourceTree = "<group>"; };
 		B6ADA4262C2B241400358F34 /* DecisionMakerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionMakerTests.swift; sourceTree = "<group>"; };
+		B6D205152E82FCF700E12C49 /* PlayerLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerLayoutView.swift; sourceTree = "<group>"; };
 		B6D403672D8A09D3008A83E8 /* PlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTests.swift; sourceTree = "<group>"; };
 		B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncorrectSelectionView.swift; sourceTree = "<group>"; };
 		B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManager.swift; sourceTree = "<group>"; };
@@ -492,6 +494,7 @@
 		B6EC8AC72E63817000C1AC9B /* BasicPreflop */ = {
 			isa = PBXGroup;
 			children = (
+				B6D205152E82FCF700E12C49 /* PlayerLayoutView.swift */,
 				B6D4036B2D919A27008A83E8 /* IncorrectSelectionView.swift */,
 				B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */,
 				B672D7DC2BC87E6300E7F5F6 /* PokerTableView.swift */,
@@ -683,6 +686,7 @@
 				B67C5E672E591EF20017ECBF /* ChallengeCard.swift in Sources */,
 				B690E2382E80D281007C601E /* RangeHelper.swift in Sources */,
 				B6EC8ADF2E739BC300C1AC9B /* BoardView.swift in Sources */,
+				B6D205162E82FD0A00E12C49 /* PlayerLayoutView.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,
 				B6EC8AE32E7B89D600C1AC9B /* StoreManager.swift in Sources */,
 				B690E22F2E7EFBBF007C601E /* SubscribeView.swift in Sources */,

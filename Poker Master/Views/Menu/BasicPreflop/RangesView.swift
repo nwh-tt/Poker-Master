@@ -3,12 +3,14 @@ import SwiftUI
 struct RangesView: View {
     let key: String
     let rangeHelper = RangeHelper()
+    
+    let playerCount: String
     var hand: String
     let scenario: String
     let hero: String
     let villain: String
     
-    init(key: String, hand: String) {
+    init(key: String, hand: String, playerCount: String) {
         self.key = key
         self.hand = hand.replacingOccurrences(of: "10", with: "T")
         
@@ -16,6 +18,7 @@ struct RangesView: View {
         self.scenario = parsedKey.scenario
         self.hero = parsedKey.hero
         self.villain = parsedKey.villain
+        self.playerCount = playerCount
     }
 
     // extract scenario, villain, and hero from a given key
@@ -32,8 +35,8 @@ struct RangesView: View {
     private let ranks = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
     
     var body: some View {
-        let raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero, villain: villain)
-        let callHands = rangeHelper.callRanges(for: scenario, hero: hero, villain: villain)
+        let raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero, villain: villain, size: playerCount)
+        let callHands = rangeHelper.callRanges(for: scenario, hero: hero, villain: villain, size: playerCount)
         
         VStack(spacing: 2) {
             ForEach(Array(0..<13), id: \.self) { row in
@@ -119,5 +122,5 @@ struct RangesView: View {
 }
 
 #Preview {
-    RangesView(key: "bet5_SB_v_BB", hand: "102s")
+    RangesView(key: "bet2_MP1_v_UTG2", hand: "102s", playerCount: "9")
 }

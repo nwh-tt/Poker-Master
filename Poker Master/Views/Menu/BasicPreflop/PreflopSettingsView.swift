@@ -133,7 +133,7 @@ struct PreflopSettingsView: View {
                 
                 // START BUTTON
                 NavigationLink(
-                    destination: PokerTableView(speed: selectedSpeed, heroPosition: selectedPosition, action: selectedBet, tableSize: selectedTableSize)
+                    destination: PokerTableView(speed: selectedSpeed, heroPosition: selectedPosition, action: selectedBet, size: selectedTableSize)
                         .toolbar(.hidden, for: .tabBar)
                 ) {
                     Text("Start Game")

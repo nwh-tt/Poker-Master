@@ -44,7 +44,8 @@ struct PokerTableView: View {
             wrappedValue: SimplePreFlopManager(
                 gameplaySpeed: speed,
                 selectedPosition: heroPosition,
-                selectedAction: action
+                selectedAction: action,
+                size: size
             )
         )
     }
@@ -131,32 +132,9 @@ struct PokerTableView: View {
                 .padding(.trailing, 12)
                 
                 
-                VStack(alignment: .center)
-                {
-                    PlayerPositionView(player: gameManager.players[3], direction: "right", isUser: false).padding(.top, 14)
-                    Spacer()
-                    HStack(alignment: .center)
-                    {
-                        PlayerPositionView(player: gameManager.players[2], direction: "right", isUser: false)
-                        Spacer()
-                        PlayerPositionView(player: gameManager.players[4], direction: "left", isUser: false)
-                    }
-                    .padding(.top, padding)
-                    .padding(.bottom, padding)
-                    Spacer()
-                    HStack(alignment: .center)
-                    {
-                        PlayerPositionView(player: gameManager.players[1], direction: "right", isUser: false)
-                        Spacer()
-                        PlayerPositionView(player: gameManager.players[5], direction: "left", isUser: false)
-                    }
-                    .padding(.top, padding)
-                    .padding(.bottom, padding)
-                    Spacer()
-                    PlayerPositionView(player: gameManager.players[0], direction: "right", isUser: true).padding(.bottom, 14)
-                    
-                }.padding(4)
-                .padding(.vertical, 90)
+                PlayerLayoutView(players: gameManager.players)
+                
+                // add buttons
                 VStack {
                     Spacer()
                     HStack(spacing: -10) {
@@ -213,7 +191,7 @@ struct PokerTableView: View {
                 // This will run when the sheet is dismissed by any means
                 gameManager.resetAndStartNewGame()
             }) {
-                IncorrectSelectionView(showPopup: $gameManager.showIncorrectPopup, adviceText: gameManager.adviceText, keyUsed: gameManager.rangesUsed, hand: gameManager.user?.getHand() ?? "")
+                IncorrectSelectionView(showPopup: $gameManager.showIncorrectPopup, adviceText: gameManager.adviceText, keyUsed: gameManager.rangesUsed, hand: gameManager.user?.getHand() ?? "", playerCount: size)
                     .presentationBackground(.ultraThinMaterial)
             }
             .edgesIgnoringSafeArea(.all)
@@ -254,7 +232,7 @@ extension View {
     }
 }
 
-#Preview("iPhone 15 Plus") {
+#Preview("6 Player") {
     let schema = Schema([
             Game.self,
             HandLog.self,
@@ -271,8 +249,31 @@ extension View {
         let user = User(username: "Ned Whittleton")
         context.insert(user)
 
-    return PokerTableView(speed: 4.5, heroPosition: "any", action: "4")
-            .modelContainer(container)
-            .environment(\.modelContext, context)
-            .environmentObject(UserProfileState(context: context))
+    return PokerTableView(speed: 4.5, heroPosition: "any", action: "any", size: "6")
+        .modelContainer(container)
+        .environment(\.modelContext, context)
+        .environmentObject(UserProfileState(context: context))
+}
+
+#Preview("9 player") {
+    let schema = Schema([
+            Game.self,
+            HandLog.self,
+            Challenges.self,
+            Item.self,
+            User.self
+        ])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+        let container = try! ModelContainer(for: schema, configurations: [config])
+        let context = ModelContext(container)
+
+        // Add some mock data so the preview isn't empty
+        let user = User(username: "Ned Whittleton")
+        context.insert(user)
+
+    return PokerTableView(speed: 4.5, heroPosition: "any", action: "any", size: "9")
+        .modelContainer(container)
+        .environment(\.modelContext, context)
+        .environmentObject(UserProfileState(context: context))
 }

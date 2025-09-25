@@ -3293,6 +3293,11 @@
             "AKs",
             "AKo"
         ],
+        "bet5_UTG2_v_MP2_call": [
+            "AA",
+            "AKs",
+            "AKo"
+        ],
         
         "bet5_UTG2_v_CO_call": [
             "AA",
@@ -3807,6 +3812,8 @@
             "QQ",
             "JJ"
         ],
+        
+        
         
         "bet5_MP1_v_MP2_call": [
             "AA",

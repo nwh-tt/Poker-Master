@@ -128,7 +128,7 @@ struct MenuView: View {
             }
         }
         .task {
-            await loadRewardedAd()
+            // await loadRewardedAd()
         }
     }
     

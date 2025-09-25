@@ -133,7 +133,7 @@ struct StatsView: View {
                             
                         }
                         NavigationLink {
-                            HandsPlayedDetailView(handsPlayed: totalHandsPlayed, handsWon: totalHandsWon, handsLost: totalHandsLost)
+                            HandsPlayedDetailView()
                         } label: {
                             VStack(spacing: 16) {
                                 // Main header

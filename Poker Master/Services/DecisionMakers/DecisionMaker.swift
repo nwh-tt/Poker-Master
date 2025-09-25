@@ -15,26 +15,21 @@ enum DecisionError: Error {
 // btn sb bb lj hj co
 class DecisionMaker {
     let rangeHelper = RangeHelper()
-    let playerCount: String
     
-    init(playerCount: String = "6") {
-        self.playerCount = playerCount
-    }
-    
-    func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int) -> Action {
+    func determineMovePreFlop(hero: Player, villian: Player?, betNumber: Int, playerCount: String) -> Action {
         var raiseHands: [String] = []
         var callHands: [String] = []
 
         switch betNumber {
         case 1:
             let scenario = "open"
-            raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero.position, villain: "")
+            raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero.position, villain: "", size: playerCount)
         case 2...5:
             guard let villianPosition = villian?.position else { return .fold }
             let scenario = "bet\(betNumber)"
             
-            raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero.position, villain: villianPosition)
-            callHands = rangeHelper.callRanges(for: scenario, hero: hero.position, villain: villianPosition)
+            raiseHands = rangeHelper.raiseRanges(for: scenario, hero: hero.position, villain: villianPosition, size: playerCount)
+            callHands = rangeHelper.callRanges(for: scenario, hero: hero.position, villain: villianPosition, size: playerCount)
         default:
             return .fold
         }

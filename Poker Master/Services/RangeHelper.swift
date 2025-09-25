@@ -18,7 +18,6 @@ class RangeHelper {
     
     init(ranges: [String: [String: [String]]] = RangesFileManager.loadRanges()) {
             self.ranges = ranges
-        print(ranges)
     }
     
     func buildKey(for scenario: String, hero:String, villain: String = "") -> String {

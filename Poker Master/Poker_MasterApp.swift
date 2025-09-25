@@ -31,10 +31,11 @@ struct Poker_MasterApp: App {
     }()
     
     init() {
+        RangesFileManager.reloadRangesFromBundle()
         RangesFileManager.loadInitialRangesIfNeeded()  // Ensure the file is copied from bundle to Documents directory
         let context = ModelContext(sharedModelContainer)
         _userProfile = StateObject(wrappedValue: UserProfileState(context: context))
-        MobileAds.shared.start()
+        // MobileAds.shared.start()
     }
 
     var body: some Scene {

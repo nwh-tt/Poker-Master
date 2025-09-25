@@ -12,6 +12,7 @@ struct IncorrectSelectionView: View {
     var adviceText: String
     let keyUsed: String
     let hand: String
+    let playerCount: String
     
     
     var body: some View {
@@ -21,7 +22,7 @@ struct IncorrectSelectionView: View {
                             .padding(.bottom, 0)
                             .padding(.top, 16)
                             .foregroundColor(.white)
-                        RangesView(key: keyUsed, hand: hand)
+                RangesView(key: keyUsed, hand: hand, playerCount: playerCount)
                     
                         Button("Got it") {
                             showPopup = false
@@ -40,5 +41,5 @@ struct IncorrectSelectionView: View {
 }
 
 #Preview {
-    IncorrectSelectionView(showPopup: .constant(true), adviceText: "Should have called", keyUsed: "open_BTN", hand: "T6s")
+    IncorrectSelectionView(showPopup: .constant(true), adviceText: "Should have called", keyUsed: "open_BTN", hand: "T6s", playerCount: "9")
 }
