@@ -18,6 +18,12 @@ class RangeHelper {
     
     init(ranges: [String: [String: [String]]] = RangesFileManager.loadRanges()) {
             self.ranges = ranges
+        print("Range helper initialized")
+        
+    }
+    
+    func refreshRanges() {
+        self.ranges = RangesFileManager.loadRanges()
     }
     
     func buildKey(for scenario: String, hero:String, villain: String = "") -> String {
@@ -28,18 +34,21 @@ class RangeHelper {
     }
     
     func rangesFromKey(key: String, size: String = "6") -> [String] {
+        // check for ranges being edited first
         return ranges[size]?[key] ?? []
     }
     
     func callRanges(for scenario: String, hero: String, villain: String, size: String = "6") -> [String] {
         let baseKey = self.buildKey(for: scenario, hero: hero, villain: villain)
         let callKey = "\(baseKey)_call"
+        
         return ranges[size]?[callKey] ?? []
     }
     
     func raiseRanges(for scenario: String, hero: String, villain: String, size: String = "6") -> [String] {
         let baseKey = self.buildKey(for: scenario, hero: hero, villain: villain)
         let raiseKey = "\(baseKey)_raise"
+        
         return ranges[size]?[raiseKey] ?? []
     }
     
@@ -128,6 +137,10 @@ class RangeHelper {
             }
             
             return sortedScenarios
+    }
+    
+    func saveRanges(baseKey: String, size: String, raiseRanges: [String], callRanges: [String]) {
+        RangesFileManager.saveRanges(for: baseKey, size: size, raiseRanges: raiseRanges, callRanges: callRanges)
     }
 
 }

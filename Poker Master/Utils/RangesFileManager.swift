@@ -41,14 +41,23 @@ class RangesFileManager {
         return [:]  // Return an empty dictionary if loading fails
     }
 
-    static func saveRanges(_ ranges: [String: [String: [String]]]) {
+    static func saveRanges(for baseKey: String, size: String, raiseRanges: [String], callRanges: [String]) {
+        var ranges = loadRanges() // Load existing data
+        
+        // Replace only the call and raise entries
+        ranges[size]?["\(baseKey)_raise"] = raiseRanges
+        ranges[size]?["\(baseKey)_call"] = callRanges
+        
+        print("Saving ranges: \(baseKey)_raise and \(baseKey)_call")
+        
         let url = getRangesFileURL()
-        if let data = try? JSONEncoder().encode(ranges) {
-            do {
-                try data.write(to: url)  // Save the modified data back to the file
-            } catch {
-                print("Error saving ranges: \(error)")
-            }
+        
+        do {
+            let data = try JSONEncoder().encode(ranges)
+            try data.write(to: url, options: .atomic)
+            print("✅ Successfully saved raise & call ranges for \(baseKey)")
+        } catch {
+            print("❌ Error saving ranges: \(error)")
         }
     }
     

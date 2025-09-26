@@ -11,8 +11,9 @@ struct RangeViewer: View {
     let rangeHelper = RangeHelper()
     
     @State private var tableSize = ["6", "9"]
+    @State private var isEditing = false
     
-    // 6-max positions
+    // 6-max positions by default
     @State private var heros = ["UTG", "MP", "CO", "BTN", "SB"]
     @State private var villains: [String] = []
     
@@ -33,6 +34,12 @@ struct RangeViewer: View {
     @State private var heroPosition = "UTG"
     @State private var villainPosition = "BTN"
     
+    @State private var callRanges: [String] = RangeHelper().callRanges(for: "open", hero: "UTG", villain: "", size: "6")
+    @State private var raiseRanges: [String] = RangeHelper().raiseRanges(for: "open", hero: "UTG", villain: "", size: "6")
+
+    init() {
+        rangeHelper.refreshRanges()
+    }
     
     var body: some View {
         ScrollView {
@@ -52,6 +59,7 @@ struct RangeViewer: View {
                             }
                         }
                         .pickerStyle(.segmented)
+                        .disabled(isEditing)
                         .onChange(of: selectedSize) {
                             // Need to filter displayed heros
                             heros = rangeHelper.getHeros(scenario: selectedScenario, size: selectedSize)
@@ -71,6 +79,12 @@ struct RangeViewer: View {
                                 villains = []
                                 villainPosition = ""
                             }
+                            
+                            let newCallRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+                            let newRaiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+
+                            callRanges = newCallRanges
+                            raiseRanges = newRaiseRanges
                         }
                     }
                     // Scenario Picker with label
@@ -86,6 +100,7 @@ struct RangeViewer: View {
                             }
                         }
                         .pickerStyle(.segmented)
+                        .disabled(isEditing)
                         .onChange(of: selectedScenario) {
                             // Recompute valid heroes for the selected scenario
                             let availableHeros = rangeHelper.getHeros(scenario: selectedScenario, size: selectedSize)
@@ -104,6 +119,12 @@ struct RangeViewer: View {
                                 villains = []
                                 villainPosition = ""
                             }
+                            
+                            let newCallRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+                            let newRaiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+
+                            callRanges = newCallRanges
+                            raiseRanges = newRaiseRanges
                         }
                     }
                     
@@ -118,6 +139,7 @@ struct RangeViewer: View {
                             }
                         }
                         .pickerStyle(.segmented)
+                        .disabled(isEditing)
                         .onChange(of: heroPosition) {
                             let availableVillains = rangeHelper.getVillains(scenario: selectedScenario, heroPosition: heroPosition, size: selectedSize)
                             villains = availableVillains
@@ -130,6 +152,11 @@ struct RangeViewer: View {
                                 villainPosition = villains.first ?? ""
                             }
                             
+                            let newCallRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+                            let newRaiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+
+                            callRanges = newCallRanges
+                            raiseRanges = newRaiseRanges
                         }
                     }
                     
@@ -145,6 +172,13 @@ struct RangeViewer: View {
                                 }
                             }
                             .pickerStyle(.segmented)
+                            .disabled(isEditing)
+                        }.onChange(of: villainPosition) {
+                            let newCallRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+                            let newRaiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+                            
+                            callRanges = newCallRanges
+                            raiseRanges = newRaiseRanges
                         }
                     }
                     
@@ -152,7 +186,8 @@ struct RangeViewer: View {
                     Divider().background(Color.white)
                     
                     // Display the range
-                    RangeEditorView(callRanges: rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize), raiseRanges: rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize))
+                    RangeEditorView(callRanges: $callRanges, raiseRanges: $raiseRanges, isEditing: isEditing)
+                        
                     
                     Spacer()
                 }
@@ -160,6 +195,45 @@ struct RangeViewer: View {
                 .padding(.horizontal)
             }
             .preferredColorScheme(.dark) // enforce dark mode
+        }
+        .onAppear {
+            rangeHelper.refreshRanges()
+            
+            // Also update your local states so the UI reflects the latest ranges
+            callRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+            raiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+        }
+        .navigationBarBackButtonHidden(isEditing)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if isEditing {
+                    Button("Cancel") {
+                        // reset raise ranges
+                        let newCallRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+                        let newRaiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
+                        
+                        callRanges = newCallRanges
+                        raiseRanges = newRaiseRanges
+                        isEditing = false
+                    }
+                }
+            }
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                if isEditing {
+                    Button("Save") {
+                        // Extract base key
+                        let baseKey = rangeHelper.buildKey(for: selectedScenario, hero: heroPosition, villain: villainPosition)
+                        rangeHelper.saveRanges(baseKey: baseKey, size: selectedSize, raiseRanges: raiseRanges, callRanges: callRanges)
+                        rangeHelper.refreshRanges()
+                        isEditing = false
+                    }
+                } else {
+                    Button("Edit") {
+                        isEditing = true
+                    }
+                }
+            }
+            
         }
     }
 }

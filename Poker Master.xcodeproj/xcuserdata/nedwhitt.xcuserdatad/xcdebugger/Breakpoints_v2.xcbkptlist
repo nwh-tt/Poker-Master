@@ -34,50 +34,6 @@
             endingLineNumber = "191"
             landmarkName = "executeLoop()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "4B879806-6ABF-47A5-BA5C-D44CC430A022 - 59100d11e1501a51"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for Poker_Master.SimplePreFlopManager.executeLoop() async -&gt; ()"
-                  moduleName = "Poker Master.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nedwhitt/Documents/Code/IOS/Poker%20Master/Poker%20Master/Services/Games/SimplePreFlopManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "191"
-                  endingLineNumber = "191">
-               </Location>
-               <Location
-                  uuid = "4B879806-6ABF-47A5-BA5C-D44CC430A022 - 7232cb9598095275"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for Poker_Master.SimplePreFlopManager.executeLoop() async -&gt; ()"
-                  moduleName = "Poker Master.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nedwhitt/Documents/Code/IOS/Poker%20Master/Poker%20Master/Services/Games/SimplePreFlopManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "191"
-                  endingLineNumber = "191">
-               </Location>
-               <Location
-                  uuid = "4B879806-6ABF-47A5-BA5C-D44CC430A022 - 2fea24f48ef8a47e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(6) suspend resume partial function for Poker_Master.SimplePreFlopManager.executeLoop() async -&gt; ()"
-                  moduleName = "Poker Master.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nedwhitt/Documents/Code/IOS/Poker%20Master/Poker%20Master/Services/Games/SimplePreFlopManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "191"
-                  endingLineNumber = "191">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

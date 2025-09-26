@@ -6,19 +6,20 @@
 //
 
 import SwiftUI
+import SwiftUI
 
 struct RangeEditorView: View {
-    let callRanges: [String]
-    let raiseRanges: [String]
+    @Binding var callRanges: [String]
+    @Binding var raiseRanges: [String]
+    let isEditing: Bool
     
     private let ranks = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
     
     var body: some View {
-        
         VStack(spacing: 1) {
-            ForEach(Array(0..<13), id: \.self) { row in
+            ForEach(0..<13, id: \.self) { row in
                 HStack(spacing: 1) {
-                    ForEach(Array(0..<13), id: \.self) { col in
+                    ForEach(0..<13, id: \.self) { col in
                         let hand = handFor(row: row, col: col)
                         
                         let handAction: String = {
@@ -40,6 +41,10 @@ struct RangeEditorView: View {
                                 RoundedRectangle(cornerRadius: 3)
                                     .stroke(Color.clear, lineWidth: 2)
                             )
+                            .onTapGesture {
+                                guard isEditing else { return }
+                                handleTap(on: hand, currentAction: handAction)
+                            }
                     }
                 }
             }
@@ -47,13 +52,29 @@ struct RangeEditorView: View {
         .padding()
         
         HStack(spacing: 16) {
-                LabelView(color: colorFor(action: "raise"), text: "Raise")
-                LabelView(color: colorFor(action: "call"), text: "Call")
-                LabelView(color: colorFor(action: "fold"), text: "Fold")
-        }.padding(.bottom, 24)
+            LabelView(color: colorFor(action: "raise"), text: "Raise")
+            LabelView(color: colorFor(action: "call"), text: "Call")
+            LabelView(color: colorFor(action: "fold"), text: "Fold")
+        }
+        .padding(.bottom, 24)
     }
     
-    // Small helper view for legend items
+    // MARK: - Logic
+    private func handleTap(on hand: String, currentAction: String) {
+        switch currentAction {
+        case "fold":
+            raiseRanges.append(hand)
+        case "raise":
+            raiseRanges.removeAll { $0 == hand }
+            callRanges.append(hand)
+        case "call":
+            callRanges.removeAll { $0 == hand }
+        default:
+            break
+        }
+    }
+    
+    // MARK: - Helpers
     struct LabelView: View {
         let color: Color
         let text: String
@@ -70,7 +91,6 @@ struct RangeEditorView: View {
         }
     }
     
-    // Create hand labels in standard 13x13 layout
     private func handFor(row: Int, col: Int) -> String {
         let rankRow = ranks[row]
         let rankCol = ranks[col]
@@ -84,18 +104,25 @@ struct RangeEditorView: View {
         }
     }
     
-    // Color scheme: black = fold, red = raise, blue = call
     private func colorFor(action: String) -> Color {
         switch action {
-        case "raise":
-            return Color(.green) // brighter green
-        case "call":
-            return Color(.yellow) // brighter magenta/purple
+        case "raise": return .green
+        case "call": return Color(red: 0.4, green: 0.7, blue: 1.0)
         default: return .gray.opacity(0.8)
         }
     }
 }
 
+
 #Preview {
-    RangeEditorView(callRanges: [], raiseRanges: [])
+    struct PreviewWrapper: View {
+        @State var callRanges: [String] = []
+        @State var raiseRanges: [String] = []
+        
+        var body: some View {
+            RangeEditorView(callRanges: $callRanges, raiseRanges: $raiseRanges, isEditing: true)
+        }
+    }
+    
+    return PreviewWrapper()
 }
