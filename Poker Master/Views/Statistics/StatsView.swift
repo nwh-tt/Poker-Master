@@ -10,6 +10,9 @@ import SwiftData
 import Charts
 
 struct StatsView: View {
+    @EnvironmentObject var storeManager: StoreManager
+    @State private var showPremiumPopup = false
+    
     @Query var handLogs: [HandLog]
     @Query var games: [Game]
     
@@ -104,91 +107,35 @@ struct StatsView: View {
                             .background(.ultraThinMaterial)
                             .cornerRadius(16)
                             .shadow(radius: 1)
+                            if storeManager.isSubscribed() {
+                                NavigationLink {
+                                    WinPercentageDetailView(overallWinPct: winPercentage)
+                                } label: {
+                                    WinPercentageStatView(symbolName: "chevron.right", winPercentage: winPercentage)
+                                }
+                            } else {
+                                Button {
+                                    showPremiumPopup = true
+                                } label: {
+                                    WinPercentageStatView(symbolName: "lock.fill", winPercentage: winPercentage)
+                                }
+                            }
                             
+                        }
+                        if storeManager.isSubscribed() {
                             NavigationLink {
-                                WinPercentageDetailView(overallWinPct: winPercentage)
+                                HandsPlayedDetailView()
                             } label: {
-                                VStack {
-                                    Text("Win %")
-                                        .font(.headline)
-                                        .foregroundColor(.gray)
-                                    
-                                    Text("\(winPercentage, specifier: "%.1f")%")
-                                        .font(.system(size: 40, weight: .bold))
-                                        .foregroundColor(.white)
-                                    HStack {
-                                        Spacer()
-                                        
-                                        Image(systemName: "chevron.right")
-                                            .foregroundColor(.gray)
-                                            .font(.system(size: 12))
-                                    }
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(.ultraThinMaterial)
-                                .cornerRadius(16)
-                                .shadow(radius: 1)
+                                HandsPlayedStatView(symbolName: "chevron.right", totalHandsPlayed: totalHandsPlayed, totalHandsWon: totalHandsWon, totalHandsLost: totalHandsLost)
                             }
-                            
-                        }
-                        NavigationLink {
-                            HandsPlayedDetailView()
-                        } label: {
-                            VStack(spacing: 16) {
-                                // Main header
-                                VStack(spacing: 4) {
-                                    Text("Hands Played")
-                                        .font(.headline)
-                                        .foregroundColor(.gray)
-                                    
-                                    Text("\(totalHandsPlayed, specifier: "%.1d")")
-                                        .font(.system(size: 40, weight: .bold))
-                                        .foregroundColor(.white)
-                                }
-                                
-                                Divider()
-                                    .background(Color.gray.opacity(0.5))
-                                
-                                // Won / Lost section
-                                HStack(spacing: 0) {
-                                    VStack {
-                                        Text("Hands Won")
-                                            .font(.subheadline)
-                                            .foregroundColor(.gray)
-                                        Text("\(totalHandsWon, specifier: "%.1d")")
-                                            .font(.title2)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    VStack {
-                                        Text("Hands Lost")
-                                            .font(.subheadline)
-                                            .foregroundColor(.gray)
-                                        Text("\(totalHandsLost, specifier: "%.1d")")
-                                            .font(.title2)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(Color(red: 130/255, green: 50/255, blue: 60/255))
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                }
-                                HStack {
-                                    Spacer()
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.gray)
-                                        .font(.system(size: 12))
-                                }
+                        } else {
+                            Button {
+                                showPremiumPopup = true
+                            }
+                            label: {
+                                HandsPlayedStatView(symbolName: "lock.fill", totalHandsPlayed: totalHandsPlayed, totalHandsWon: totalHandsWon, totalHandsLost: totalHandsLost)
                             }
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(16)
-                        .shadow(radius: 4)
-                        .padding(.bottom, 12)
                         Spacer()
                         // Put total time played, total pots seen
                         VStack(alignment: .leading) {
@@ -214,6 +161,104 @@ struct StatsView: View {
                 }
             }
         }
+        .fullScreenCover(isPresented: $showPremiumPopup) {
+            SubscribeView()
+        }
+    }
+}
+
+struct WinPercentageStatView: View {
+    let symbolName: String // Pass in "chevron.right" or "lock.fill"
+    let winPercentage: Double
+    
+    var body: some View {
+        VStack {
+            Text("Win %")
+                .font(.headline)
+                .foregroundColor(.gray)
+            
+            Text("\(winPercentage, specifier: "%.1f")%")
+                .font(.system(size: 40, weight: .bold))
+                .foregroundColor(.white)
+            HStack {
+                Spacer()
+                Image(systemName: symbolName)
+                    .foregroundColor(.gray)
+                    .font(.system(size: 12))
+                
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(.ultraThinMaterial)
+        .cornerRadius(16)
+        .shadow(radius: 1)
+    }
+}
+
+struct HandsPlayedStatView: View {
+    let symbolName: String // Pass in "chevron.right" or "lock.fill"
+    
+    // Example data; you can also make these parameters if you want full flexibility
+    let totalHandsPlayed: Int
+    let totalHandsWon: Int
+    let totalHandsLost: Int
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Main header
+            VStack(spacing: 4) {
+                Text("Hands Played")
+                    .font(.headline)
+                    .foregroundColor(.gray)
+                
+                Text("\(totalHandsPlayed)")
+                    .font(.system(size: 40, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            
+            Divider()
+                .background(Color.gray.opacity(0.5))
+            
+            // Won / Lost section
+            HStack(spacing: 0) {
+                VStack {
+                    Text("Hands Won")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    Text("\(totalHandsWon)")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
+                }
+                .frame(maxWidth: .infinity)
+                
+                VStack {
+                    Text("Hands Lost")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    Text("\(totalHandsLost)")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color(red: 130/255, green: 50/255, blue: 60/255))
+                }
+                .frame(maxWidth: .infinity)
+            }
+            
+            // Symbol row
+            HStack {
+                Spacer()
+                Image(systemName: symbolName)
+                    .foregroundColor(.gray)
+                    .font(.system(size: 12))
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(.ultraThinMaterial)
+        .cornerRadius(16)
+        .shadow(radius: 4)
+        .padding(.bottom, 12)
     }
 }
 
@@ -267,4 +312,5 @@ struct StatsView: View {
     
     return StatsView()
         .modelContainer(container)
+        .environmentObject(StoreManager())
 }

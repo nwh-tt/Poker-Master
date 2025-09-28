@@ -16,6 +16,7 @@ struct MenuView: View {
     @State private var showPremiumPopup = false
     @State private var rewardedAd: RewardedAd?
     @Query var handLogs: [HandLog]
+    @EnvironmentObject var storeManager: StoreManager
     
     var needsAd: Bool {
         let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
@@ -101,20 +102,22 @@ struct MenuView: View {
                             gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9)
                         )
                     }
+                    if !storeManager.isSubscribed() {
+                        Button {
+                               // Show premium paywall
+                               showPremiumPopup = true
+                           } label: {
+                               Text("Go Premium for no Ads")
+                                   .font(.headline)
+                                   .padding()
+                                   .frame(maxWidth: .infinity)
+                                   .background(.white.opacity(0.1))
+                                   .foregroundColor(.white)
+                                   .cornerRadius(12)
+                           }
+                           .padding(.top, 20)
+                    }
                     
-                    Button {
-                           // Show premium paywall
-                           showPremiumPopup = true
-                       } label: {
-                           Text("Go Premium for no Ads")
-                               .font(.headline)
-                               .padding()
-                               .frame(maxWidth: .infinity)
-                               .background(.white.opacity(0.1))
-                               .foregroundColor(.white)
-                               .cornerRadius(12)
-                       }
-                       .padding(.top, 20)
                 }
             }
             .padding()

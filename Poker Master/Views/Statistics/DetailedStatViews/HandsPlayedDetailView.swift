@@ -85,7 +85,8 @@ struct HandsPlayedDetailView: View {
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
+                .padding()
+                .padding(.top, 16)
                 // Header metric
                 VStack(spacing: 16) {
                     // Main header

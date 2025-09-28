@@ -12,6 +12,7 @@ import GoogleMobileAds
 @main
 struct Poker_MasterApp: App {
     @StateObject var userProfile: UserProfileState
+    @StateObject private var storeManager: StoreManager
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -34,6 +35,7 @@ struct Poker_MasterApp: App {
         RangesFileManager.loadInitialRangesIfNeeded()  // Ensure the file is copied from bundle to Documents directory
         let context = ModelContext(sharedModelContainer)
         _userProfile = StateObject(wrappedValue: UserProfileState(context: context))
+        _storeManager = StateObject(wrappedValue: StoreManager())
         // MobileAds.shared.start()
     }
 
@@ -42,6 +44,7 @@ struct Poker_MasterApp: App {
             ContentView()
                 .preferredColorScheme(.dark)
                 .environmentObject(userProfile)
+                .environmentObject(storeManager)
                 .task {    // This runs once when ContentView appears
                     let context = ModelContext(sharedModelContainer)
                     await ChallengeDataManager.syncDefaultChallenges(context: context)

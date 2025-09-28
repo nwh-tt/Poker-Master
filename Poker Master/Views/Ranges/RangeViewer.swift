@@ -9,9 +9,11 @@ import SwiftUI
 
 struct RangeViewer: View {
     let rangeHelper = RangeHelper()
+    @EnvironmentObject var storeManager: StoreManager
     
     @State private var tableSize = ["6", "9"]
     @State private var isEditing = false
+    @State private var showSubscribeView = false
     
     // 6-max positions by default
     @State private var heros = ["UTG", "MP", "CO", "BTN", "SB"]
@@ -203,6 +205,9 @@ struct RangeViewer: View {
             callRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
             raiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
         }
+        .fullScreenCover(isPresented: $showSubscribeView) {
+            SubscribeView()
+        }
         .navigationBarBackButtonHidden(isEditing)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -229,7 +234,13 @@ struct RangeViewer: View {
                     }
                 } else {
                     Button("Edit") {
-                        isEditing = true
+                        if storeManager.isSubscribed() {
+                            isEditing = true
+                        }
+                        else {
+                            // show subscribe view
+                            showSubscribeView = true
+                        }
                     }
                 }
             }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B6131C3B2E8706E300E9ACFA /* FeatureComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6131C3A2E8706E300E9ACFA /* FeatureComparisonView.swift */; };
 		B631BA472BD0968F00F9FCAA /* PlayerPositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */; };
 		B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C42E7DA494005F78BA /* CreateAccountView.swift */; };
 		B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C62E7DA49D005F78BA /* LoginView.swift */; };
@@ -97,6 +98,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B6131C3A2E8706E300E9ACFA /* FeatureComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureComparisonView.swift; sourceTree = "<group>"; };
 		B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPositionView.swift; sourceTree = "<group>"; };
 		B645C6C42E7DA494005F78BA /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
 		B645C6C62E7DA49D005F78BA /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -387,6 +389,7 @@
 			isa = PBXGroup;
 			children = (
 				B690E22E2E7EFBBF007C601E /* SubscribeView.swift */,
+				B6131C3A2E8706E300E9ACFA /* FeatureComparisonView.swift */,
 			);
 			path = Subscribe;
 			sourceTree = "<group>";
@@ -675,6 +678,7 @@
 				B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */,
 				B67C5E512E2806F30017ECBF /* HomeView.swift in Sources */,
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
+				B6131C3B2E8706E300E9ACFA /* FeatureComparisonView.swift in Sources */,
 				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
 				B645C6CC2E7DA9B7005F78BA /* LoginService.swift in Sources */,
 				B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */,
