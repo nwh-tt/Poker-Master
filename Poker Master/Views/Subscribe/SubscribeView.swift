@@ -14,7 +14,7 @@ struct SubscribeView: View {
         if selectedTimeFrame == "Monthly" && isEligibleForTrial == true {
             return "Try it Free for 7 days"
         } else {
-            return "Subscribe Now"
+            return "Unlock Premium"
         }
     }
     
@@ -44,7 +44,6 @@ struct SubscribeView: View {
         .task {
             // Determine trial eligibility for Monthly
             isEligibleForTrial = await storeManager.isEligibleForTrial()
-            print("isEligibleForTrial: \(String(describing: isEligibleForTrial))")
         }
     }
     
@@ -104,7 +103,7 @@ struct SubscribeView: View {
                 FeatureComparisonView()
                     .padding(8)
                     .overlay( HStack { Spacer() // Premium highlight outline
-                        RoundedRectangle(cornerRadius: 12) .stroke( LinearGradient( colors: [Color.green, Color.blue], startPoint: .topLeading, endPoint: .bottomTrailing ), lineWidth: 3 ) .frame(width: 96, height: .infinity)
+                        RoundedRectangle(cornerRadius: 12) .stroke( LinearGradient( colors: [Color.green, Color.blue], startPoint: .topLeading, endPoint: .bottomTrailing ), lineWidth: 3 ) .frame(width: 96)
                     })
                 Spacer()
                 
@@ -112,6 +111,7 @@ struct SubscribeView: View {
                     Button {
                         Task {
                             await storeManager.purchase(timeFrame: selectedTimeFrame)
+                            dismiss()
                         }
                     } label: {
                         Text(buttonText)
@@ -149,5 +149,7 @@ struct SubscribeView: View {
 }
 
 #Preview {
-    SubscribeView()
+    @Previewable @StateObject var storeManager = StoreManager()
+    return SubscribeView()
+        .environmentObject(storeManager)
 }

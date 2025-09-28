@@ -64,7 +64,7 @@ struct FeatureComparisonView: View {
                 Divider()
             }
         }
-        .background(.black)
+        .background(.clear)
         .cornerRadius(12)
     }
 }

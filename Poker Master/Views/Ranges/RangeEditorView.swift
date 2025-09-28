@@ -34,7 +34,7 @@ struct RangeEditorView: View {
                         
                         Text(hand)
                             .font(.system(size: 7, weight: .bold))
-                            .frame(width: 20, height: 20)
+                            .frame(width: 24, height: 24)
                             .background(colorFor(action: handAction))
                             .foregroundColor(.white)
                             .overlay(

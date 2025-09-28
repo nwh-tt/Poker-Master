@@ -11,7 +11,6 @@ import GoogleMobileAds
 
 struct MenuView: View {
     @State private var showLogin = false
-    @AppStorage("isSignedIn") private var isSignedIn: Bool = false
     @State private var navigateToEquityDrill = false
     @State private var showPremiumPopup = false
     @State private var rewardedAd: RewardedAd?
@@ -107,7 +106,7 @@ struct MenuView: View {
                                // Show premium paywall
                                showPremiumPopup = true
                            } label: {
-                               Text("Go Premium for no Ads")
+                               Text("Go Premium for No Ads")
                                    .font(.headline)
                                    .padding()
                                    .frame(maxWidth: .infinity)
@@ -123,9 +122,6 @@ struct MenuView: View {
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color.black)
-            .fullScreenCover(isPresented: $showLogin) {
-                LoginViewWrapper(isSignedIn: $isSignedIn, showLogin: $showLogin, navigate: $navigateToEquityDrill)
-            }
             .fullScreenCover(isPresented: $showPremiumPopup) {
                 SubscribeView()
             }
@@ -148,14 +144,6 @@ struct MenuView: View {
         }
     
     private func presentEquityDrillFlow() {
-        // If you want to gate by sign-in, uncomment this block
-        // if isSignedIn {
-        //     navigateToEquityDrill = true
-        //     return
-        // } else {
-        //     showLogin = true
-        //     return
-        // }
         if needsAd {
             guard let ad = rewardedAd else {
                 print("Rewarded ad not ready")
@@ -203,6 +191,7 @@ struct LoginViewWrapper: View {
 
 
 #Preview {
+    @Previewable @StateObject var storeManager = StoreManager()
     let schema = Schema([
             Game.self,
             HandLog.self,
@@ -223,5 +212,8 @@ struct LoginViewWrapper: View {
     
     return MenuView()
         .modelContainer(container)
+        .environment(\.modelContext, context)
+        .environmentObject(UserProfileState(context: context))
+        .environmentObject(storeManager)
     
 }

@@ -42,7 +42,7 @@ struct LoginView: View {
             } onCompletion: { result in
                 switch result {
                 case .success(let authResults):
-                    print("Authorization successful: \(authResults)")
+                    self.handleAppleSignIn(authResults)
                     isSignedIn = true
                 case .failure(let error):
                     print("Authorization failed: \(error.localizedDescription)")
@@ -54,12 +54,12 @@ struct LoginView: View {
             .padding(.horizontal, 40)
             
             Button(action: {
-                            dismiss()   // <-- this closes the fullScreenCover
-                }) {
-                    Text("Not now")
-                        .foregroundColor(.white)
-                        .underline()
-                    }
+                dismiss()
+            }) {
+                Text("Not now")
+                    .foregroundColor(.white)
+                    .underline()
+            }
             
             Text("We use your Apple ID to authenticate you, protect your progress, and confirm any subscriptions.")
                 .font(.footnote)
