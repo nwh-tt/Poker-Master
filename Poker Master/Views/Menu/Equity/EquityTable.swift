@@ -21,6 +21,7 @@ struct EquityTable: View {
     @Environment(\.modelContext) private var context
     
     @State private var cardAnimations: [Bool] = [false, false]
+    @State private var villainCardAnimations: [Bool] = [false, false]
     @State private var showGameOver: Bool = false
     
     let street: String
@@ -38,26 +39,26 @@ struct EquityTable: View {
         ZStack {
             
             if equityDrillManager.roundsPlayed >= 10 {
-                            GameOverView(
-                                correctDecisions: equityDrillManager.score,
-                                totalHands: equityDrillManager.roundsPlayed,
-                                startNewGame: {
-                                    equityDrillManager.reset()
-                                    showGameOver = false
-                                }
-                            )
-                            .scaleEffect(showGameOver ? 1 : 0.8)
-                            .opacity(showGameOver ? 1 : 0)
-                            .animation(.easeOut(duration: 0.5), value: showGameOver)
-                            .onAppear {
-                                // Slight delay before animating in
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                    showGameOver = true
-                                }
-                            }
-                            .ignoresSafeArea()
-                            .zIndex(1)
-                        }
+                GameOverView(
+                    correctDecisions: equityDrillManager.score,
+                    totalHands: equityDrillManager.roundsPlayed,
+                    startNewGame: {
+                        equityDrillManager.reset()
+                        showGameOver = false
+                    }
+                )
+                .scaleEffect(showGameOver ? 1 : 0.8)
+                .opacity(showGameOver ? 1 : 0)
+                .animation(.easeOut(duration: 0.5), value: showGameOver)
+                .onAppear {
+                    // Slight delay before animating in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        showGameOver = true
+                    }
+                }
+                .ignoresSafeArea()
+                .zIndex(1)
+            }
             
             
             EllipticalGradient(colors: [darkBlue, Color.black], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.9)
@@ -108,11 +109,48 @@ struct EquityTable: View {
                             .padding(.top, 20)
                             .id(villainRange.hashValue)
                         
-                    } else {
+                    }
+                    else if let villainHand = equityDrillManager.currentScenario?.villainHand {
+                        VStack {
+                            Text("Villain Hand")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.white)
+                            HStack(spacing: -10) {
+                                ForEach(Array(villainHand.enumerated()), id: \.offset) { index, card in
+                                    CardView(card: card)
+                                        .opacity(villainCardAnimations[index] ? 1 : 0)
+                                        .offset(y: villainCardAnimations[index] ? 0 : 20) // start below and slide up
+                                        .animation(.easeOut(duration: 0.5).delay(Double(index) * 0.1), value: villainCardAnimations[index])
+                                }
+                            }
+                        }.frame(height: 207)
+                            .padding(.top, 20)
+                            .onAppear {
+                                for i in villainHand.indices {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) {
+                                        villainCardAnimations[i] = true
+                                    }
+                                }
+                            }.onChange(of: equityDrillManager.currentScenario?.villainHand) { oldHand, newHand in
+                                guard let newHand = newHand else { return }
+                                
+                                // Optional: fade out old cards first
+                                villainCardAnimations = [false, false]
+                                
+                                // Delay before dealing new cards
+                                for i in newHand.indices {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) {
+                                        villainCardAnimations[i] = true
+                                    }
+                                }
+                            }
+                    }
+                    else {
                         Color.clear
                             .padding(.top, 20)
                             .frame(height: 207) // adjust height as needed
                     }
+                    
                 }
                 Spacer()
                 
@@ -300,7 +338,7 @@ struct EquityTable: View {
         let user = Profile(username: "Ned Whittleton")
         context.insert(user)
     
-    return EquityTable(street: "Any", villainType: "Any", authManager: authManager)
+    return EquityTable(street: "Any", villainType: "Ranges", authManager: authManager)
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
 }

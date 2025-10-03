@@ -28,7 +28,7 @@ struct MenuView: View {
             $0.typeOfHand == .equity && $0.date >= cutoff
         }
         print("Printing recent equity count: \(recentEquityHands.count)")
-        return recentEquityHands.count >= 20
+        return recentEquityHands.count >= 200
     }
 
     var body: some View {
@@ -153,8 +153,9 @@ struct MenuView: View {
     
     private func presentEquityDrillFlow() {
         if !authManager.isAuthenticated {
+            navigateToEquityDrill = true
             // present the create account flow
-            showCreateAccount = true
+            // showCreateAccount = true
             return
         }
         

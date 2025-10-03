@@ -59,14 +59,20 @@ class EquityDrillManager: ObservableObject {
     }
     
     private func createScenario() async -> EquityScenario? {
-        let allKeys = rangeHelper.getKeys()
-        guard let randomKey = allKeys.randomElement() else { return nil }
+        // Randomly selects a key
         
+        
+        // Dealing hands to players
         let deck = Deck()
         let heroHand = [deck.dealCard(), deck.dealCard()]
         guard heroHand.count == 2 else { return nil }
+        
+        var selectedVillainType = villainType
+        if villainType == "Any" {
+            selectedVillainType = ["Cards", "Ranges"].randomElement()!
+        }
+        
         var selectedStreet = street
-        print("Selected street: \(street)")
         if street == "Any" {
             selectedStreet = ["Preflop", "Flop", "Turn"].randomElement()!
         }
@@ -81,25 +87,54 @@ class EquityDrillManager: ObservableObject {
             }
         }
         
-        let villainRange = rangeHelper.rangesFromKey(key: randomKey)
-        
-        if villainRange.isEmpty {
-            fatalError("No range found for \(randomKey)")
+        // Either assign villain hand or range
+        var villainHand: [Card]?
+        var villainRange: [String]?
+        if selectedVillainType == "Cards" {
+            villainHand = [deck.dealCard(), deck.dealCard()]
+        } else {
+            let allKeys = rangeHelper.getKeys()
+            guard let randomKey = allKeys.randomElement() else { return nil }
+            villainRange = rangeHelper.rangesFromKey(key: randomKey)
+            if villainRange?.isEmpty == true {
+                fatalError("No range found for \(randomKey)")
+            }
         }
+        
+        print("Fetching equity for: \(selectedVillainType), \(selectedStreet)")
         
         // Fetch equity asynchronously
         do {
+            var response: EquityResponse?
             // 1. Use try await to call the async function directly
-            let response = try await equityAPI.fetchEquityRange(
-                heroHole: [heroHand[0].toString(), heroHand[1].toString()],
-                villainRange: villainRange,
-                board: board.map { $0.toString() } // Ensure board is also mapped to strings
-            )
+            if selectedVillainType == "Ranges" {
+                guard let villainRange else {
+                    fatalError("Villain range is nil")
+                }
+                response = try await equityAPI.fetchEquityRange(
+                    heroHole: [heroHand[0].toString(), heroHand[1].toString()],
+                    villainRange: villainRange,
+                    board: board.map { $0.toString() } // Ensure board is also mapped to strings
+                )
+            } else {
+                guard let villainHand else {
+                    fatalError("Villain hand is nil")
+                }
+                response = try await equityAPI.fetchEquityHand(
+                    heroHole: [heroHand[0].toString(), heroHand[1].toString()],
+                    villainHole: [villainHand[0].toString(), villainHand[1].toString()],
+                    board: board.map { $0.toString() } // Ensure board is also mapped to strings
+                )
+            }
+            guard let response else {
+                fatalError("Equity response is nil")
+            }
             
             // 2. Process the successful response
             let correctEquityRange = "\(response.low_equity)% - \(response.high_equity)%"
             let scenario = EquityScenario(
                 heroHand: heroHand,
+                villainHand: villainHand,
                 villainRange: villainRange,
                 board: board,
                 correctEquityRange: correctEquityRange,
@@ -196,11 +231,31 @@ class EquityDrillManager: ObservableObject {
 // MARK: - Equity Scenario Struct
 struct EquityScenario {
     let heroHand: [Card]
-    let villainHand: [Card]? = nil
+    let villainHand: [Card]?
     let villainRange: [String]?
     let board: [Card]
     let correctEquityRange: String
     let lowEquity: Int
     let highEquity: Int
-    let options: [String]   // includes correct + 3 distractors
+    let options: [String]
+    
+    init(
+        heroHand: [Card],
+        villainHand: [Card]? = nil,
+        villainRange: [String]? = nil,
+        board: [Card] = [],
+        correctEquityRange: String,
+        lowEquity: Int,
+        highEquity: Int,
+        options: [String]
+    ) {
+        self.heroHand = heroHand
+        self.villainHand = villainHand
+        self.villainRange = villainRange
+        self.board = board
+        self.correctEquityRange = correctEquityRange
+        self.lowEquity = lowEquity
+        self.highEquity = highEquity
+        self.options = options
+    }
 }
