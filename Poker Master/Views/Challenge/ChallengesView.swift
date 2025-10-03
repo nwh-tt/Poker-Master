@@ -48,7 +48,7 @@ struct ChallengesView: View {
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let container = try! ModelContainer(
             for: schema,

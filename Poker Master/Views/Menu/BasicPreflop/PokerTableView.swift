@@ -197,7 +197,7 @@ struct PokerTableView: View {
             .edgesIgnoringSafeArea(.all)
             .onAppear {
                 gameManager.setContext(context)
-                gameManager.setProfile(profile: userProfile.user)
+                gameManager.setProfile(profile: userProfile.profile)
                 Task {
                     await gameManager.startGame()
                 }
@@ -238,7 +238,7 @@ extension View {
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
@@ -246,7 +246,7 @@ extension View {
         let context = ModelContext(container)
 
         // Add some mock data so the preview isn't empty
-        let user = User(username: "Ned Whittleton")
+        let user = Profile(username: "Ned Whittleton")
         context.insert(user)
 
     return PokerTableView(speed: 4.5, heroPosition: "any", action: "any", size: "6")
@@ -261,7 +261,7 @@ extension View {
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
@@ -269,7 +269,7 @@ extension View {
         let context = ModelContext(container)
 
         // Add some mock data so the preview isn't empty
-        let user = User(username: "Ned Whittleton")
+        let user = Profile(username: "Ned Whittleton")
         context.insert(user)
 
     return PokerTableView(speed: 4.5, heroPosition: "any", action: "any", size: "9")

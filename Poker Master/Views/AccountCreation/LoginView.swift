@@ -36,22 +36,6 @@ struct LoginView: View {
             
             Spacer()
             
-            // Apple Sign In Button
-            SignInWithAppleButton(.signIn) { request in
-                request.requestedScopes = [.fullName, .email]
-            } onCompletion: { result in
-                switch result {
-                case .success(let authResults):
-                    self.handleAppleSignIn(authResults)
-                    isSignedIn = true
-                case .failure(let error):
-                    print("Authorization failed: \(error.localizedDescription)")
-                }
-            }
-            .signInWithAppleButtonStyle(.white) // .black, .whiteOutline also available
-            .frame(height: 50)
-            .cornerRadius(10)
-            .padding(.horizontal, 40)
             
             Button(action: {
                 dismiss()
@@ -75,31 +59,6 @@ struct LoginView: View {
             .ignoresSafeArea()
         )
     }
-    
-    private func handleAppleSignIn(_ authResults: ASAuthorization) {
-            guard let appleIDCredential = authResults.credential as? ASAuthorizationAppleIDCredential else {
-                print("Unable to get AppleID Credential")
-                return
-            }
-            
-            // Get identity token as string
-            if let identityTokenData = appleIDCredential.identityToken,
-               let identityTokenString = String(data: identityTokenData, encoding: .utf8) {
-                
-                // Save token permanently using Keychain via LoginService
-                let saved = LoginService.shared.saveToken(identityTokenString)
-                print("Token saved permanently:", saved)
-                
-                // Optional: store userIdentifier if you want to track the user
-                let userId = appleIDCredential.user
-                print("Apple userIdentifier:", userId)
-                
-                // Update app state
-                // isSignedIn = true
-            } else {
-                print("Failed to get identity token from AppleIDCredential")
-            }
-        }
 }
 
 #Preview {

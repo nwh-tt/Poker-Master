@@ -15,6 +15,7 @@ struct EquitySettingsView: View {
         
         @State private var selectedStreet: String = "Any"
         @State private var selectedEquityType: String = "Any"
+        @EnvironmentObject var authManager: AuthManager
         
         var body: some View {
             NavigationStack {
@@ -52,7 +53,7 @@ struct EquitySettingsView: View {
                     
                     // START BUTTON
                     NavigationLink(
-                        destination: EquityTable(street: selectedStreet) // example
+                        destination: EquityTable(street: selectedStreet, villainType: selectedEquityType, authManager: authManager)
                             .toolbar(.hidden, for: .tabBar)
                             .id(UUID())
                     ) {
@@ -84,5 +85,7 @@ struct EquitySettingsView: View {
 }
 
 #Preview {
+    @Previewable @StateObject var authManager = AuthManager()
     EquitySettingsView()
+        .environmentObject(authManager)
 }

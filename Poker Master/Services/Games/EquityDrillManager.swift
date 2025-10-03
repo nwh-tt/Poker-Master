@@ -14,6 +14,7 @@ class EquityDrillManager: ObservableObject {
     @Published var roundsPlayed: Int = 0
     @Published var equityReady: Bool = false
     @Published var currentScenario: EquityScenario? = nil
+    let equityAPI: EquityAPI
     var context: ModelContext?
     
     var betNumber: Int = 1
@@ -25,9 +26,12 @@ class EquityDrillManager: ObservableObject {
     private let queueSize = 3
     
     var street: String = "Any"
+    var villainType: String = "Any" // Any, Ranges, Cards
     
-    init(street: String) {
+    init(street: String, villainType: String, authManager: AuthManager) {
         self.street = street
+        self.villainType = villainType
+        self.equityAPI = EquityAPI(authManager: authManager)
         // Load in the first scenario
         Task { @MainActor in
                 // Load the first scenario
@@ -84,24 +88,35 @@ class EquityDrillManager: ObservableObject {
         }
         
         // Fetch equity asynchronously
-        return await withCheckedContinuation { (continuation: CheckedContinuation<EquityScenario?, Never>) in
-            fetchEquityRange(heroHole: [heroHand[0].toString(), heroHand[1].toString()], villainRange: villainRange) { response in
-                guard let response = response else {
-                    continuation.resume(returning: nil as EquityScenario?)
-                    return
-                }
-                let correctEquityRange = "\(response.low_equity)% - \(response.high_equity)%"
-                let scenario = EquityScenario(
-                    heroHand: heroHand,
-                    villainRange: villainRange,
-                    board: board,
-                    correctEquityRange: correctEquityRange,
-                    lowEquity: response.low_equity,
-                    highEquity: response.high_equity,
-                    options: self.getEquityOptions(correctEquityHigh: response.high_equity, correctEquityLow: response.low_equity, correctEquityRange: correctEquityRange)
+        do {
+            // 1. Use try await to call the async function directly
+            let response = try await equityAPI.fetchEquityRange(
+                heroHole: [heroHand[0].toString(), heroHand[1].toString()],
+                villainRange: villainRange,
+                board: board.map { $0.toString() } // Ensure board is also mapped to strings
+            )
+            
+            // 2. Process the successful response
+            let correctEquityRange = "\(response.low_equity)% - \(response.high_equity)%"
+            let scenario = EquityScenario(
+                heroHand: heroHand,
+                villainRange: villainRange,
+                board: board,
+                correctEquityRange: correctEquityRange,
+                lowEquity: response.low_equity,
+                highEquity: response.high_equity,
+                options: self.getEquityOptions(
+                    correctEquityHigh: response.high_equity,
+                    correctEquityLow: response.low_equity,
+                    correctEquityRange: correctEquityRange
                 )
-                continuation.resume(returning: scenario)
-            }
+            )
+            
+            return scenario
+        } catch {
+            // 3. Handle any error thrown (401, network failure, decoding failure, etc.)
+            print("Error fetching equity in createScenario: \(error.localizedDescription)")
+            return nil // Return nil on failure
         }
     }
     
@@ -181,7 +196,8 @@ class EquityDrillManager: ObservableObject {
 // MARK: - Equity Scenario Struct
 struct EquityScenario {
     let heroHand: [Card]
-    let villainRange: [String]
+    let villainHand: [Card]? = nil
+    let villainRange: [String]?
     let board: [Card]
     let correctEquityRange: String
     let lowEquity: Int

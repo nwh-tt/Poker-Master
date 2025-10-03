@@ -26,7 +26,7 @@ class SimplePreFlopManager: ObservableObject {
     
     // Database values
     var game: Game
-    var profile: User? = nil
+    var profile: Profile? = nil
     
     let deck: Deck = Deck()
     var turn: Int = 0
@@ -77,7 +77,7 @@ class SimplePreFlopManager: ObservableObject {
         stageTheGame()
     }
     
-    func setProfile(profile: User) {
+    func setProfile(profile: Profile) {
         self.profile = profile
         print("Profile set to: \(profile.username)")
     }

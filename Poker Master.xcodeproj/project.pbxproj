@@ -8,11 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		B6131C3B2E8706E300E9ACFA /* FeatureComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6131C3A2E8706E300E9ACFA /* FeatureComparisonView.swift */; };
+		B6131C412E89F31D00E9ACFA /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = B6131C402E89F31D00E9ACFA /* FirebaseAnalytics */; };
+		B6131C432E89F31D00E9ACFA /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = B6131C422E89F31D00E9ACFA /* FirebaseAnalyticsCore */; };
+		B6131C452E89F31D00E9ACFA /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = B6131C442E89F31D00E9ACFA /* FirebaseAnalyticsIdentitySupport */; };
+		B6131C472E89F31D00E9ACFA /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = B6131C462E89F31D00E9ACFA /* FirebaseAppCheck */; };
+		B6131C4B2E89FAEF00E9ACFA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6131C4A2E89FAEF00E9ACFA /* GoogleService-Info.plist */; };
+		B6131C4D2E8A221A00E9ACFA /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B6131C4C2E8A221A00E9ACFA /* FirebaseAuth */; };
 		B631BA472BD0968F00F9FCAA /* PlayerPositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */; };
 		B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C42E7DA494005F78BA /* CreateAccountView.swift */; };
 		B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C62E7DA49D005F78BA /* LoginView.swift */; };
 		B645C6CA2E7DA626005F78BA /* AnimatedGradient in Frameworks */ = {isa = PBXBuildFile; productRef = B645C6C92E7DA626005F78BA /* AnimatedGradient */; };
-		B645C6CC2E7DA9B7005F78BA /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6CB2E7DA9B7005F78BA /* LoginService.swift */; };
 		B649ED4A2BD1B0C900157267 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED492BD1B0C900157267 /* Player.swift */; };
 		B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED4C2BD1B2E100157267 /* GameManager.swift */; };
 		B649ED4F2BD5E47300157267 /* GameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED4E2BD5E47300157267 /* GameManagerTests.swift */; };
@@ -64,7 +69,6 @@
 		B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403772DA07150008A83E8 /* RangesFileManager.swift */; };
 		B6D4037A2DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403792DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift */; };
 		B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */; };
-		B6EC8AC42E61FA3100C1AC9B /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC32E61FA3100C1AC9B /* UserDataManager.swift */; };
 		B6EC8AC62E621C1C00C1AC9B /* UserProfileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */; };
 		B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */; };
 		B6EC8ACB2E6B3B6400C1AC9B /* RangesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8ACA2E6B3B6400C1AC9B /* RangesView.swift */; };
@@ -100,10 +104,10 @@
 /* Begin PBXFileReference section */
 		B6131C3A2E8706E300E9ACFA /* FeatureComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureComparisonView.swift; sourceTree = "<group>"; };
 		B6131C3C2E89BA7700E9ACFA /* Poker Master.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Poker Master.entitlements"; sourceTree = "<group>"; };
+		B6131C4A2E89FAEF00E9ACFA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B631BA462BD0968F00F9FCAA /* PlayerPositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPositionView.swift; sourceTree = "<group>"; };
 		B645C6C42E7DA494005F78BA /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
 		B645C6C62E7DA49D005F78BA /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		B645C6CB2E7DA9B7005F78BA /* LoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
 		B649ED492BD1B0C900157267 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		B649ED4C2BD1B2E100157267 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		B649ED4E2BD5E47300157267 /* GameManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManagerTests.swift; sourceTree = "<group>"; };
@@ -158,7 +162,6 @@
 		B6D403772DA07150008A83E8 /* RangesFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesFileManager.swift; sourceTree = "<group>"; };
 		B6D403792DAC34F4008A83E8 /* SimplePreFlopManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManagerTests.swift; sourceTree = "<group>"; };
 		B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		B6EC8AC32E61FA3100C1AC9B /* UserDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
 		B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileState.swift; sourceTree = "<group>"; };
 		B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopSettingsView.swift; sourceTree = "<group>"; };
 		B6EC8ACA2E6B3B6400C1AC9B /* RangesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesView.swift; sourceTree = "<group>"; };
@@ -178,9 +181,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6131C472E89F31D00E9ACFA /* FirebaseAppCheck in Frameworks */,
 				B690E22A2E7DE52F007C601E /* GoogleMobileAds in Frameworks */,
+				B6131C432E89F31D00E9ACFA /* FirebaseAnalyticsCore in Frameworks */,
 				B6EC8ADB2E738E3A00C1AC9B /* ActivityIndicatorView in Frameworks */,
+				B6131C4D2E8A221A00E9ACFA /* FirebaseAuth in Frameworks */,
+				B6131C452E89F31D00E9ACFA /* FirebaseAnalyticsIdentitySupport in Frameworks */,
 				B6D4036F2D9340A3008A83E8 /* ConfettiSwiftUI in Frameworks */,
+				B6131C412E89F31D00E9ACFA /* FirebaseAnalytics in Frameworks */,
 				B645C6CA2E7DA626005F78BA /* AnimatedGradient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -233,7 +241,6 @@
 				B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */,
 				B6EC8AE02E78A71600C1AC9B /* Auth.swift */,
 				B6EC8AE22E7B89D600C1AC9B /* StoreManager.swift */,
-				B645C6CB2E7DA9B7005F78BA /* LoginService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -337,7 +344,6 @@
 			isa = PBXGroup;
 			children = (
 				B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */,
-				B6EC8AC32E61FA3100C1AC9B /* UserDataManager.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -429,6 +435,7 @@
 		B697E7732BC849E700191C7A /* Poker Master */ = {
 			isa = PBXGroup;
 			children = (
+				B6131C4A2E89FAEF00E9ACFA /* GoogleService-Info.plist */,
 				B6131C3C2E89BA7700E9ACFA /* Poker Master.entitlements */,
 				B67C5E5C2E4183170017ECBF /* State */,
 				B67C5E592E283FED0017ECBF /* Poker-Master-Info.plist */,
@@ -542,6 +549,11 @@
 				B6EC8ADA2E738E3A00C1AC9B /* ActivityIndicatorView */,
 				B645C6C92E7DA626005F78BA /* AnimatedGradient */,
 				B690E2292E7DE52F007C601E /* GoogleMobileAds */,
+				B6131C402E89F31D00E9ACFA /* FirebaseAnalytics */,
+				B6131C422E89F31D00E9ACFA /* FirebaseAnalyticsCore */,
+				B6131C442E89F31D00E9ACFA /* FirebaseAnalyticsIdentitySupport */,
+				B6131C462E89F31D00E9ACFA /* FirebaseAppCheck */,
+				B6131C4C2E8A221A00E9ACFA /* FirebaseAuth */,
 			);
 			productName = "Poker Master";
 			productReference = B697E7712BC849E700191C7A /* Poker Master.app */;
@@ -620,6 +632,7 @@
 				B6EC8AD92E738E3A00C1AC9B /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 				B645C6C82E7DA626005F78BA /* XCRemoteSwiftPackageReference "AnimatedGradient" */,
 				B690E2282E7DE52F007C601E /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				B6131C3F2E89F31D00E9ACFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = B697E7722BC849E700191C7A /* Products */;
 			projectDirPath = "";
@@ -638,6 +651,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6D403762DA07098008A83E8 /* Ranges.json in Resources */,
+				B6131C4B2E89FAEF00E9ACFA /* GoogleService-Info.plist in Resources */,
 				B697E77E2BC849E800191C7A /* Preview Assets.xcassets in Resources */,
 				B697E77B2BC849E800191C7A /* Assets.xcassets in Resources */,
 				B67C5E582E283F600017ECBF /* Exo2-VariableFont_wght.ttf in Resources */,
@@ -673,7 +687,6 @@
 				B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */,
 				B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */,
 				B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */,
-				B6EC8AC42E61FA3100C1AC9B /* UserDataManager.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
 				B6EC8AD82E735C4F00C1AC9B /* EquitySettingsView.swift in Sources */,
 				B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */,
@@ -682,7 +695,6 @@
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
 				B6131C3B2E8706E300E9ACFA /* FeatureComparisonView.swift in Sources */,
 				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
-				B645C6CC2E7DA9B7005F78BA /* LoginService.swift in Sources */,
 				B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */,
 				B67C5E4F2E2806DD0017ECBF /* StatsView.swift in Sources */,
 				B67C5E472E2802D70017ECBF /* MainView.swift in Sources */,
@@ -1056,6 +1068,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B6131C3F2E89F31D00E9ACFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
 		B645C6C82E7DA626005F78BA /* XCRemoteSwiftPackageReference "AnimatedGradient" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/AnimatedGradient";
@@ -1091,6 +1111,30 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B6131C402E89F31D00E9ACFA /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6131C3F2E89F31D00E9ACFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		B6131C422E89F31D00E9ACFA /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6131C3F2E89F31D00E9ACFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		B6131C442E89F31D00E9ACFA /* FirebaseAnalyticsIdentitySupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6131C3F2E89F31D00E9ACFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsIdentitySupport;
+		};
+		B6131C462E89F31D00E9ACFA /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6131C3F2E89F31D00E9ACFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		B6131C4C2E8A221A00E9ACFA /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FirebaseAuth;
+		};
 		B645C6C92E7DA626005F78BA /* AnimatedGradient */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B645C6C82E7DA626005F78BA /* XCRemoteSwiftPackageReference "AnimatedGradient" */;

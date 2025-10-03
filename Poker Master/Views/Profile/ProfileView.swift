@@ -9,17 +9,20 @@ import SwiftData
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var context
+    
     @EnvironmentObject var userProfileState: UserProfileState
     @EnvironmentObject var storeManager: StoreManager
+    @EnvironmentObject var authManager: AuthManager
 
     @State private var tempUsername: String = ""
     @State private var isEditing: Bool = false
     @State private var showPremiumPopup: Bool = false
+    @State private var showCreateAccount: Bool = false
     
     @Query var games: [Game]
     
-    var currentUser: User {
-        userProfileState.user
+    var currentUser: Profile {
+        userProfileState.profile
     }
     // MARK: - Mock Data
     @State private var nextLevelXP: Double = 500
@@ -92,7 +95,7 @@ struct ProfileView: View {
                                     .submitLabel(.done)
                                 
                                 Button(action: {
-                                    tempUsername = userProfileState.user.username
+                                    tempUsername = userProfileState.profile.username
                                     isEditing = false
                                 }) {
                                     Image(systemName: "xmark.circle.fill")
@@ -101,7 +104,7 @@ struct ProfileView: View {
                                 }
                                 
                                 Button(action: {
-                                    userProfileState.user.username = tempUsername
+                                    userProfileState.profile.username = tempUsername
                                     isEditing = false
                                     try? context.save()
                                 }) {
@@ -111,13 +114,13 @@ struct ProfileView: View {
                                 }
                                 
                             } else {
-                                Text(userProfileState.user.username)
+                                Text(userProfileState.profile.username)
                                     .font(.title2)
                                     .fontWeight(.semibold)
                                     .foregroundColor(.white)
                                 
                                 Button(action: {
-                                    tempUsername = userProfileState.user.username
+                                    tempUsername = userProfileState.profile.username
                                     isEditing = true
                                 }) {
                                     Image(systemName: "pencil")
@@ -160,26 +163,6 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal)
                     
-                    // MARK: - Theme Selector Scaffold
-                    //                VStack(alignment: .leading, spacing: 8) {
-                    //                    Text("Theme")
-                    //                        .font(.headline)
-                    //                        .foregroundColor(.white)
-                    //                    HStack {
-                    //                        Text(selectedTheme)
-                    //                            .foregroundColor(.gray)
-                    //                        Spacer()
-                    //                        Button("Change") {
-                    //                            // action to change theme
-                    //                        }
-                    //                        .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
-                    //                        .padding(6)
-                    //                        .background(Color.white.opacity(0.1))
-                    //                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                    //                    }
-                    //                }
-                    //                .padding(.horizontal)
-                    
                     // MARK: - Streak Tracker
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Streak")
@@ -193,38 +176,78 @@ struct ProfileView: View {
                         }
                     }
                     .padding(.horizontal)
-                    if !storeManager.isSubscribed() {
-                        Button(action: {
-                            showPremiumPopup = true
-                        }) {
-                            Text("Go Premium")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(
-                                    LinearGradient(
-                                        colors: [
-                                            Color(red: 19/255, green: 70/255, blue: 50/255),
-                                            Color(red: 50/255, green: 130/255, blue: 80/255)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
+                    VStack {
+                        if !storeManager.isSubscribed() {
+                            Button(action: {
+                                showPremiumPopup = true
+                            }) {
+                                Text("Go Premium")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(
+                                        LinearGradient(
+                                            colors: [
+                                                Color(red: 19/255, green: 70/255, blue: 50/255),
+                                                Color(red: 50/255, green: 130/255, blue: 80/255)
+                                            ],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
                                     )
-                                )
-                                .foregroundColor(.white)
-                                .cornerRadius(12)
-                        }.padding()
+                                    .foregroundColor(.white)
+                                    .cornerRadius(12)
+                            }.padding(.horizontal)
+                        }
+                        if !authManager.isAuthenticated {
+                            Button(action: {
+                                showCreateAccount = true
+                            }) {
+                                Text("Create Account")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .foregroundColor(.white) // Text stays white
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(
+                                                LinearGradient(
+                                                    colors: [
+                                                        Color(red: 19/255, green: 70/255, blue: 50/255),
+                                                        Color(red: 50/255, green: 130/255, blue: 80/255)
+                                                    ],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                ),
+                                                lineWidth: 4
+                                            )
+                                    )
+                            }
+                            .padding(.horizontal)
+                        }
                     }
-                    
                     Spacer()
+                    if authManager.isAuthenticated {
+                        Button(action: {
+                            authManager.signOut()
+                        }) {
+                            Text("Sign Out")
+                                .foregroundColor(.white)
+                                .underline()
+                        }
+                    }
                 }
-                .padding(.bottom, 40)
+                
             }
             .background(Color.black.edgesIgnoringSafeArea(.all))
             .fullScreenCover(isPresented: $showPremiumPopup) {
-                        SubscribeView()
-                    }
-            
+                SubscribeView()
+            }
+
+            .fullScreenCover(isPresented: $showCreateAccount) {
+                CreateAccountView()
+            }
+
             if currentUser.leveledUP {
                     LevelUpOverlay(level: currentUser.level)
                         .transition(.opacity.combined(with: .scale))
@@ -264,12 +287,14 @@ struct ProfileView: View {
 }
 
 #Preview {
+    @Previewable @StateObject var storeManager = StoreManager()
+    @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let container = try! ModelContainer(
             for: schema,
@@ -278,8 +303,7 @@ struct ProfileView: View {
         let context = container.mainContext
     
     // Seed with some test data
-    let sampleUser = User(username: "Ned Whittleton")
-    sampleUser.addXP(amount: 140)
+    let sampleUser = Profile(username: "Ned Whittleton")
     
     // insert one game from yesterday
     let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
@@ -300,4 +324,6 @@ struct ProfileView: View {
         .modelContainer(container)
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
+        .environmentObject(storeManager)
+        .environmentObject(authManager)
 }

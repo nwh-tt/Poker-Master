@@ -73,7 +73,7 @@ struct MainView: View {
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
@@ -81,7 +81,7 @@ struct MainView: View {
         let context = ModelContext(container)
 
         // Add some mock data so the preview isn't empty
-        let user = User(username: "Ned Whittleton")
+        let user = Profile(username: "Ned Whittleton")
         context.insert(user)
 
         return

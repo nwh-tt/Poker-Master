@@ -10,12 +10,17 @@ import SwiftData
 import GoogleMobileAds
 
 struct MenuView: View {
-    @State private var showLogin = false
-    @State private var navigateToEquityDrill = false
-    @State private var showPremiumPopup = false
-    @State private var rewardedAd: RewardedAd?
-    @Query var handLogs: [HandLog]
     @EnvironmentObject var storeManager: StoreManager
+    @EnvironmentObject var authManager: AuthManager
+    
+    @State private var navigateToEquityDrill = false
+    @State private var rewardedAd: RewardedAd?
+    
+    @State private var showPremiumPopup = false
+    @State private var showCreateAccount = false
+    
+    @Query var handLogs: [HandLog]
+    
     
     var needsAd: Bool {
         let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
@@ -125,6 +130,9 @@ struct MenuView: View {
             .fullScreenCover(isPresented: $showPremiumPopup) {
                 SubscribeView()
             }
+            .fullScreenCover(isPresented: $showCreateAccount) {
+                CreateAccountView()
+            }
         }
         .task {
             // await loadRewardedAd()
@@ -144,6 +152,12 @@ struct MenuView: View {
         }
     
     private func presentEquityDrillFlow() {
+        if !authManager.isAuthenticated {
+            // present the create account flow
+            showCreateAccount = true
+            return
+        }
+        
         if needsAd {
             guard let ad = rewardedAd else {
                 print("Rewarded ad not ready")
@@ -170,34 +184,16 @@ struct MenuView: View {
     }
 }
 
-// Wrapper to connect LoginView completion with MenuView navigation
-struct LoginViewWrapper: View {
-    @Binding var isSignedIn: Bool
-    @Binding var showLogin: Bool
-    @Binding var navigate: Bool
-
-    var body: some View {
-        LoginView()
-            .onChange(of: isSignedIn) { newValue, oldValue in
-                if newValue {
-                    // Dismiss login and navigate
-                    showLogin = false
-                    navigate = true
-                }
-            }
-    }
-}
-
-
 
 #Preview {
     @Previewable @StateObject var storeManager = StoreManager()
+    @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
@@ -205,7 +201,7 @@ struct LoginViewWrapper: View {
         let context = ModelContext(container)
 
         // Add some mock data so the preview isn't empty
-        let user = User(username: "Ned Whittleton")
+        let user = Profile(username: "Ned Whittleton")
     
     
     context.insert(user)
@@ -215,5 +211,6 @@ struct LoginViewWrapper: View {
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
         .environmentObject(storeManager)
+        .environmentObject(authManager)
     
 }

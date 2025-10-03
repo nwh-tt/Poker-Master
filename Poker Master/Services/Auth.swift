@@ -1,136 +1,124 @@
 import Foundation
-import DeviceCheck
+import AuthenticationServices
+import FirebaseAuth
+import CryptoKit
 
-struct AuthRequest: Codable {
-    let device_id: String
-}
-
-struct AuthResponse: Codable {
-    let access_token: String
-    let token_type: String
-}
-
-
-class JWTCache {
-    static let shared = JWTCache()
-    private init() {}
-
-    private var token: String?
-    private var expiration: Date?
-    private var isFetching = false
-    private var pendingCompletions: [(String?) -> Void] = []
+class AuthManager: ObservableObject {
+    @Published var user: User? // The current authenticated user
+    @Published var isAuthenticated: Bool = false
     
-    func getDeviceToken(completion: @escaping (Data?) -> Void) {
-        #if targetEnvironment(simulator)
-        // Simulator: return a mock token
-        let mockToken = "simulator-mock-token".data(using: .utf8)
-        completion(mockToken)
-        #else
-        // Real device: generate Apple-verified token
-        DCDevice.current.generateToken { data, error in
-            if let error = error {
-                print("Error generating device token: \(error)")
-                completion(nil)
-                return
+    // States to handle the UI
+    @Published var errorMessage: String? = nil
+    @Published var isLoading: Bool = false
+
+    init() {
+            // Listen for changes in the authentication state
+            Auth.auth().addStateDidChangeListener { [weak self] _, user in
+                self?.user = user
+                self?.isAuthenticated = user != nil
             }
-            completion(data) // Apple-verified device token
         }
-        #endif
-    }
-
-    // Returns a valid token, fetching a new one if needed
-    func getToken(completion: @escaping (String?) -> Void) {
-        if let token = token, let expiration = expiration, expiration > Date() {
-            // Token is valid
-            completion(token)
-            return
+    
+    func getIDToken(forceRefresh: Bool = false) async throws -> String {
+        // 1. Check if a user is currently signed in.
+        guard let user = Auth.auth().currentUser else {
+            // Throw an error if no user is authenticated
+            throw TokenError.userNotAuthenticated
         }
-
-        // If a fetch is already in progress, append the completion to pending list
-        if isFetching {
-            pendingCompletions.append(completion)
-            return
-        }
-
-        isFetching = true
-        pendingCompletions.append(completion)
-        // Get Apple device token
-                getDeviceToken { deviceTokenData in
-                    guard let deviceTokenData = deviceTokenData else {
-                        self.isFetching = false
-                        self.pendingCompletions.forEach { $0(nil) }
-                        self.pendingCompletions.removeAll()
-                        return
-                    }
-
-                    let deviceTokenString = deviceTokenData.base64EncodedString()
-
-                    // Fetch new JWT from backend
-                    self.fetchJWT(deviceId: deviceTokenString) { newToken in
-                        self.isFetching = false
-                        self.token = newToken
-                        if let newToken = newToken {
-                            self.expiration = self.decodeExpiration(from: newToken)
-                        }
-
-                        // Call all pending completions
-                        self.pendingCompletions.forEach { $0(newToken) }
-                        self.pendingCompletions.removeAll()
-                    }
-                }
-    }
-
-    private func fetchJWT(deviceId: String, completion: @escaping (String?) -> Void) {
-        guard let url = URL(string: "\(apiPrefix)/api/auth/token") else {
-            completion(nil)
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = ["device_id": deviceId]
-
+        
         do {
-            request.httpBody = try JSONEncoder().encode(body)
+            // 2. Fetch the ID Token asynchronously.
+            // forceRefresh=true ensures the token is fresh, but often
+            // set to false unless an immediate refresh is needed.
+            let token = try await user.getIDTokenResult(forcingRefresh: forceRefresh).token
+            
+            // 3. Return the token string
+            return token
+            
         } catch {
-            print("Error encoding body: \(error)")
-            completion(nil)
-            return
+            // 4. Handle token retrieval failure (e.g., network error)
+            print("Failed to retrieve ID Token: \(error.localizedDescription)")
+            throw error
         }
-
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            guard let data = data, error == nil else {
-                print("Request error: \(String(describing: error))")
-                completion(nil)
-                return
-            }
-
-            do {
-                let response = try JSONDecoder().decode(AuthResponse.self, from: data)
-                completion(response.access_token)
-            } catch {
-                print("Decoding error: \(error)")
-                completion(nil)
-            }
-        }.resume()
     }
 
-    private func decodeExpiration(from jwt: String) -> Date? {
-        let segments = jwt.split(separator: ".")
-        guard segments.count == 3 else { return nil }
+    // MARK: - Sign In
+    func signIn(email: String, password: String) {
+        errorMessage = nil // Clear any previous errors
+        
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+            if let error = error {
+                // Handle sign-in failure (e.g., incorrect password, no user)
+                self?.errorMessage = error.localizedDescription
+                self?.isAuthenticated = false
+            } else {
+                // Sign-in successful
+                print("User signed in with UID: \(authResult?.user.uid ?? "N/A")")
+                self?.isAuthenticated = true
+                
+                // TODO: Here you would also create/fetch your AppUser SwiftData model
+                // based on the successful Firebase sign-in.
+            }
+        }
+    }
+    
+    
+    // MARK: - Sign Up (User Creation)
+    func signUp(email: String, password: String) {
+        errorMessage = nil
+        isLoading = true
+        
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
+            DispatchQueue.main.async { // Ensure UI updates are on the main thread
+                self?.isLoading = false
+                if let error = error {
+                    // Sign-up failed
+                    self?.errorMessage = error.localizedDescription
+                    self?.isAuthenticated = false
+                } else {
+                    // Sign-up succeeded, user is automatically logged in
+                    print("New user created: \(authResult?.user.uid ?? "N/A")")
+                    self?.isAuthenticated = true
+                    // The view will automatically dismiss/transition because isAuthenticated changed
+                }
+            }
+        }
+    }
+       
+       // MARK: - Sign Out
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            isAuthenticated = false
+        } catch let error {
+            errorMessage = error.localizedDescription
+        }
+    }
+    
+    // MARK: Apple Sign in functions
+    func signInWithApple(credential: AuthCredential) {
+        Auth.auth().signIn(with: credential) { (authResult, error) in
+            if (error != nil) {
+                // Error. If error.code == .MissingOrInvalidNonce, make sure
+                // you're sending the SHA256-hashed nonce as a hex string with
+                // your request to Apple.
+                print(error?.localizedDescription as Any)
+                return
+            }
+            print("signed in")
+            self.isAuthenticated = true
+        }
+    }
+}
 
-        let payloadSegment = segments[1]
-        var base64 = String(payloadSegment)
-            .replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        while base64.count % 4 != 0 { base64 += "=" }
-
-        guard let data = Data(base64Encoded: base64),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let exp = json["exp"] as? TimeInterval
-        else { return nil }
-
-        return Date(timeIntervalSince1970: exp)
+// Custom error to make token retrieval errors clear
+enum TokenError: Error, LocalizedError {
+    case userNotAuthenticated
+    
+    var errorDescription: String? {
+        switch self {
+        case .userNotAuthenticated:
+            return "The user is not currently authenticated."
+        }
     }
 }

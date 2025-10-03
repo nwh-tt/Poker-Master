@@ -24,13 +24,14 @@ struct EquityTable: View {
     @State private var showGameOver: Bool = false
     
     let street: String
+    let villainType: String
     let game: Game
     
-    init(street: String) {
+    init(street: String, villainType: String, authManager: AuthManager) {
         self.street = street
+        self.villainType = villainType
         self.game = Game()
-        _equityDrillManager = StateObject(wrappedValue: EquityDrillManager(street: street))
-        
+        _equityDrillManager = StateObject(wrappedValue: EquityDrillManager(street: street, villainType: villainType, authManager: authManager))
     }
     
     var body: some View {
@@ -282,12 +283,13 @@ struct EquityTable: View {
 
 
 #Preview {
+    @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
@@ -295,10 +297,10 @@ struct EquityTable: View {
         let context = ModelContext(container)
 
         // Add some mock data so the preview isn't empty
-        let user = User(username: "Ned Whittleton")
+        let user = Profile(username: "Ned Whittleton")
         context.insert(user)
     
-    return EquityTable(street: "Any")
+    return EquityTable(street: "Any", villainType: "Any", authManager: authManager)
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
 }

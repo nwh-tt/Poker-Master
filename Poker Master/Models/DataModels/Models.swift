@@ -11,9 +11,9 @@ import Foundation
 
 
 
-// MARK: - User Definition
+// MARK: - Profile Definition
 @Model
-class User {
+class Profile {
     @Attribute(.unique) var id: UUID
     var username: String
     var email: String? = nil // Not required

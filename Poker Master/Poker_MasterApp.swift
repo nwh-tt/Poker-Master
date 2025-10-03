@@ -8,16 +8,28 @@
 import SwiftUI
 import SwiftData
 import GoogleMobileAds
+import FirebaseCore
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+  func application(_ application: UIApplication,
+                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    FirebaseApp.configure()
+
+    return true
+  }
+}
 
 @main
 struct Poker_MasterApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var userProfile: UserProfileState
     @StateObject private var storeManager: StoreManager
+    @StateObject private var authManager = AuthManager()
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
-            User.self,
+            Profile.self,
             Challenges.self,
             Game.self,
             HandLog.self
@@ -45,6 +57,7 @@ struct Poker_MasterApp: App {
                 .preferredColorScheme(.dark)
                 .environmentObject(userProfile)
                 .environmentObject(storeManager)
+                .environmentObject(authManager)
                 .task {    // This runs once when ContentView appears
                     let context = ModelContext(sharedModelContainer)
                     await ChallengeDataManager.syncDefaultChallenges(context: context)

@@ -5,8 +5,8 @@ struct HomeView: View {
     // MARK: - Environment
     @EnvironmentObject var userProfileState: UserProfileState
     
-    var userProfile: User {
-        userProfileState.user
+    var userProfile: Profile {
+        userProfileState.profile
     }    // MARK: - Sample Data
     // Sample articles
     // Sample categorized articles
@@ -188,7 +188,7 @@ struct ActionButton: View {
             HandLog.self,
             Challenges.self,
             Item.self,
-            User.self
+            Profile.self
         ])
         let container = try! ModelContainer(
             for: schema,
@@ -197,7 +197,7 @@ struct ActionButton: View {
         let context = container.mainContext
     
     // Seed with some test data
-    let sampleUser = User(username: "Ned Whittleton")
+    let sampleUser = Profile(username: "Ned Whittleton")
     sampleUser.addXP(amount: 140)
     
     // insert one game from yesterday
