@@ -11,10 +11,14 @@ import Foundation
 class RangeHelper {
     private var ranges: [String: [String: [String]]]
     
-    let positionOrders: [String: [String]] = [
+    static let positionsOrderGlobal: [String: [String]] = [
             "6": ["UTG", "MP", "CO", "BTN", "SB", "BB"],
             "9": ["UTG", "UTG1", "UTG2", "MP1", "MP2", "CO", "BTN", "SB", "BB"]
         ]
+    
+    var positionOrders: [String: [String]] {
+        RangeHelper.positionsOrderGlobal
+    }
     
     init(ranges: [String: [String: [String]]] = RangesFileManager.loadRanges()) {
             self.ranges = ranges

@@ -15,32 +15,31 @@ struct CardBackView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(cardColor)
+            // Background gradient
+            RoundedRectangle(cornerRadius: 4)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(red: 0.05, green: 0.05, blue: 0.15),
+                                 Color(red: 0.15, green: 0.15, blue: 0.3)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
                 .frame(width: 18, height: 25.2)
-                .overlay(
-                    Image(systemName: "suit.diamond.fill")
-                        .resizable()
-                        .frame(width: 18, height: 25)
-                        .foregroundColor(borderColor)
-                )
-                .overlay(
-                    Image(systemName: "suit.diamond.fill")
-                        .resizable()
-                        .frame(width: 12, height: 6)
-                        .foregroundColor(cardColor)
-                )
-                .overlay(
-                    Image(systemName: "suit.diamond.fill")
-                        .resizable()
-                        .frame(width: 6, height: 15)
-                        .foregroundColor(cardColor)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 2)
-                        .stroke(Color.white, lineWidth: 1)
-                )
-        }
+                .shadow(color: .black.opacity(0.5), radius: 3, x: 2, y: 2)
+            
+            
+            // Central emblem
+            Image(systemName: "suit.diamond.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 8)
+                .foregroundColor(Color.white.opacity(0.8))
+            
+            // Border
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(Color.white.opacity(0.8), lineWidth: 1)
+        }.frame(width: 18, height: 25.2)
     }
 }
 

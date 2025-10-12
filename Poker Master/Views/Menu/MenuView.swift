@@ -46,7 +46,7 @@ struct MenuView: View {
                         .frame(width: 25, height: 25)
                 }
                 .foregroundColor(.white)
-                .padding(.bottom, 120)
+                .padding(.bottom, 60)
                 
                 VStack(spacing: 10) {
                     NavigationLink {
@@ -83,6 +83,16 @@ struct MenuView: View {
                                 adLockedGame: needsAd
                             )
                         }
+                    }
+                    
+                    NavigationLink {
+                        AITable(tableSize: "6")
+                    } label: {
+                        MenuOption(
+                            gameName: "Play AI",
+                            gameDescription: "Play against a table of unique AI",
+                            gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7)
+                        )
                     }
                     
                     MenuOption(

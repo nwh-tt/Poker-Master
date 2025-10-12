@@ -8,10 +8,6 @@ struct BoardView: View {
     
     var body: some View {
         VStack {
-            Text("Board")
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.white)
-            
             HStack(spacing: 4) {
                 ForEach(0..<5, id: \.self) { index in
                     if index < displayedBoard.count {
