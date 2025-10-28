@@ -63,7 +63,6 @@ struct PokerTableView: View {
                 correctMoveMade = .none // Reset button color
                 // check if handsPlayed > handLimit
                 if (gameManager.handsPlayed >= 10) {
-                    // TODO: Show end of game screen
                     return
                 }
                 gameManager.resetAndStartNewGame()

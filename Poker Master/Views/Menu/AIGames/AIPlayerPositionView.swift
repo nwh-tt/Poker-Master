@@ -12,6 +12,7 @@ struct AIPlayerPositionView: View {
     // set default position to right
     let direction: String
     let isUser: Bool
+    let round: Int
     
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     
@@ -21,7 +22,7 @@ struct AIPlayerPositionView: View {
         let cardOffsets = direction == "right" ? [45, 67] : [-67, -45]
         // let amount = player.folded ? "Fold" : "\(Int(player.stack)) BB"
         let textColor = player.lastMove() == Action.fold ? Color.gray : Color.white
-        if player.isOutOfMoney() {
+        if false {
             ZStack {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.clear)
@@ -58,28 +59,37 @@ struct AIPlayerPositionView: View {
                             .fontWeight(.bold)
                             .foregroundColor(textColor)
                     )
-                if player.lastMove() != .none {
-                    Text(
-                        player.lastMove() == .raise
-                        ? "Raise: \(String(format: "%.1f", player.lastBet()))BB"
-                        : player.lastMove().rawValue.capitalizeFirst
-                    )
-                    .font(.system(size: 12))
-                    .fontWeight(.heavy)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
+                ZStack {
+                    if player.lastMoveForRound(round: round) != .none {
+                        Text(
+                            player.lastMoveForRound(round: round) == .raise
+                            ? "Raise: \(String(format: "%.1f", player.lastBet(round: round)))BB"
+                            : player.lastMoveForRound(round: round).rawValue.capitalizeFirst
+                        )
+                        .font(.system(size: 12))
+                        .fontWeight(.heavy)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
                                 .fill(Color.black.opacity(0.6))
                                 .shadow(color: Color.white.opacity(0.15), radius: 4, x: 0, y: 0)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 10)
                                         .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                 )
-                    )
-                    .offset(y: 30)
+                        )
+                        .offset(y: 30)
+                        .opacity(1)
+                    } else {
+                        // Invisible placeholder to allow smooth transition
+                        Text("")
+                            .opacity(0)
+                            .offset(y: 30)
+                    }
                 }
+                .animation(.easeInOut(duration: 0.4), value: player.lastMoveForRound(round: round))
                 if (!isUser && player.lastMove() != Action.fold) {
                     CardBackView()
                         .offset(CGSize(width: cardOffsets[0], height: -30))
@@ -95,6 +105,6 @@ struct AIPlayerPositionView: View {
 #Preview {
     let player = AIPlayer(name: "ATW", position: "BB", stack: 100.0)
     //player.raise(amountRaisingTo: 2.5)
-    player.raise(amount: 10, round: 0)
-    return AIPlayerPositionView(player: player , direction: "right", isUser: true)
+    player.raise(amount: 100, round: 0)
+    return AIPlayerPositionView(player: player , direction: "right", isUser: true, round: 0)
 }

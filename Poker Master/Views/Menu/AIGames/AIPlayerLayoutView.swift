@@ -9,12 +9,12 @@ import SwiftUI
 struct AIPlayerLayoutView: View {
     let players: [AIPlayer]   // from gameManager
     let size: String        // "6" or "9"
+    let round: Int
     
-    init(players: [AIPlayer]) {
+    init(players: [AIPlayer], round: Int) {
         self.players = players
         self.size = String(players.count)
-        
-        print("Players count: \(players.count)")
+        self.round = round
     }
     
     var body: some View {
@@ -33,27 +33,27 @@ struct AIPlayerLayoutView: View {
     
     private var sixMaxLayout: some View {
         VStack(alignment: .center) {
-            AIPlayerPositionView(player: players[3], direction: "right", isUser: false).padding(.top, 14)
+            AIPlayerPositionView(player: players[3], direction: "right", isUser: false, round: round).padding(.top, 14)
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[2], direction: "right", isUser: false)
+                AIPlayerPositionView(player: players[2], direction: "right", isUser: false, round: round)
                 Spacer()
-                AIPlayerPositionView(player: players[4], direction: "left", isUser: false)
+                AIPlayerPositionView(player: players[4], direction: "left", isUser: false, round: round)
             }
             .padding(.top, 40.0)
             .padding(.bottom, 40.0)
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[1], direction: "right", isUser: false)
+                AIPlayerPositionView(player: players[1], direction: "right", isUser: false, round: round)
                 Spacer()
-                AIPlayerPositionView(player: players[5], direction: "left", isUser: false)
+                AIPlayerPositionView(player: players[5], direction: "left", isUser: false, round: round)
             }
             .padding(.top, 40.0)
             .padding(.bottom, 40.0)
             Spacer()
-            AIPlayerPositionView(player: players[0], direction: "right", isUser: true).padding(.bottom, 14)
+            AIPlayerPositionView(player: players[0], direction: "right", isUser: true, round: round).padding(.bottom, 14)
             
         }
     }
@@ -61,33 +61,33 @@ struct AIPlayerLayoutView: View {
     private var nineMaxLayout: some View {
         VStack {
             HStack(alignment: .center, spacing: 60) {
-                AIPlayerPositionView(player: players[4], direction: "right", isUser: false).padding(.top, 14)
-                AIPlayerPositionView(player: players[5], direction: "right", isUser: false).padding(.top, 14)
+                AIPlayerPositionView(player: players[4], direction: "right", isUser: false, round: round).padding(.top, 14)
+                AIPlayerPositionView(player: players[5], direction: "right", isUser: false, round: round).padding(.top, 14)
             }.padding(.top, 10.0)
             
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[3], direction: "right", isUser: false)
+                AIPlayerPositionView(player: players[3], direction: "right", isUser: false, round: round)
                 Spacer()
-                AIPlayerPositionView(player: players[6], direction: "left", isUser: false)
+                AIPlayerPositionView(player: players[6], direction: "left", isUser: false, round: round)
             }
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[2], direction: "right", isUser: false)
+                AIPlayerPositionView(player: players[2], direction: "right", isUser: false, round: round)
                 Spacer()
-                AIPlayerPositionView(player: players[7], direction: "left", isUser: false)
+                AIPlayerPositionView(player: players[7], direction: "left", isUser: false, round: round)
             }
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[1], direction: "right", isUser: false)
+                AIPlayerPositionView(player: players[1], direction: "right", isUser: false, round: round)
                 Spacer()
-                AIPlayerPositionView(player: players[8], direction: "left", isUser: false)
+                AIPlayerPositionView(player: players[8], direction: "left", isUser: false, round: round)
             }
             Spacer()
-            AIPlayerPositionView(player: players[0], direction: "right", isUser: true)
+            AIPlayerPositionView(player: players[0], direction: "right", isUser: true, round: round)
                 .padding(.bottom, 14)
         }
     }
@@ -105,5 +105,5 @@ struct AIPlayerLayoutView: View {
         AIPlayer(name: "BIG", position: "MP2", stack: 100.0),
         AIPlayer(name: "BIG", position: "MP2", stack: 100.0)
     ]
-    AIPlayerLayoutView(players: players)
+    AIPlayerLayoutView(players: players, round: 0)
 }

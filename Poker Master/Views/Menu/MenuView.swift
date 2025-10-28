@@ -87,6 +87,7 @@ struct MenuView: View {
                     
                     NavigationLink {
                         AITable(tableSize: "6")
+                            .toolbar(.hidden, for: .tabBar)
                     } label: {
                         MenuOption(
                             gameName: "Play AI",

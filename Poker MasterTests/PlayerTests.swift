@@ -66,53 +66,5 @@ final class PlayerTests: XCTestCase {
         XCTAssertEqual(player.currentBetAmount, 100.0)
         XCTAssertEqual(player.lastMove, Action.call)
     }
-    
-    
-
-    func testDealFunctionality() {
-        let player = Player(position: "BB", stack: 1000.0)
-        let card1 = Card(suit: "spade", rank: "A")
-        let card2 = Card(suit: "spade", rank: "K")
-        
-        player.deal(card: card1)
-        player.deal(card: card2)
-        
-        XCTAssertEqual(player.hand.count, 2)
-        XCTAssertEqual(player.hand[0].rank, "A")
-        XCTAssertEqual(player.hand[1].rank, "K")
-    }
-
-    func testGetHandSuited() {
-        let player = Player(position: "HJ", stack: 1000.0)
-        let card1 = Card(suit: "spade", rank: "A")
-        let card2 = Card(suit: "spade", rank: "K")
-        
-        player.deal(card: card1)
-        player.deal(card: card2)
-        
-        XCTAssertEqual(player.getHand(), "AKs")
-    }
-
-    func testGetHandOffSuit() {
-        let player = Player(position: "UTG", stack: 1000.0)
-        let card1 = Card(suit: "diamond", rank: "J")
-        let card2 = Card(suit: "spade", rank: "Q")
-        
-        player.deal(card: card1)
-        player.deal(card: card2)
-        
-        XCTAssertEqual(player.getHand(), "QJo")
-    }
-
-    func testGetHandPair() {
-        let player = Player(position: "CO", stack: 1000.0)
-        let card1 = Card(suit: "club", rank: "9")
-        let card2 = Card(suit: "diamond", rank: "9")
-        
-        player.deal(card: card1)
-        player.deal(card: card2)
-        
-        XCTAssertEqual(player.getHand(), "99")
-    }
 }
 

@@ -38,8 +38,8 @@ struct AITable: View {
                     .tint(.white)
                     .scaleEffect(2)
             } else {
-                AIPlayerLayoutView(players: aiManager.aiPlayers)
-                BoardView(board: [])
+                AIPlayerLayoutView(players: aiManager.aiPlayers, round: aiManager.round)
+                AIBoardView(board: aiManager.board)
                 VStack {
                     Spacer()
                     HStack(spacing: -10) {
@@ -56,68 +56,103 @@ struct AITable: View {
             VStack {
                 Spacer()
                 if raiseMenuVisible {
-                    VStack(spacing: 10) {
+                    VStack(spacing: 8) {
                         // Quick Raise Presets
                         HStack(spacing: 10) {
-                            ForEach([1, 2, 3, 4], id: \.self) { multiplier in
-                                Text("\(multiplier)x BB")
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 10)
-                                    .background(darkBlue.opacity(0.8))
-                                    .foregroundColor(.white)
-                                    .clipShape(Capsule())
+                            ForEach(aiManager.getUserDefaultBets(), id: \.self) { multiplier in
+                                Button(action: {
+                                    aiManager.handleUserMove(move:("raise", Double(multiplier)))
+                                    raiseMenuVisible = false
+                                }) {
+                                    if #available(iOS 26.0, *) {
+                                        Text("\(multiplier)x BB")
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 10)
+                                            .background(.ultraThinMaterial)
+                                            .glassEffect()
+                                            .foregroundColor(.white)
+                                            .clipShape(Capsule())
+                                    } else {
+                                        // Fallback on earlier versions
+                                        Text("\(multiplier)x BB")
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 10)
+                                            .background(.ultraThinMaterial)
+                                            .foregroundColor(.white)
+                                            .clipShape(Capsule())
+                                    }
+                                }
+                            }
+                            Button(action: {
+                                aiManager.handleUserMove(move:("allin", 0.0))
+                                raiseMenuVisible = false
+                            }) {
+                                if #available(iOS 26.0, *) {
+                                    Text("All In")
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .background(.ultraThinMaterial)
+                                        .glassEffect()
+                                        .foregroundColor(.white)
+                                        .clipShape(Capsule())
+                                }
+                                else {
+                                    Text("All In")
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .background(.ultraThinMaterial)
+                                        .foregroundColor(.white)
+                                        .clipShape(Capsule())
+                                }
                             }
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 8)
-                        Text("All In")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.red.opacity(0.9))
-                            .foregroundColor(.white)
-                            .clipShape(Capsule())
-                        
-                        // Confirm Button
-                        Text("Confirm Raise")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .clipShape(Capsule())
                     }
-                    .padding(.horizontal)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
 
                 // Main Action Buttons
                 HStack(spacing: 10) {
+                    Button(action: {
+                        aiManager.handleUserMove(move:("fold", 0.0))
+                    }) {
                     Text("Fold")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(darkBlue)
                         .foregroundColor(.white)
                         .clipShape(Capsule())
-                        .opacity(1.0)
+                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
+                    }.disabled(!aiManager.waitingForUserInput)
+                    
 
+                    Button(action: {
+                        aiManager.handleUserMove(move: ("call", aiManager.lastPlayerBet))
+                    }) {
                     Text("Call")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(darkBlue)
                         .foregroundColor(.white)
                         .clipShape(Capsule())
-                        .opacity(1.0)
+                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
+                    }.disabled(!aiManager.waitingForUserInput)
 
+                    Button(action: {
+                        // toggle raise menu
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                raiseMenuVisible.toggle()
+                            }
+                    }) {
                     Text("Raise")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(darkBlue)
                         .foregroundColor(.white)
                         .clipShape(Capsule())
-                        .onTapGesture {
-                            withAnimation {
-                                raiseMenuVisible.toggle()
-                            }
-                        }
+                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
+                    }.disabled(!aiManager.waitingForUserInput)
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 16)
@@ -127,6 +162,15 @@ struct AITable: View {
         .edgesIgnoringSafeArea(.all)
         .task {
             await aiManager.startGame()
+        }
+    }
+    
+    private func truncateDouble(_ number: Double) -> String {
+        // Only show decimals if needed
+        if number.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f× BB", number)
+        } else {
+            return String(format: "%.1f× BB", number)
         }
     }
 }

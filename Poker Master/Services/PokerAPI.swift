@@ -19,8 +19,8 @@ struct EquityResponse: Codable {
 
 class EquityAPI {
     let authManager: AuthManager
-    let apiPrefix = "https://pokermasterbackend-production.up.railway.app"
-    //let apiPrefix = "http://127.0.0.1:8000"
+    //let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
+    let apiPrefix = "http://127.0.0.1:8000"
     
     init(authManager: AuthManager) {
         self.authManager = authManager
@@ -119,6 +119,27 @@ class EquityAPI {
         return try JSONDecoder().decode(EquityResponse.self, from: data)
     }
     
+    struct WinnerRequestPlayerDetails: Codable {
+        let name: String
+        let hand: [String]
+    }
+
+    struct DetermineWinnerRequest: Codable {
+        let players: [WinnerRequestPlayerDetails]
+        let board: [String]
+    }
+
+    struct DetermineWinnerResponse: Codable {
+        struct Result: Codable {
+            let name: String
+            let hand: [String]
+            let score: Int
+            let hand_name: String
+        }
+
+        let winners: [String]
+        let results: [Result]
+    }
     
 
 }

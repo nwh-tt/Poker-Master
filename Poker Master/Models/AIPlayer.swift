@@ -19,21 +19,25 @@ class AIPlayer {
     var stack: Double
     var hand: [Card]
     var moveHistory: [ActionRecord]
+    var isUser: Bool
     
-    init(name: String, position: String, stack: Double = 100, hand: [Card] = [], moveHistory: [ActionRecord] = []) {
+    init(name: String, position: String, stack: Double = 100, hand: [Card] = [], moveHistory: [ActionRecord] = [], isUser: Bool = false) {
         self.name = name
         self.position = position
         self.stack = stack
         self.hand = hand
         self.moveHistory = moveHistory
+        self.isUser = isUser
     }
     
     func isOutOfMoney() -> Bool {
         return stack <= 0
     }
     
-    func lastBet() -> Double {
+    func lastBet(round: Int) -> Double {
         guard let lastAction = moveHistory.last else { return 0 }
+        if lastAction.round != round { return 0 }
+        
         return lastAction.amount
     }
     
@@ -42,27 +46,28 @@ class AIPlayer {
         return lastAction.action
     }
     
-    func isReRaise() -> Bool {
-        // Need at least 2 moves to check consecutive raises
-        guard moveHistory.count >= 2 else { return false }
-
-        let last = moveHistory[moveHistory.count - 1]
-        let secondLast = moveHistory[moveHistory.count - 2]
-
-        return last.action == .raise && secondLast.action == .raise
+    func lastMoveForRound(round: Int) -> Action {
+        guard let lastAction = moveHistory.last else { return .none }
+        if lastAction.round != round { return .none }
+        
+        return lastAction.action
     }
 
+    
+    /// Raises the stack to the given amount
+    /// - Parameters:
+    ///   - amount: amount to raise too
+    ///   - round: current round (preflop, flop, turn, river)
+    /// - Returns: Additonal amount needed to raise
     func raise(amount: Double, round: Int) -> Double {
         var amountToBet = amount
-        guard let lastAction = moveHistory.last else {
-            stack -= amountToBet
-            recordAction(.raise, amount: amount, round: round)
-            return amountToBet
-        }
-        if lastAction.round == round {
+
+        // Subtract any existing bet in this round to find the additional amount needed
+        if let lastAction = moveHistory.last, lastAction.round == round {
             amountToBet -= lastAction.amount
         }
-        
+
+        // Deduct from stack and record the raise
         stack -= amountToBet
         recordAction(.raise, amount: amount, round: round)
         return amountToBet
@@ -70,12 +75,8 @@ class AIPlayer {
     
     func call(amount: Double = 0, round: Int) -> Double {
         var amountNeededToCall = amount
-        guard let lastAction = moveHistory.last else {
-            stack -= amountNeededToCall
-            recordAction(.call, amount: amount, round: round)
-            return amountNeededToCall
-        }
-        if lastAction.round == round {
+        
+        if let lastAction = moveHistory.last, lastAction.round == round {
             amountNeededToCall -= lastAction.amount
         }
         
