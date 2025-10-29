@@ -168,7 +168,7 @@ enum Position: String, Codable, CaseIterable {
 }
 
 enum Action: String, Codable, CaseIterable {
-    case fold, call, raise, none
+    case fold, call, raise, check, none
 }
 
 enum RaiseType: String, Codable, CaseIterable {

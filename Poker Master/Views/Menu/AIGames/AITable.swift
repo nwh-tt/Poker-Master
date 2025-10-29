@@ -9,14 +9,13 @@
 import SwiftUI
 
 struct AITable: View {
-    @State var aiManager: AIGameManager
+    @State var aiManager: AIGameManager = AIGameManager()
     @State private var raiseMenuVisible = false
     
     let tableSize: String
     
     init(tableSize: String) {
         self.tableSize = tableSize
-        self.aiManager = AIGameManager()
     }
     
     var body: some View {
@@ -111,56 +110,79 @@ struct AITable: View {
                     }
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
-
-                // Main Action Buttons
-                HStack(spacing: 10) {
-                    Button(action: {
-                        aiManager.handleUserMove(move:("fold", 0.0))
-                    }) {
-                    Text("Fold")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(darkBlue)
-                        .foregroundColor(.white)
-                        .clipShape(Capsule())
-                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
-                    }.disabled(!aiManager.waitingForUserInput)
-                    
-
-                    Button(action: {
-                        aiManager.handleUserMove(move: ("call", aiManager.lastPlayerBet))
-                    }) {
-                    Text("Call")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(darkBlue)
-                        .foregroundColor(.white)
-                        .clipShape(Capsule())
-                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
-                    }.disabled(!aiManager.waitingForUserInput)
-
-                    Button(action: {
-                        // toggle raise menu
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                raiseMenuVisible.toggle()
+                ZStack {
+                    if !aiManager.isLoading && !aiManager.waitingForContinueButton {
+                        HStack(spacing: 10) {
+                            ForEach(aiManager.getPossibleActions(), id: \.self) { action in
+                                Button(action: {
+                                    if action == "Raise" {
+                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                                raiseMenuVisible.toggle()
+                                            }
+                                    }
+                                    else {
+                                        aiManager.handleUserMove(move:(action.lowercased(), 0.0))
+                                    }
+                                }) {
+                                    Text("\(action)")
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(darkBlue)
+                                        .foregroundColor(.white)
+                                        .clipShape(Capsule())
+                                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
+                                }.disabled(!aiManager.waitingForUserInput)
                             }
-                    }) {
-                    Text("Raise")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(darkBlue)
-                        .foregroundColor(.white)
-                        .clipShape(Capsule())
-                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
-                    }.disabled(!aiManager.waitingForUserInput)
+                        }
+                        
+                    }
+                    
+                    if aiManager.waitingForContinueButton {
+                        HStack(spacing: 10) {
+                            Button(action: {
+                                // Leave table action
+                                
+                            }) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "xmark.circle")
+                                    Text("Leave Table")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.red.opacity(0.15))
+                                .clipShape(Capsule())
+                                .foregroundColor(.white)
+                            }
+
+                            Button(action: {
+                                // Keep playing action
+                                aiManager.waitingForContinueButton = false
+                                Task {
+                                    await aiManager.startNextGame()
+                                }
+                            }) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "play.circle")
+                                    Text("Keep Playing")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(darkBlue)
+                                .clipShape(Capsule())
+                                .foregroundColor(.white)
+                            }
+                        }
+                    }
+
+
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 16)
-            }
+            }.padding(.horizontal)
+            .padding(.bottom, 16)
 
         }
         .edgesIgnoringSafeArea(.all)
         .task {
+            aiManager.resetGame()
             await aiManager.startGame()
         }
     }

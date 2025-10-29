@@ -22,7 +22,7 @@ struct AIPlayerPositionView: View {
         let cardOffsets = direction == "right" ? [45, 67] : [-67, -45]
         // let amount = player.folded ? "Fold" : "\(Int(player.stack)) BB"
         let textColor = player.lastMove() == Action.fold ? Color.gray : Color.white
-        if false {
+        if player.isOutOfMoney() {
             ZStack {
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.clear)

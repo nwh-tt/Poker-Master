@@ -31,7 +31,8 @@ class AIPlayer {
     }
     
     func isOutOfMoney() -> Bool {
-        return stack <= 0
+        guard let lastBet = moveHistory.last else { return stack <= 0 }
+        return (stack + lastBet.amount) <= 0
     }
     
     func lastBet(round: Int) -> Double {
@@ -88,6 +89,11 @@ class AIPlayer {
     func fold(round: Int) {
         recordAction(.fold, amount: 0.0, round: round)
     }
+    
+    func check(round: Int) {
+        recordAction(.check, round: round)
+    }
+    
     
     private func recordAction(_ action: Action, amount: Double = 0, round: Int) {
         let record = ActionRecord(action: action, amount: amount, round: round)

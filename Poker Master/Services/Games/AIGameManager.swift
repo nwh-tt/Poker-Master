@@ -7,6 +7,7 @@ class AIGameManager {
     var aiPlayers: [AIPlayer] = []
     var pot = 0.0
     var round = 0 // Preflop = 0, Flop = 1, Turn = 2, River = 3
+    var game = 0 // Iterates upwards
     var lastPlayerBet = 0.0
     let deck = Deck() // Create a shared deck
     var board: [Card] = []
@@ -14,6 +15,10 @@ class AIGameManager {
     // Used to handle user input
     var waitingForUserInput: Bool = false
     var pendingUserMoveContinuation: CheckedContinuation<(String, Double), Never>?
+    
+    // User continue button
+    var waitingForContinueButton: Bool = false
+    
     
     var isLoading = true
     var errorMessage: String?
@@ -40,7 +45,27 @@ class AIGameManager {
         }
         isLoading = false
         
-        // Start the game loop here
+        try? await Task.sleep(nanoseconds: 250_000_000)
+        await gameLoop()
+    }
+    
+    func startNextGame() async {
+        // Reset necessarry variables and trigger a new hand deal out
+        board = []
+        deck.resetDeck() // Creates new shuffled deck
+        round = 0
+        game += 1
+        
+        // Need to shift positions
+        rotatePositions()
+        
+        // Also need to reset all players last moves and deal new cards
+        for player in aiPlayers {
+            player.moveHistory.removeAll()
+            player.hand.removeAll()
+            player.hand = [deck.dealCard(), deck.dealCard()]
+        }
+        
         await gameLoop()
     }
     
@@ -75,6 +100,7 @@ class AIGameManager {
         }
         
         processRoundEnd(winners: winnerNames)
+        waitingForContinueButton = true
     }
     
     func playBettingRound() async {
@@ -83,7 +109,6 @@ class AIGameManager {
         let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
 
         var highestBet = 0.0
-        var lastAggressorIndex = 0
         var turn = getFirstPlayerToAct()
         // --- Initialize Betting State ---
         if round == 0 { // if preflop
@@ -104,10 +129,27 @@ class AIGameManager {
                 turn = (turn + 1) % Int(tableSize)!
                 continue
             }
-
-            // Check if everyone has matched the highest bet
-            if currentPlayer.lastBet(round: round) == highestBet && turn == lastAggressorIndex {
-                print("✅ Betting complete: everyone has matched the highest bet.")
+            
+            let activePlayers = aiPlayers.filter { $0.lastMove() != .fold }
+            let bettingComplete = activePlayers.allSatisfy { player in
+                let playerBet = player.lastBet(round: round)
+                let playerMove = player.lastMoveForRound(round: round)
+                
+                // 1. Player is all-in → treat as matched
+                if player.stack == 0 { return true }
+                
+                // 2. Player has matched the highest bet → OK
+                if highestBet != 0 && playerBet == highestBet { return true }
+                
+                // 3. Player checked → only OK if highestBet == 0
+                if playerMove == .check && highestBet == 0 { return true }
+                
+                // Otherwise, player still needs to act
+                return false
+            }
+            
+            if bettingComplete {
+                print("✅ Betting complete: everyone has matched the highest bet or is all-in.")
                 break
             }
             
@@ -137,7 +179,9 @@ class AIGameManager {
             case "fold":
                 print("🟥 \(currentPlayer.name) folds.")
                 currentPlayer.fold(round: round)
-
+            case "check":
+                print("\(currentPlayer.name) checks.")
+                currentPlayer.check(round: round)
             case "call":
                 print("🟨 \(currentPlayer.name) calls")
                 call(aiPlayer: currentPlayer)
@@ -146,14 +190,12 @@ class AIGameManager {
                 print("🟩 \(currentPlayer.name) raises to \(amount)!")
                 raise(aiPlayer: currentPlayer, amount: amount)
                 highestBet = amount
-                lastAggressorIndex = turn
                 print("New highest bet = \(highestBet). Last aggressor = \(currentPlayer.name)")
             case "allin":
                 let allInAmount = currentPlayer.stack + currentPlayer.lastBet(round: round)
                 print("🟨 \(currentPlayer.name) goes all-in for \(allInAmount)!")
                 raise(aiPlayer: currentPlayer, amount: allInAmount)
                 highestBet = max(highestBet, allInAmount)
-                lastAggressorIndex = turn
             default:
                 print("⚠️ Unknown action from AI: \(action)")
             }
@@ -169,8 +211,16 @@ class AIGameManager {
         }
 
         print("=== ROUND COMPLETE ===")
+        try? await Task.sleep(nanoseconds: 500_000_000)
         round += 1
         lastPlayerBet = 0
+    }
+    
+    func resetGame() {
+        board = []
+        deck.resetDeck() // Creates new shuffled deck
+        round = 0
+        pot = 0
     }
     
     func dealBoard(cardsToDeal: Int) async {
@@ -179,31 +229,9 @@ class AIGameManager {
             board.append(deck.dealCard())
         }
         // wait half a second
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
     }
     
-    func getFirstPlayerToAct() -> Int {
-        guard !aiPlayers.isEmpty else { return -1 }
-
-        // Find reference index
-        let referenceIndex: Int
-        if round == 0 { // If preflop return utg
-            return aiPlayers.firstIndex(where: { $0.position == "UTG" }) ?? 0
-            // return playerCount == "6" ? aiPlayers.firstIndex(where: { $0.position == "UTG" }) ?? 0 : aiPlayers.firstIndex(where: { $0.position == "UTG1" }) ?? 0
-        } else {
-            referenceIndex = aiPlayers.firstIndex(where: { $0.position == "BTN" }) ?? 0
-        }
-
-        // Start from the next player clockwise
-        for i in 1...aiPlayers.count {
-            let nextIndex = (referenceIndex + i) % aiPlayers.count
-            if aiPlayers[nextIndex].lastMove() != .fold {
-                return nextIndex
-            }
-        }
-
-        return -1 // fallback if everyone folded
-    }
     
     func setUpBlinds() async {
         let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
@@ -223,51 +251,36 @@ class AIGameManager {
         turn = (turn + 1) % Int(tableSize)!
     }
     
-    func remainingPlayers() -> Int {
-        return aiPlayers.filter { $0.lastMove() != .fold }.count
-    }
-    
     func processRoundEnd(winners: [String]) {
         let potSplit = pot / Double(winners.count)
         for playerName in winners {
             guard let player = aiPlayers.first(where: { $0.name == playerName }) else { continue }
             player.stack += potSplit
-            pot -= potSplit
         }
+        pot = 0
         
         print("=== ROUND END ===")
         print("Winners: \(winners)")
-        print("Pot: \(pot)")
-        print("Player stacks:")
-        for player in aiPlayers {
-            print("🟨 \(player.name): \(player.stack)")
+    }
+    
+    func rotatePositions() {
+        // Save the last player's position to wrap around
+        let lastPosition = aiPlayers.last!.position
+        
+        // Shift positions from end to start
+        for i in stride(from: aiPlayers.count - 1, through: 1, by: -1) {
+            aiPlayers[i].position = aiPlayers[i - 1].position
         }
+        
+        // Set first player's position to last player's old position
+        aiPlayers[0].position = lastPosition
     }
     
-    func getUserDefaultBets() -> [Int] {
-        guard let user = aiPlayers.first(where: { $0.isUser }) else { return [] }
-
-        let defaultAmounts = [2.0, 5.0, 10.0, 20.0]
-
-        return defaultAmounts.compactMap { base -> Int? in
-            let total = base + lastPlayerBet
-            let rounded = Int(total.rounded())
-            return rounded <= Int(user.stack) ? rounded : nil
-        }
-    }
-    
-    func handleUserMove(move: (String, Double)) {
-        guard let continuation = pendingUserMoveContinuation else { fatalError("No continuation to resume") }
-        continuation.resume(returning: move)
-        pendingUserMoveContinuation = nil
-    }
-
-    
-    // For now just randomly return a move and bet amount
+    // TODO: Implement real ai logic with backend
     func makeAIDecision(ai: AIPlayer) -> (String, Double) {
         var actions = ["call", "raise", "fold"]
         if lastPlayerBet == 0 {
-            actions = ["fold", "raise"]
+            actions = ["check", "raise"]
         }
         let action = actions.randomElement()!
         var amount = 0.0
@@ -285,14 +298,7 @@ class AIGameManager {
         return (action, amount)
     }
     
-    func getUserDecision() async -> (String, Double) {
-        waitingForUserInput = true
-        return await withCheckedContinuation { continuation in
-            pendingUserMoveContinuation = continuation
-        }
-        
-    }
-    
+    // MARK: Helper functions for processing
     func raise(aiPlayer: AIPlayer, amount: Double) {
         let raiseAmount = min(amount, aiPlayer.stack + aiPlayer.lastBet(round: round)) // Restrict user to never go over their stack
         let potIncrease = aiPlayer.raise(amount: raiseAmount, round: round)
@@ -305,7 +311,117 @@ class AIGameManager {
         let potIncrease = aiPlayer.call(amount: callAmount, round: round)
         pot += potIncrease
     }
+    
+    func remainingPlayers() -> Int {
+        return aiPlayers.filter { $0.lastMove() != .fold }.count
+    }
+    
+    func getFirstPlayerToAct() -> Int {
+        guard !aiPlayers.isEmpty else { return -1 }
 
+        // Find reference index
+        let referenceIndex: Int
+        if round == 0 { // If preflop find BB (Not utg since we iterate in the loop later)
+            referenceIndex = aiPlayers.firstIndex(where: { $0.position == "BB" }) ?? 0
+            // return playerCount == "6" ? aiPlayers.firstIndex(where: { $0.position == "UTG" }) ?? 0 : aiPlayers.firstIndex(where: { $0.position == "UTG1" }) ?? 0
+        } else {
+            referenceIndex = aiPlayers.firstIndex(where: { $0.position == "BTN" }) ?? 0
+        }
+
+        // Start from the next player clockwise
+        for i in 1...aiPlayers.count {
+            let nextIndex = (referenceIndex + i) % aiPlayers.count
+            let player = aiPlayers[nextIndex]
+            if player.lastMove() != .fold && !player.isOutOfMoney() {
+                return nextIndex
+            }
+        }
+
+        return -1 // fallback if everyone folded
+    }
+    
+    // MARK: UI functions determine what buttons to display to the user
+    func getUserDefaultBets() -> [Int] {
+        guard let user = aiPlayers.first(where: { $0.isUser }) else { return [] }
+
+        let defaultAmounts = [2.0, 5.0, 10.0, 20.0]
+
+        return defaultAmounts.compactMap { base -> Int? in
+            let total = base + lastPlayerBet
+            let rounded = Int(total.rounded())
+            return rounded <= Int(user.stack) ? rounded : nil
+        }
+    }
+    
+    func getPossibleActions() -> [String] {
+        guard let user = aiPlayers.first(where: { $0.isUser }) else { return [] }
+        var allActions = ["Check", "Fold", "Call", "Raise"] // , "All In"] - this is one scenario
+        
+        if lastPlayerBet == 0 {
+            // remove Fold, Call
+            allActions.removeAll(where: { $0 == "Fold" || $0 == "Call" })
+        } else {
+            // Remove check
+            allActions.removeAll(where: { $0 == "Check" })
+        }
+        
+        if lastPlayerBet > user.stack {
+            allActions = ["All In"]
+        }
+        
+        return allActions
+    }
+    
+    // MARK: User Input handling
+    func handleUserMove(move: (String, Double)) {
+        guard let continuation = pendingUserMoveContinuation else { fatalError("No continuation to resume") }
+        continuation.resume(returning: move)
+        pendingUserMoveContinuation = nil
+    }
+    
+    func getUserDecision() async -> (String, Double) {
+        waitingForUserInput = true
+        return await withCheckedContinuation { continuation in
+            pendingUserMoveContinuation = continuation
+        }
+        
+    }
+    
+    // MARK: Functions to create list of players
+    func createRandomPlayers(aiNames: [String]) -> [AIPlayer] {
+        let userPosition = RangeHelper.positionsOrderGlobal[tableSize]!.randomElement()!
+        
+        let aiPlayers = createAndReorderPlayers(playerPosition: userPosition)
+        // Loop through aiPlayers and assign names (start at 2nd entry)
+        aiPlayers[0].name = "HERO"
+        aiPlayers[0].isUser = true
+        
+        for i in 1..<aiPlayers.count {
+            if i - 1 < aiNames.count {
+                aiPlayers[i].name = aiNames[i - 1]
+            }
+        }
+        
+        return aiPlayers
+    }
+    
+    func createAndReorderPlayers(playerPosition: String) -> [AIPlayer] {
+        let positionList = RangeHelper.positionsOrderGlobal[tableSize]!
+        var playersReordered: [AIPlayer] = []
+        var index = positionList.firstIndex(of: playerPosition)!
+        let playerCount = Int(tableSize)!
+        
+        for _ in 1...playerCount {
+            let player: AIPlayer = AIPlayer(name: "", position: positionList[index], stack: 100.0)
+            playersReordered.append(player)
+            index = (index + 1) % playerCount
+            
+        }
+         
+        return playersReordered
+    }
+    
+    // TODO: Move all these to a different file
     func fetchAIPlayers() async -> [String] {
         isLoading = true
         errorMessage = nil
@@ -360,7 +476,8 @@ class AIGameManager {
             return []
         }
         
-        let players = aiPlayers.map { player in
+        let playersLeft = aiPlayers.filter({ $0.lastMove() != .fold })
+        let players = playersLeft.map { player in
             WinnerRequestPlayerDetails(name: player.name, hand: player.hand.map { $0.toString() })
         }
         let requestBody = DetermineWinnerRequest(players: players, board: board.map { $0.toString() })
@@ -382,52 +499,17 @@ class AIGameManager {
             
             // Example usage:
             print("🏆 Winners:", decoded.winners)
-            var winners: [String] = []
             for result in decoded.results {
                 print("\(result.name): \(result.hand_name) (\(result.score))")
-                winners.append(result.name)
             }
             
             // Optionally update your AI player list if desired
-            return winners
+            return decoded.winners
             
         } catch {
             errorMessage = "Failed to determine winners: \(error.localizedDescription)"
             return []
         }
         
-    }
-
-    func createRandomPlayers(aiNames: [String]) -> [AIPlayer] {
-        let userPosition = RangeHelper.positionsOrderGlobal[tableSize]!.randomElement()!
-        
-        let aiPlayers = createAndReorderPlayers(playerPosition: userPosition)
-        // Loop through aiPlayers and assign names (start at 2nd entry)
-        aiPlayers[0].name = "HERO"
-        aiPlayers[0].isUser = true
-        
-        for i in 1..<aiPlayers.count {
-            if i - 1 < aiNames.count {
-                aiPlayers[i].name = aiNames[i - 1]
-            }
-        }
-        
-        return aiPlayers
-    }
-    
-    func createAndReorderPlayers(playerPosition: String) -> [AIPlayer] {
-        let positionList = RangeHelper.positionsOrderGlobal[tableSize]!
-        var playersReordered: [AIPlayer] = []
-        var index = positionList.firstIndex(of: playerPosition)!
-        let playerCount = Int(tableSize)!
-        
-        for _ in 1...playerCount {
-            let player: AIPlayer = AIPlayer(name: "", position: positionList[index], stack: 100.0)
-            playersReordered.append(player)
-            index = (index + 1) % playerCount
-            
-        }
-         
-        return playersReordered
     }
 }

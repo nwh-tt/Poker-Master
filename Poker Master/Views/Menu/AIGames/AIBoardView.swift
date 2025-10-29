@@ -35,6 +35,13 @@ struct AIBoardView: View {
                 }
             }
             .onChange(of: board) { oldBoard, newBoard in
+                if newBoard.isEmpty {
+                    // Board got reset → reset all flips
+                    flipped = Array(repeating: false, count: 5)
+                    displayedBoard = []
+                    return
+                }
+                
                 let oldCount = displayedBoard.count
                 displayedBoard = newBoard
                 
