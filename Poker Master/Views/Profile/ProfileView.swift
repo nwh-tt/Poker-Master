@@ -6,18 +6,20 @@
 //
 import SwiftUI
 import SwiftData
+import RevenueCatUI
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var context
     
     @EnvironmentObject var userProfileState: UserProfileState
-    @EnvironmentObject var storeManager: StoreManager
     @EnvironmentObject var authManager: AuthManager
 
     @State private var tempUsername: String = ""
     @State private var isEditing: Bool = false
     @State private var showPremiumPopup: Bool = false
     @State private var showCreateAccount: Bool = false
+    
+    @State private var isSubscribed: Bool = true
     
     @Query var games: [Game]
     
@@ -177,7 +179,7 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal)
                     VStack {
-                        if !storeManager.isSubscribed() {
+                        if !isSubscribed {
                             Button(action: {
                                 showPremiumPopup = true
                             }) {
@@ -241,13 +243,14 @@ struct ProfileView: View {
             }
             .background(Color.black.edgesIgnoringSafeArea(.all))
             .fullScreenCover(isPresented: $showPremiumPopup) {
-                SubscribeView()
+                PaywallView()
             }
-
             .fullScreenCover(isPresented: $showCreateAccount) {
                 CreateAccountView()
-            }
-
+            }.task {
+                // await loadRewardedAd()
+                isSubscribed = await SubscriptionManager.isSubscribed()
+            }.preferredColorScheme(.dark)
             if currentUser.leveledUP {
                     LevelUpOverlay(level: currentUser.level)
                         .transition(.opacity.combined(with: .scale))
@@ -287,7 +290,6 @@ struct ProfileView: View {
 }
 
 #Preview {
-    @Previewable @StateObject var storeManager = StoreManager()
     @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
@@ -324,6 +326,5 @@ struct ProfileView: View {
         .modelContainer(container)
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
-        .environmentObject(storeManager)
         .environmentObject(authManager)
 }

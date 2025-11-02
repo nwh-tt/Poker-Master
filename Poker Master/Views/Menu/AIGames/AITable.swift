@@ -41,9 +41,11 @@ struct AITable: View {
                 AIBoardView(board: aiManager.board)
                 VStack {
                     Spacer()
-                    HStack(spacing: -10) {
-                        CardView(card: aiManager.aiPlayers[0].hand[0])
-                        CardView(card: aiManager.aiPlayers[0].hand[1])
+                    if aiManager.aiPlayers[0].hand.count != 0 {
+                        HStack(spacing: -10) {
+                            CardView(card: aiManager.aiPlayers[0].hand[0])
+                            CardView(card: aiManager.aiPlayers[0].hand[1])
+                        }
                     }
                 }.padding(.bottom, 170)
             }
@@ -173,6 +175,51 @@ struct AITable: View {
                             }
                         }
                     }
+                    
+                    if aiManager.waitingForStartButton {
+                        if aiManager.errorMessage != "" {
+                            HStack(spacing: 10) {
+                                Button(action: {
+                                    // Keep playing action
+                                    Task {
+                                        await aiManager.populateAINames()
+                                    }
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "arrow.trianglehead.clockwise")
+                                        Text("Retry")
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(darkBlue)
+                                    .clipShape(Capsule())
+                                    .foregroundColor(.white)
+                                }
+                            }
+                            
+                        }
+                        else {
+                            HStack(spacing: 10) {
+                                Button(action: {
+                                    // Keep playing action
+                                    aiManager.waitingForContinueButton = false
+                                    Task {
+                                        await aiManager.startGame()
+                                    }
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "play.fill")
+                                        Text("Start Game")
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(darkBlue)
+                                    .clipShape(Capsule())
+                                    .foregroundColor(.white)
+                                }
+                            }
+                        }
+                    }
 
 
                 }
@@ -183,7 +230,7 @@ struct AITable: View {
         .edgesIgnoringSafeArea(.all)
         .task {
             aiManager.resetGame()
-            await aiManager.startGame()
+            await aiManager.populateAINames()
         }
     }
     

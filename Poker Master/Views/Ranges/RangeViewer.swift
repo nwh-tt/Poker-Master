@@ -6,14 +6,14 @@
 //
 
 import SwiftUI
+import RevenueCatUI
 
 struct RangeViewer: View {
     let rangeHelper = RangeHelper()
-    @EnvironmentObject var storeManager: StoreManager
     
     @State private var tableSize = ["6", "9"]
     @State private var isEditing = false
-    @State private var showSubscribeView = false
+    @State private var showSubscribePopup = false
     
     // 6-max positions by default
     @State private var heros = ["UTG", "MP", "CO", "BTN", "SB"]
@@ -205,8 +205,8 @@ struct RangeViewer: View {
             callRanges = rangeHelper.callRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
             raiseRanges = rangeHelper.raiseRanges(for: selectedScenario, hero: heroPosition, villain: villainPosition, size: selectedSize)
         }
-        .fullScreenCover(isPresented: $showSubscribeView) {
-            SubscribeView()
+        .fullScreenCover(isPresented: $showSubscribePopup) {
+            PaywallView()
         }
         .navigationBarBackButtonHidden(isEditing)
         .toolbar {
@@ -234,12 +234,16 @@ struct RangeViewer: View {
                     }
                 } else {
                     Button("Edit") {
-                        if storeManager.isSubscribed() {
-                            isEditing = true
-                        }
-                        else {
-                            // show subscribe view
-                            showSubscribeView = true
+                        Task {
+                            let subscribed = await SubscriptionManager.isSubscribed()
+                            
+                            if subscribed {
+                                isEditing = true
+                            }
+                            else {
+                                // show subscribe view
+                                showSubscribePopup = true
+                            }
                         }
                     }
                 }

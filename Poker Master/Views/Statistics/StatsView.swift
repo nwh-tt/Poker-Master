@@ -8,10 +8,11 @@
 import SwiftUI
 import SwiftData
 import Charts
+import RevenueCatUI
 
 struct StatsView: View {
-    @EnvironmentObject var storeManager: StoreManager
     @State private var showPremiumPopup = false
+    @State private var isSubscribed = true
     
     @Query var handLogs: [HandLog]
     @Query var games: [Game]
@@ -107,7 +108,7 @@ struct StatsView: View {
                             .background(.ultraThinMaterial)
                             .cornerRadius(16)
                             .shadow(radius: 1)
-                            if storeManager.isSubscribed() {
+                            if isSubscribed {
                                 NavigationLink {
                                     WinPercentageDetailView(overallWinPct: winPercentage)
                                 } label: {
@@ -122,7 +123,7 @@ struct StatsView: View {
                             }
                             
                         }
-                        if storeManager.isSubscribed() {
+                        if isSubscribed {
                             NavigationLink {
                                 HandsPlayedDetailView()
                             } label: {
@@ -162,8 +163,10 @@ struct StatsView: View {
             }
         }
         .fullScreenCover(isPresented: $showPremiumPopup) {
-            SubscribeView()
-        }
+            PaywallView()
+        }.task {
+            isSubscribed = await SubscriptionManager.isSubscribed()
+        }.preferredColorScheme(.dark)
     }
 }
 
@@ -312,5 +315,4 @@ struct HandsPlayedStatView: View {
     
     return StatsView()
         .modelContainer(container)
-        .environmentObject(StoreManager())
 }

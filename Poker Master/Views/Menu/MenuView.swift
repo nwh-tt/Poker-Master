@@ -8,9 +8,10 @@
 import SwiftUI
 import SwiftData
 import GoogleMobileAds
+import RevenueCat
+import RevenueCatUI
 
 struct MenuView: View {
-    @EnvironmentObject var storeManager: StoreManager
     @EnvironmentObject var authManager: AuthManager
     
     @State private var navigateToEquityDrill = false
@@ -18,6 +19,8 @@ struct MenuView: View {
     
     @State private var showPremiumPopup = false
     @State private var showCreateAccount = false
+    
+    @State private var isSubscribed = true
     
     @Query var handLogs: [HandLog]
     
@@ -117,12 +120,12 @@ struct MenuView: View {
                             gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9)
                         )
                     }
-                    if !storeManager.isSubscribed() {
+                    if !isSubscribed {
                         Button {
                                // Show premium paywall
                                showPremiumPopup = true
                            } label: {
-                               Text("Go Premium for No Ads")
+                               Text("Go Premium for Full Access")
                                    .font(.headline)
                                    .padding()
                                    .frame(maxWidth: .infinity)
@@ -138,16 +141,23 @@ struct MenuView: View {
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color.black)
+//            .fullScreenCover(isPresented: $showPremiumPopup) {
+//                SubscribeView()
+//            }
             .fullScreenCover(isPresented: $showPremiumPopup) {
-                SubscribeView()
+                PaywallView()
+                    .onPurchaseCompleted { customerInfo in
+                        // ✅ Your logic for a successful purchase goes here.
+                        print("Purchase completed successfully! Customer Info: \(customerInfo.entitlements.active)")
+                        // TODO: Navigate to where the user was trying to go
+                    }
             }
-            .fullScreenCover(isPresented: $showCreateAccount) {
-                CreateAccountView()
-            }
+                
         }
         .task {
             // await loadRewardedAd()
-        }
+            isSubscribed = await SubscriptionManager.isSubscribed()
+        }.preferredColorScheme(.dark)
     }
     
     // MARK: - Rewarded Ad Functions
@@ -198,7 +208,6 @@ struct MenuView: View {
 
 
 #Preview {
-    @Previewable @StateObject var storeManager = StoreManager()
     @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
@@ -222,7 +231,7 @@ struct MenuView: View {
         .modelContainer(container)
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
-        .environmentObject(storeManager)
         .environmentObject(authManager)
     
 }
+

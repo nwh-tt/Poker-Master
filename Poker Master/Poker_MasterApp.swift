@@ -9,11 +9,15 @@ import SwiftUI
 import SwiftData
 import GoogleMobileAds
 import FirebaseCore
+import RevenueCat
 
 class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     FirebaseApp.configure()
+      
+    Purchases.logLevel = .debug
+    Purchases.configure(withAPIKey: "appl_GQpXusiTmcOvPDpqshsmiyFesMb")
 
     return true
   }
@@ -23,7 +27,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct Poker_MasterApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var userProfile: UserProfileState
-    @StateObject private var storeManager: StoreManager
     @StateObject private var authManager = AuthManager()
     
     var sharedModelContainer: ModelContainer = {
@@ -47,7 +50,6 @@ struct Poker_MasterApp: App {
         RangesFileManager.loadInitialRangesIfNeeded()  // Ensure the file is copied from bundle to Documents directory
         let context = ModelContext(sharedModelContainer)
         _userProfile = StateObject(wrappedValue: UserProfileState(context: context))
-        _storeManager = StateObject(wrappedValue: StoreManager())
         // MobileAds.shared.start()
     }
 
@@ -56,7 +58,6 @@ struct Poker_MasterApp: App {
             ContentView()
                 .preferredColorScheme(.dark)
                 .environmentObject(userProfile)
-                .environmentObject(storeManager)
                 .environmentObject(authManager)
                 .task {    // This runs once when ContentView appears
                     let context = ModelContext(sharedModelContainer)
