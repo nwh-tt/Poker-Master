@@ -5,6 +5,7 @@
 //  Created by Ned Whittleton on 10/11/25.
 //
 import Observation
+import Foundation
 
 struct ActionRecord {
     let action: Action
@@ -13,16 +14,19 @@ struct ActionRecord {
 }
 
 @Observable
-class AIPlayer {
+class AIPlayer: Identifiable {
+    let id = UUID()
     var name: String
+    var fullName: String
     var position: String
     var stack: Double
     var hand: [Card]
     var moveHistory: [ActionRecord]
     var isUser: Bool
     
-    init(name: String, position: String, stack: Double = 100, hand: [Card] = [], moveHistory: [ActionRecord] = [], isUser: Bool = false) {
+    init(name: String, fullName: String, position: String, stack: Double = 100, hand: [Card] = [], moveHistory: [ActionRecord] = [], isUser: Bool = false) {
         self.name = name
+        self.fullName = fullName
         self.position = position
         self.stack = stack
         self.hand = hand

@@ -20,9 +20,10 @@ class AIGameManager {
     var waitingForContinueButton: Bool = false
     var waitingForStartButton: Bool = false
     
-    
+    // Error handling
     var isLoading = true
     var errorMessage: String?
+    var showToast = false
 
     // User configs
     let gameplaySpeed: Double
@@ -43,7 +44,6 @@ class AIGameManager {
     }
 
     func startGame() async {
-        
         // Create deck and deal cards
         for player in aiPlayers {
             player.hand.append(deck.dealCard())
@@ -110,6 +110,7 @@ class AIGameManager {
         waitingForContinueButton = true
     }
     
+    @MainActor
     func playBettingRound() async {
         print("=== 🃏 STARTING BETTING ROUND ===")
 
@@ -400,7 +401,7 @@ class AIGameManager {
     }
     
     // MARK: Functions to create list of players
-    func createRandomPlayers(aiNames: [String]) -> [AIPlayer] {
+    func createRandomPlayers(aiNames: [FetchPlayerResponse]) -> [AIPlayer] {
         let userPosition = RangeHelper.positionsOrderGlobal[tableSize]!.randomElement()!
         
         let aiPlayers = createAndReorderPlayers(playerPosition: userPosition)
@@ -410,7 +411,8 @@ class AIGameManager {
         
         for i in 1..<aiPlayers.count {
             if i - 1 < aiNames.count {
-                aiPlayers[i].name = aiNames[i - 1]
+                aiPlayers[i].name = aiNames[i - 1].name
+                aiPlayers[i].fullName = aiNames[i - 1].full_name
             }
         }
         
@@ -424,7 +426,7 @@ class AIGameManager {
         let playerCount = Int(tableSize)!
         
         for _ in 1...playerCount {
-            let player: AIPlayer = AIPlayer(name: "", position: positionList[index], stack: 100.0)
+            let player: AIPlayer = AIPlayer(name: "", fullName: "", position: positionList[index], stack: 100.0)
             playersReordered.append(player)
             index = (index + 1) % playerCount
             
@@ -433,13 +435,20 @@ class AIGameManager {
         return playersReordered
     }
     
+    
+    struct FetchPlayerResponse: Codable {
+        let name: String
+        let full_name: String
+    }
+    
     // TODO: Move all these to a different file
-    func fetchAIPlayers() async -> [String] {
+    func fetchAIPlayers() async -> [FetchPlayerResponse] {
         isLoading = true
         errorMessage = nil
 
         guard let url = URL(string: "http://127.0.0.1:8000/api/ai/players?table_size=\(tableSize)") else {
             errorMessage = "Invalid URL"
+            showToast = true
             return []
         }
 
@@ -448,14 +457,16 @@ class AIGameManager {
 
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 errorMessage = "Server error"
+                showToast = true
                 return []
             }
 
-            let decoded = try JSONDecoder().decode([String].self, from: data)
+            let decoded = try JSONDecoder().decode([FetchPlayerResponse].self, from: data)
             return decoded
 
         } catch {
-            errorMessage = "Failed to fetch AI players: \(error.localizedDescription)"
+            errorMessage = "Failed to fetch AI players"
+            showToast = true
             return []
         }
     }
@@ -485,6 +496,7 @@ class AIGameManager {
     func determineWinners() async -> [String] {
         guard let url = URL(string: "http://127.0.0.1:8000/api/ai/determine-winner") else {
             errorMessage = "Invalid URL"
+            showToast = true
             return []
         }
         
@@ -504,6 +516,7 @@ class AIGameManager {
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
                 errorMessage = "Server error"
+                showToast = true
                 return []
             }
             
@@ -520,6 +533,7 @@ class AIGameManager {
             
         } catch {
             errorMessage = "Failed to determine winners: \(error.localizedDescription)"
+            showToast = true
             return []
         }
         

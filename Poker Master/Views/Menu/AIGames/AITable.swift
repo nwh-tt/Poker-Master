@@ -7,10 +7,15 @@
 //
 
 import SwiftUI
+import AlertToast
+import ActivityIndicatorView
 
 struct AITable: View {
     @State var aiManager: AIGameManager = AIGameManager()
     @State private var raiseMenuVisible = false
+    
+    // Used for player info view
+    @State private var selectedPlayer: AIPlayer? = nil
     
     let tableSize: String
     
@@ -33,11 +38,14 @@ struct AITable: View {
             .padding(.vertical, 128)
             EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
             if aiManager.isLoading {
-                ProgressView()
-                    .tint(.white)
-                    .scaleEffect(2)
+                ActivityIndicatorView(isVisible: .constant(true), type: .arcs(count: 3, lineWidth: 2))
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(Color(red: 1,green: 1,blue: 0.95).opacity(0.2))
             } else {
-                AIPlayerLayoutView(players: aiManager.aiPlayers, round: aiManager.round)
+                AIPlayerLayoutView(players: aiManager.aiPlayers, round: aiManager.round) { tappedPlayer in
+                    print(tappedPlayer.name)
+                    selectedPlayer = tappedPlayer
+                }
                 AIBoardView(board: aiManager.board)
                 VStack {
                     Spacer()
@@ -113,33 +121,51 @@ struct AITable: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
                 ZStack {
-                    if !aiManager.isLoading && !aiManager.waitingForContinueButton {
-                        HStack(spacing: 10) {
-                            ForEach(aiManager.getPossibleActions(), id: \.self) { action in
+                    if aiManager.waitingForStartButton {
+                        if aiManager.errorMessage != nil {
+                            HStack(spacing: 10) {
                                 Button(action: {
-                                    if action == "Raise" {
-                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                                raiseMenuVisible.toggle()
-                                            }
-                                    }
-                                    else {
-                                        aiManager.handleUserMove(move:(action.lowercased(), 0.0))
+                                    // Keep playing action
+                                    Task {
+                                        await aiManager.populateAINames()
                                     }
                                 }) {
-                                    Text("\(action)")
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(darkBlue)
-                                        .foregroundColor(.white)
-                                        .clipShape(Capsule())
-                                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
-                                }.disabled(!aiManager.waitingForUserInput)
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "arrow.trianglehead.clockwise")
+                                        Text("Retry")
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(darkBlue)
+                                    .clipShape(Capsule())
+                                    .foregroundColor(.white)
+                                }
+                            }
+                            
+                        }
+                        else {
+                            HStack(spacing: 10) {
+                                Button(action: {
+                                    // Keep playing action
+                                    aiManager.waitingForStartButton = false
+                                    Task {
+                                        await aiManager.startGame()
+                                    }
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "play.fill")
+                                        Text("Start Game")
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(darkBlue)
+                                    .clipShape(Capsule())
+                                    .foregroundColor(.white)
+                                }
                             }
                         }
-                        
                     }
-                    
-                    if aiManager.waitingForContinueButton {
+                    else if aiManager.waitingForContinueButton {
                         HStack(spacing: 10) {
                             Button(action: {
                                 // Leave table action
@@ -175,51 +201,36 @@ struct AITable: View {
                             }
                         }
                     }
-                    
-                    if aiManager.waitingForStartButton {
-                        if aiManager.errorMessage != "" {
-                            HStack(spacing: 10) {
+                    else if !aiManager.isLoading {
+                        HStack(spacing: 10) {
+                            ForEach(Array(aiManager.getPossibleActions().enumerated()), id: \.offset) { index, action in
                                 Button(action: {
-                                    // Keep playing action
-                                    Task {
-                                        await aiManager.populateAINames()
+                                    if action == "Raise" {
+                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                                raiseMenuVisible.toggle()
+                                            }
+                                    }
+                                    else {
+                                        aiManager.handleUserMove(move:(action.lowercased(), 0.0))
+                                        raiseMenuVisible = false
                                     }
                                 }) {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "arrow.trianglehead.clockwise")
-                                        Text("Retry")
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(darkBlue)
-                                    .clipShape(Capsule())
-                                    .foregroundColor(.white)
-                                }
+                                    Text("\(action)")
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(darkBlue)
+                                        .foregroundColor(.white)
+                                        .clipShape(Capsule())
+                                        .opacity(aiManager.waitingForUserInput ? 1.0 : 0.5)
+                                }.disabled(!aiManager.waitingForUserInput)
                             }
-                            
-                        }
-                        else {
-                            HStack(spacing: 10) {
-                                Button(action: {
-                                    // Keep playing action
-                                    aiManager.waitingForContinueButton = false
-                                    Task {
-                                        await aiManager.startGame()
-                                    }
-                                }) {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "play.fill")
-                                        Text("Start Game")
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(darkBlue)
-                                    .clipShape(Capsule())
-                                    .foregroundColor(.white)
-                                }
-                            }
-                        }
+                        }.id(aiManager.waitingForUserInput)
+                        
                     }
+                    
+                    
+                    
+                    
 
 
                 }
@@ -227,7 +238,29 @@ struct AITable: View {
             .padding(.bottom, 16)
 
         }
+        .toast(
+            isPresenting: $aiManager.showToast,
+            duration: 10,
+            tapToDismiss: true,
+            alert: {
+                AlertToast(
+                    displayMode: .hud,
+                    type: .error(.red),
+                    title: aiManager.errorMessage,
+                    subTitle: nil
+                )
+            },
+            completion: {
+                aiManager.showToast = false
+            }
+        )
+        .sheet(item: $selectedPlayer) { player in
+            PlayerInfoSheet(player: player)
+                .presentationDetents([.fraction(0.35)])
+                .presentationDragIndicator(.visible)
+        }
         .edgesIgnoringSafeArea(.all)
+        .preferredColorScheme(.dark)
         .task {
             aiManager.resetGame()
             await aiManager.populateAINames()
@@ -247,3 +280,4 @@ struct AITable: View {
 #Preview {
     AITable(tableSize: "6")
 }
+

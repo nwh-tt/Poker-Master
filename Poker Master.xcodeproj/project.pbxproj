@@ -30,6 +30,8 @@
 		B649ED532BD6E78200157267 /* Deck.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED522BD6E78200157267 /* Deck.swift */; };
 		B649ED552BD6FE5000157267 /* DeckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED542BD6FE5000157267 /* DeckTests.swift */; };
 		B649ED572BD70D6B00157267 /* CardBackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED562BD70D6B00157267 /* CardBackView.swift */; };
+		B656DC702EB6D83E00488B57 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = B656DC6F2EB6D83E00488B57 /* AlertToast */; };
+		B656DC722EC2D87B00488B57 /* PlayerInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B656DC712EC2D87200488B57 /* PlayerInfoSheet.swift */; };
 		B672D7DD2BC87E6300E7F5F6 /* PokerTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672D7DC2BC87E6300E7F5F6 /* PokerTableView.swift */; };
 		B672D7DF2BC88CB900E7F5F6 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672D7DE2BC88CB900E7F5F6 /* CardView.swift */; };
 		B67C5E432E208A950017ECBF /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E422E208A950017ECBF /* MenuView.swift */; };
@@ -124,6 +126,7 @@
 		B649ED522BD6E78200157267 /* Deck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deck.swift; sourceTree = "<group>"; };
 		B649ED542BD6FE5000157267 /* DeckTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckTests.swift; sourceTree = "<group>"; };
 		B649ED562BD70D6B00157267 /* CardBackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardBackView.swift; sourceTree = "<group>"; };
+		B656DC712EC2D87200488B57 /* PlayerInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInfoSheet.swift; sourceTree = "<group>"; };
 		B672D7DC2BC87E6300E7F5F6 /* PokerTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerTableView.swift; sourceTree = "<group>"; };
 		B672D7DE2BC88CB900E7F5F6 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		B67C5E422E208A950017ECBF /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
@@ -194,6 +197,7 @@
 				B6131C472E89F31D00E9ACFA /* FirebaseAppCheck in Frameworks */,
 				B690E22A2E7DE52F007C601E /* GoogleMobileAds in Frameworks */,
 				B635743A2EB3FBF000F1212D /* RevenueCat in Frameworks */,
+				B656DC702EB6D83E00488B57 /* AlertToast in Frameworks */,
 				B635743F2EB3FC2200F1212D /* StoreKit.framework in Frameworks */,
 				B635743C2EB3FBF000F1212D /* RevenueCatUI in Frameworks */,
 				B6131C432E89F31D00E9ACFA /* FirebaseAnalyticsCore in Frameworks */,
@@ -524,6 +528,7 @@
 		B6BB62532E9733E700F1E565 /* AIGames */ = {
 			isa = PBXGroup;
 			children = (
+				B656DC712EC2D87200488B57 /* PlayerInfoSheet.swift */,
 				B63574362EB1401E00F1212D /* AIBoardView.swift */,
 				B6BB62542E97340A00F1E565 /* AITable.swift */,
 				B6BB625A2E9AD06F00F1E565 /* AIPlayerLayoutView.swift */,
@@ -597,6 +602,7 @@
 				B6131C4C2E8A221A00E9ACFA /* FirebaseAuth */,
 				B63574392EB3FBF000F1212D /* RevenueCat */,
 				B635743B2EB3FBF000F1212D /* RevenueCatUI */,
+				B656DC6F2EB6D83E00488B57 /* AlertToast */,
 			);
 			productName = "Poker Master";
 			productReference = B697E7712BC849E700191C7A /* Poker Master.app */;
@@ -677,6 +683,7 @@
 				B690E2282E7DE52F007C601E /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				B6131C3F2E89F31D00E9ACFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				B63574382EB3FBF000F1212D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+				B656DC6E2EB6D83E00488B57 /* XCRemoteSwiftPackageReference "AlertToast" */,
 			);
 			productRefGroup = B697E7722BC849E700191C7A /* Products */;
 			projectDirPath = "";
@@ -768,6 +775,7 @@
 				B63574372EB1402300F1212D /* AIBoardView.swift in Sources */,
 				B697E7792BC849E700191C7A /* Item.swift in Sources */,
 				B67C5E432E208A950017ECBF /* MenuView.swift in Sources */,
+				B656DC722EC2D87B00488B57 /* PlayerInfoSheet.swift in Sources */,
 				B67C5E7F2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift in Sources */,
 				B67C5E452E208AD70017ECBF /* MenuOption.swift in Sources */,
 				B649ED4A2BD1B0C900157267 /* Player.swift in Sources */,
@@ -1139,6 +1147,14 @@
 				minimumVersion = 1.0.1;
 			};
 		};
+		B656DC6E2EB6D83E00488B57 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.9;
+			};
+		};
 		B690E2282E7DE52F007C601E /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
@@ -1204,6 +1220,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B645C6C82E7DA626005F78BA /* XCRemoteSwiftPackageReference "AnimatedGradient" */;
 			productName = AnimatedGradient;
+		};
+		B656DC6F2EB6D83E00488B57 /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B656DC6E2EB6D83E00488B57 /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
 		};
 		B690E2292E7DE52F007C601E /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;

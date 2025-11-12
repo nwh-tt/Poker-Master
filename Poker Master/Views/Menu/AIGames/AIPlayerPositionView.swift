@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct AIPlayerPositionView: View {
+    @State private var showPlayerPopup = false
+    
     let player: AIPlayer
     // set default position to right
     let direction: String
@@ -61,14 +63,24 @@ struct AIPlayerPositionView: View {
                     )
                 ZStack {
                     if player.lastMoveForRound(round: round) != .none {
-                        Text(
-                            player.lastMoveForRound(round: round) == .raise
-                            ? "Raise: \(String(format: "%.1f", player.lastBet(round: round)))BB"
-                            : player.lastMoveForRound(round: round).rawValue.capitalizeFirst
-                        )
-                        .font(.system(size: 12))
-                        .fontWeight(.heavy)
-                        .foregroundColor(.white)
+                        HStack(spacing: 4) {
+                            if player.lastMoveForRound(round: round) == .raise {
+                                Image(systemName: "arrow.up.circle.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.white)
+                                Text("\(String(format: "%.1f", player.lastBet(round: round)))BB")
+                                    .font(.system(size: 12))
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.white)
+                            } else {
+                                Text(
+                                    player.lastMoveForRound(round: round).rawValue.capitalizeFirst
+                                )
+                                .font(.system(size: 12))
+                                .fontWeight(.heavy)
+                                .foregroundColor(.white)
+                            }
+                        }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
@@ -103,8 +115,9 @@ struct AIPlayerPositionView: View {
 }
 
 #Preview {
-    let player = AIPlayer(name: "ATW", position: "BB", stack: 100.0)
+    let player = AIPlayer(name: "ATW", fullName: "test", position: "BB", stack: 100.0)
     //player.raise(amountRaisingTo: 2.5)
-    player.raise(amount: 100, round: 0)
-    return AIPlayerPositionView(player: player , direction: "right", isUser: true, round: 0)
+    player.raise(amount: 20, round: 0)
+    player.call(round: 0)
+    return AIPlayerPositionView(player: player, direction: "right", isUser: true, round: 0)
 }
