@@ -14,6 +14,11 @@ class EquityDrillManager: ObservableObject {
     @Published var roundsPlayed: Int = 0
     @Published var equityReady: Bool = false
     @Published var currentScenario: EquityScenario? = nil
+    
+    // Error message logic
+    @Published var errorMessage: String? = nil
+    @Published var showToast = false
+    
     let equityAPI: EquityAPI
     var context: ModelContext?
     
@@ -151,6 +156,8 @@ class EquityDrillManager: ObservableObject {
         } catch {
             // 3. Handle any error thrown (401, network failure, decoding failure, etc.)
             print("Error fetching equity in createScenario: \(error.localizedDescription)")
+            errorMessage = "Failed to fetch equity"
+            showToast = true
             return nil // Return nil on failure
         }
     }

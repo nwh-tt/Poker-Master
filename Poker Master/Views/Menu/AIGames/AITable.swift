@@ -139,6 +139,8 @@ struct AITable: View {
                                     .clipShape(Capsule())
                                     .foregroundColor(.white)
                                 }
+                                .padding(.horizontal, 8)
+                                .padding(.bottom, 8)
                             }
                             
                         }
@@ -161,6 +163,8 @@ struct AITable: View {
                                     .clipShape(Capsule())
                                     .foregroundColor(.white)
                                 }
+                                .padding(.horizontal, 8)
+                                .padding(.bottom, 8)
                             }
                         }
                     }
@@ -171,7 +175,7 @@ struct AITable: View {
                                 
                             }) {
                                 HStack(spacing: 6) {
-                                    Image(systemName: "xmark.circle")
+                                    Image(systemName: "rectangle.portrait.and.arrow.right")
                                     Text("Leave Table")
                                 }
                                 .frame(maxWidth: .infinity)
@@ -199,6 +203,8 @@ struct AITable: View {
                                 .foregroundColor(.white)
                             }
                         }
+                        .padding(.horizontal, 8)
+                        .padding(.bottom, 8)
                     }
                     else if !aiManager.isLoading {
                         HStack(spacing: 10) {
@@ -206,8 +212,8 @@ struct AITable: View {
                                 Button(action: {
                                     if action == "Raise" {
                                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                                raiseMenuVisible.toggle()
-                                            }
+                                            raiseMenuVisible.toggle()
+                                        }
                                     }
                                     else {
                                         aiManager.handleUserMove(move:(action.lowercased(), 0.0))
@@ -224,6 +230,8 @@ struct AITable: View {
                                 }.disabled(!aiManager.waitingForUserInput)
                             }
                         }.id(aiManager.waitingForUserInput)
+                        .padding(.horizontal, 8)
+                        .padding(.bottom, 8)
                         
                     }
                     

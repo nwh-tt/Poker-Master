@@ -141,7 +141,7 @@ enum TokenError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .userNotAuthenticated:
-            return "The user is not currently authenticated."
+            return "Not Authenticated"
         }
     }
 }

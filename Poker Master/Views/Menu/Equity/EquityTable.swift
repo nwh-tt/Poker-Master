@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import ActivityIndicatorView
+import AlertToast
 
 let darkGreen = Color(red: 0, green: 0.15, blue: 0)
 let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
@@ -19,6 +20,8 @@ struct EquityTable: View {
     @StateObject private var equityDrillManager: EquityDrillManager
     @State private var showResult: Bool = false
     @Environment(\.modelContext) private var context
+    
+    @Environment(\.dismiss) private var dismiss
     
     @State private var cardAnimations: [Bool] = [false, false]
     @State private var villainCardAnimations: [Bool] = [false, false]
@@ -239,20 +242,58 @@ struct EquityTable: View {
                         .padding(.bottom)
                     }
                 } else {
-                    VStack(spacing: 12) {
+                    if equityDrillManager.errorMessage == nil {
+                        VStack(spacing: 12) {
                             ActivityIndicatorView(isVisible: .constant(true), type: .opacityDots(count: 3, inset: 4))
                                 .frame(width: 50, height: 50)
                                 .foregroundColor(.white)
-
+                            
                             Text("Calculating Equity")
                                 .foregroundColor(.gray)
                                 .font(.system(size: 14, weight: .semibold))
                         }
                         .padding()
+                    } else {
+                        HStack(spacing: 10) {
+                            Button(action: {
+                                // Go back
+                                dismiss()
+                            }) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                                    Text("Exit")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(darkBlue)
+                                .clipShape(Capsule())
+                                .foregroundColor(.white)
+                                .padding(32)
+                                .padding(.horizontal, 8)
+                            }
+                        }
+
+                    }
                 }
             }
             
         }
+        .toast(
+            isPresenting: $equityDrillManager.showToast,
+            duration: 10,
+            tapToDismiss: true,
+            alert: {
+                AlertToast(
+                    displayMode: .hud,
+                    type: .error(.red),
+                    title: equityDrillManager.errorMessage,
+                    subTitle: nil
+                )
+            },
+            completion: {
+                equityDrillManager.showToast = false
+            }
+        )
         .edgesIgnoringSafeArea(.all)
         .onAppear() {
             context.insert(game)
@@ -264,6 +305,7 @@ struct EquityTable: View {
                     .padding(.vertical, 6)
             }
         }
+        .preferredColorScheme(.dark)
     }
     
     private func handleSelection(_ option: String, in scenario: EquityScenario) {
