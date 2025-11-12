@@ -15,6 +15,7 @@ struct PlayerInfoSheet: View {
     let winRate = "+7.3 bb/100"
     let biggestWin = "142 BB Pot"
     let round = 1
+    let game = 0
     
     init(player: AIPlayer) {
         self.player = player
@@ -23,8 +24,8 @@ struct PlayerInfoSheet: View {
     }
     
     func determineInvestedField() -> String {
-        let latestBet = player.lastBet(round: round)
-        let amountInvested = "\(formatDouble(latestBet)) BB"
+        let latestBet = player.lastBet(game: game, round: round)
+        let amountInvested = "\(latestBet.formattedString()) BB"
         
         var percent = 0.0
         if player.stack > 0 {
@@ -33,23 +34,11 @@ struct PlayerInfoSheet: View {
             percent = 100.0
         }
         
-        return "\(amountInvested) (\(formatDouble(percent))%)"
+        return "\(amountInvested) (\(percent.formattedString())%)"
     }
-    
-    func formatDouble(_ value: Double) -> String {
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            // Whole number
-            return String(format: "%.0f", value)
-        } else {
-            // Has a decimal
-            return String(format: "%.1f", value)
-        }
-    }
-
 
     var body: some View {
         VStack(spacing: 20) {
-
             VStack(spacing: 8) {
                 Text(player.fullName)
                     .font(.title2.bold())
@@ -62,16 +51,13 @@ struct PlayerInfoSheet: View {
 
             Divider().background(Color.gray.opacity(0.5))
 
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
+            Grid(alignment: .leading, horizontalSpacing: 100, verticalSpacing: 24) {
+                GridRow {
                     infoRow(title: "Stack", value: stackSize)
-                    Spacer()
                     infoRow(title: "Invested", value: investedThisHand)
                 }
-
-                HStack {
+                GridRow {
                     infoRow(title: "Win Rate", value: winRate, color: .green)
-                    Spacer()
                     infoRow(title: "Biggest Win", value: biggestWin, color: .yellow)
                 }
             }
@@ -99,7 +85,7 @@ struct PlayerInfoSheet: View {
 
 #Preview {
     let player = AIPlayer(name: "HERO", fullName: "p1", position: "SB", stack: 100.0)
-    let _ = player.raise(amount: 9.5, round: 1)
+    let _ = player.raise(amount: 9.5, game: 0, round: 1)
     PlayerInfoSheet(player: player)
         .preferredColorScheme(.dark)
 }

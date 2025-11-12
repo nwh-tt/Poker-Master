@@ -10,6 +10,7 @@ import Foundation
 struct ActionRecord {
     let action: Action
     let amount: Double
+    let game: Int // Iterates up through games (used for tying history to a game)
     let round: Int // Preflop = 0, Flop = 1, Turn = 2, River = 3
 }
 
@@ -34,26 +35,31 @@ class AIPlayer: Identifiable {
         self.isUser = isUser
     }
     
-    func isOutOfMoney() -> Bool {
+    func isOutOfMoney(game: Int) -> Bool {
         guard let lastBet = moveHistory.last else { return stack <= 0 }
+        if lastBet.game != game { return stack <= 0 }
         return (stack + lastBet.amount) <= 0
     }
     
-    func lastBet(round: Int) -> Double {
+    func lastBet(game: Int, round: Int) -> Double {
         guard let lastAction = moveHistory.last else { return 0 }
+        if lastAction.game != game { return 0 }
         if lastAction.round != round { return 0 }
         
         return lastAction.amount
     }
     
-    func lastMove() -> Action {
+    func lastMove(game: Int) -> Action {
         guard let lastAction = moveHistory.last else { return .none }
+        if lastAction.game != game { return .none }
+        
         return lastAction.action
     }
     
-    func lastMoveForRound(round: Int) -> Action {
+    func lastMoveForRound(game: Int, round: Int) -> Action {
         guard let lastAction = moveHistory.last else { return .none }
         if lastAction.round != round { return .none }
+        if lastAction.game != game { return .none }
         
         return lastAction.action
     }
@@ -64,7 +70,7 @@ class AIPlayer: Identifiable {
     ///   - amount: amount to raise too
     ///   - round: current round (preflop, flop, turn, river)
     /// - Returns: Additonal amount needed to raise
-    func raise(amount: Double, round: Int) -> Double {
+    func raise(amount: Double, game: Int, round: Int) -> Double {
         var amountToBet = amount
 
         // Subtract any existing bet in this round to find the additional amount needed
@@ -74,11 +80,11 @@ class AIPlayer: Identifiable {
 
         // Deduct from stack and record the raise
         stack -= amountToBet
-        recordAction(.raise, amount: amount, round: round)
+        recordAction(.raise, amount: amount, game: game, round: round)
         return amountToBet
     }
     
-    func call(amount: Double = 0, round: Int) -> Double {
+    func call(amount: Double = 0, game: Int, round: Int) -> Double {
         var amountNeededToCall = amount
         
         if let lastAction = moveHistory.last, lastAction.round == round {
@@ -86,21 +92,21 @@ class AIPlayer: Identifiable {
         }
         
         stack -= amountNeededToCall
-        recordAction(.call, amount: amount, round: round)
+        recordAction(.call, amount: amount, game: game, round: round)
         return amountNeededToCall
     }
     
-    func fold(round: Int) {
-        recordAction(.fold, amount: 0.0, round: round)
+    func fold(game: Int, round: Int) {
+        recordAction(.fold, amount: 0.0, game: game, round: round)
     }
     
-    func check(round: Int) {
-        recordAction(.check, round: round)
+    func check(game: Int, round: Int) {
+        recordAction(.check, game: game, round: round)
     }
     
     
-    private func recordAction(_ action: Action, amount: Double = 0, round: Int) {
-        let record = ActionRecord(action: action, amount: amount, round: round)
+    private func recordAction(_ action: Action, amount: Double = 0, game: Int, round: Int) {
+        let record = ActionRecord(action: action, amount: amount, game: game, round: round)
         moveHistory.append(record)
     }
     

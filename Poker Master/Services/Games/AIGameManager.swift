@@ -66,9 +66,8 @@ class AIGameManager {
         
         // Also need to reset all players last moves and deal new cards
         for player in aiPlayers {
-            player.moveHistory.removeAll()
             player.hand.removeAll()
-            if !player.isOutOfMoney() {
+            if !player.isOutOfMoney(game: game) {
                 player.hand = [deck.dealCard(), deck.dealCard()]
             }
         }
@@ -102,7 +101,7 @@ class AIGameManager {
             let winnersList = await determineWinners()
             winnerNames = winnersList
         } else {
-            let singularWinner = aiPlayers.first(where: { $0.lastMove() != .fold && !$0.isOutOfMoney() })
+            let singularWinner = aiPlayers.first(where: { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game) })
             winnerNames = [singularWinner!.name]
         }
         
@@ -132,16 +131,16 @@ class AIGameManager {
             print("\n---> Player \(currentPlayer.name) (\(currentPlayer.position))'s turn")
 
             // Skip folded
-            if currentPlayer.lastMove() == .fold {
+            if currentPlayer.lastMove(game: game) == .fold {
                 print("Skipping \(currentPlayer.name): already folded.")
                 turn = (turn + 1) % Int(tableSize)!
                 continue
             }
             
-            let activePlayers = aiPlayers.filter { $0.lastMove() != .fold }
+            let activePlayers = aiPlayers.filter { $0.lastMove(game: game) != .fold }
             let bettingComplete = activePlayers.allSatisfy { player in
-                let playerBet = player.lastBet(round: round)
-                let playerMove = player.lastMoveForRound(round: round)
+                let playerBet = player.lastBet(game: game, round: round)
+                let playerMove = player.lastMoveForRound(game: game,  round: round)
                 
                 // 1. Player is all-in → treat as matched
                 if player.stack == 0 { return true }
@@ -164,7 +163,7 @@ class AIGameManager {
             var action: String = ""
             var amount: Double = 0
             
-            if currentPlayer.isOutOfMoney() {
+            if currentPlayer.isOutOfMoney(game: game) {
                 turn = (turn + 1) % Int(tableSize)!
                 continue
             }
@@ -191,10 +190,10 @@ class AIGameManager {
             switch action {
             case "fold":
                 print("🟥 \(currentPlayer.name) folds.")
-                currentPlayer.fold(round: round)
+                currentPlayer.fold(game: game, round: round)
             case "check":
                 print("\(currentPlayer.name) checks.")
-                currentPlayer.check(round: round)
+                currentPlayer.check(game: game, round: round)
             case "call":
                 print("🟨 \(currentPlayer.name) calls")
                 call(aiPlayer: currentPlayer)
@@ -205,7 +204,7 @@ class AIGameManager {
                 highestBet = amount
                 print("New highest bet = \(highestBet). Last aggressor = \(currentPlayer.name)")
             case "allin":
-                let allInAmount = currentPlayer.stack + currentPlayer.lastBet(round: round)
+                let allInAmount = currentPlayer.stack + currentPlayer.lastBet(game: game, round: round)
                 print("🟨 \(currentPlayer.name) goes all-in for \(allInAmount)!")
                 raise(aiPlayer: currentPlayer, amount: allInAmount)
                 highestBet = max(highestBet, allInAmount)
@@ -216,7 +215,7 @@ class AIGameManager {
             turn = (turn + 1) % Int(tableSize)!
 
             // Check if only one player remains
-            let activeCount = aiPlayers.filter { $0.lastMove() != .fold }.count
+            let activeCount = aiPlayers.filter { $0.lastMove(game: game) != .fold }.count
             if activeCount == 1 {
                 print("🏁 Only one player remains. Game ends.")
                 break
@@ -297,7 +296,7 @@ class AIGameManager {
         var amount = 0.0
         
         if action == "raise" {
-            if ai.stack <= lastPlayerBet + ai.lastBet(round: round) {
+            if ai.stack <= lastPlayerBet + ai.lastBet(game: game, round: round) {
                 return ("fold", 0.0)
             }
             amount = lastPlayerBet + (Double.random(in: 1.0...10.0) * 2).rounded() / 2
@@ -311,20 +310,20 @@ class AIGameManager {
     
     // MARK: Helper functions for processing
     func raise(aiPlayer: AIPlayer, amount: Double) {
-        let raiseAmount = min(amount, aiPlayer.stack + aiPlayer.lastBet(round: round)) // Restrict user to never go over their stack
-        let potIncrease = aiPlayer.raise(amount: raiseAmount, round: round)
+        let raiseAmount = min(amount, aiPlayer.stack + aiPlayer.lastBet(game: game, round: round)) // Restrict user to never go over their stack
+        let potIncrease = aiPlayer.raise(amount: raiseAmount, game: game, round: round)
         pot += potIncrease
         lastPlayerBet = max(lastPlayerBet, raiseAmount) // should never go down
     }
     
     func call(aiPlayer: AIPlayer) {
-        let callAmount = min(lastPlayerBet, aiPlayer.stack + aiPlayer.lastBet(round: round)) // Can't bet more than you have
-        let potIncrease = aiPlayer.call(amount: callAmount, round: round)
+        let callAmount = min(lastPlayerBet, aiPlayer.stack + aiPlayer.lastBet(game: game, round: round)) // Can't bet more than you have
+        let potIncrease = aiPlayer.call(amount: callAmount, game: game, round: round)
         pot += potIncrease
     }
     
     func remainingPlayers() -> Int {
-        return aiPlayers.filter { $0.lastMove() != .fold && !$0.isOutOfMoney()}.count
+        return aiPlayers.filter { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)}.count
     }
     
     func getFirstPlayerToAct() -> Int {
@@ -345,7 +344,7 @@ class AIGameManager {
         for i in 0...aiPlayers.count {
             let nextIndex = (referenceIndex + i) % aiPlayers.count
             let player = aiPlayers[nextIndex]
-            if player.lastMove() != .fold && !player.isOutOfMoney() && player.lastBet(round: round) == 0.0 {
+            if player.lastMove(game: game) != .fold && !player.isOutOfMoney(game: game) && player.lastBet(game: game, round: round) == 0.0 {
                 return nextIndex
             }
         }
@@ -500,7 +499,7 @@ class AIGameManager {
             return []
         }
         
-        let playersLeft = aiPlayers.filter({ $0.lastMove() != .fold && !$0.isOutOfMoney()})
+        let playersLeft = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
         let players = playersLeft.map { player in
             WinnerRequestPlayerDetails(name: player.name, hand: player.hand.map { $0.toString() })
         }

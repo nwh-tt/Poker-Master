@@ -78,29 +78,6 @@ struct EquityTable: View {
             
             EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
             
-            // Score top right
-            HStack {
-                Spacer()
-                Text("\(equityDrillManager.score) / \(equityDrillManager.roundsPlayed)")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(
-                        Capsule()
-                            .fill(Color.black.opacity(0.4))
-                            .overlay(
-                                Capsule()
-                                    .stroke(borderColor, lineWidth: 2)
-                            )
-                    )
-                    .padding(.top, 16)
-                    .padding(.trailing, 8)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            .padding(.top, 40)
-            .padding(.trailing, 12)
-            
             VStack {
                 Spacer()
                 VStack {
@@ -279,6 +256,13 @@ struct EquityTable: View {
         .edgesIgnoringSafeArea(.all)
         .onAppear() {
             context.insert(game)
+        }.toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Text("\(equityDrillManager.score) / \(equityDrillManager.roundsPlayed)")
+                    .font(.system(size: 16, weight: .semibold))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+            }
         }
     }
     

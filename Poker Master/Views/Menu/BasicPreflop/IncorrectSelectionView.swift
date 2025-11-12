@@ -37,7 +37,9 @@ struct IncorrectSelectionView: View {
                 .padding()
                 .presentationDetents([.fraction(0.75)]) // 3/4 screen height
                 .presentationDragIndicator(.visible)
+                .preferredColorScheme(.dark)
     }
+        
 }
 
 #Preview {

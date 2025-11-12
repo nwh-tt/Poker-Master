@@ -113,9 +113,9 @@ struct RangesView: View {
     private func colorFor(action: String) -> Color {
         switch action {
         case "raise":
-            return Color(red: 40/255, green: 130/255, blue: 90/255) // brighter green
+            return .green.opacity(0.8) // green
         case "call":
-            return Color(red: 160/255, green: 60/255, blue: 160/255) // brighter magenta/purple
+            return Color(red: 0.4, green: 0.7, blue: 1.0).opacity(0.8) // Light blue
         default: return .gray.opacity(0.8)
         }
     }

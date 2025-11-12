@@ -7,12 +7,7 @@
 
 import SwiftUI
 
-extension String {
-    var capitalizeFirst: String {
-        guard let first = first else { return self }
-        return String(first).uppercased() + dropFirst()
-    }
-}
+
 
 struct PlayerPositionView: View {
     let player: Player
@@ -87,7 +82,7 @@ struct CountingPlayerText: AnimatableModifier {
     }
     
     func body(content: Content) -> some View {
-        Text("\(String(format: "%.1f", value)) BB")
+        Text("\(value.formattedString()) BB")
             .font(.system(size: 12))
             .fontWeight(.bold)
             .foregroundColor(textColor)
@@ -95,11 +90,6 @@ struct CountingPlayerText: AnimatableModifier {
     }
 }
 
-extension View {
-    func countingPlayerText(to value: Double, color: Color, offset: Int) -> some View {
-        self.modifier(CountingPlayerText(value: value, textColor: color, textOffset: offset))
-    }
-}
 
 
 #Preview {

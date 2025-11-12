@@ -42,8 +42,7 @@ struct AITable: View {
                     .frame(width: 50, height: 50)
                     .foregroundColor(Color(red: 1,green: 1,blue: 0.95).opacity(0.2))
             } else {
-                AIPlayerLayoutView(players: aiManager.aiPlayers, round: aiManager.round) { tappedPlayer in
-                    print(tappedPlayer.name)
+                AIPlayerLayoutView(players: aiManager.aiPlayers, game: aiManager.game, round: aiManager.round) { tappedPlayer in
                     selectedPlayer = tappedPlayer
                 }
                 AIBoardView(board: aiManager.board)
@@ -233,7 +232,7 @@ struct AITable: View {
                     
 
 
-                }
+                }.padding(4)
             }.padding(.horizontal)
             .padding(.bottom, 16)
 
@@ -264,15 +263,6 @@ struct AITable: View {
         .task {
             aiManager.resetGame()
             await aiManager.populateAINames()
-        }
-    }
-    
-    private func truncateDouble(_ number: Double) -> String {
-        // Only show decimals if needed
-        if number.truncatingRemainder(dividingBy: 1) == 0 {
-            return String(format: "%.0f× BB", number)
-        } else {
-            return String(format: "%.1f× BB", number)
         }
     }
 }

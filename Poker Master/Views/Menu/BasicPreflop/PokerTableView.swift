@@ -107,28 +107,6 @@ struct PokerTableView: View {
                 .padding(.vertical, 128)
                 
                 EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
-                // add a score in the top right corner
-                HStack {
-                    Spacer()
-                    Text("\(gameManager.score) / \(gameManager.handsPlayed)")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(
-                            Capsule()
-                                .fill(Color.black.opacity(0.4))
-                                .overlay(
-                                    Capsule()
-                                        .stroke(borderColor, lineWidth: 2)
-                                )
-                        )
-                        .padding(.top, 16)
-                        .padding(.trailing, 8)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .padding(.top, 40)
-                .padding(.trailing, 12)
                 
                 
                 PlayerLayoutView(players: gameManager.players)
@@ -179,7 +157,7 @@ struct PokerTableView: View {
                         }.disabled(!gameManager.waitingForUserInput)
                     }.padding()
                         .confettiCannon(trigger: $triggerMoneyConfetti, num: 50, confettis: [.text("💵"), .text("💰")])
-                }.padding()
+                }.padding(4)
                 Text("")
                     .countingText(to: gameManager.pot)
                     .position(x: UIScreen.main.bounds.width / 2,
@@ -191,7 +169,6 @@ struct PokerTableView: View {
                 gameManager.resetAndStartNewGame()
             }) {
                 IncorrectSelectionView(showPopup: $gameManager.showIncorrectPopup, adviceText: gameManager.adviceText, keyUsed: gameManager.rangesUsed, hand: gameManager.user?.getHand() ?? "", playerCount: size)
-                    .presentationBackground(.ultraThinMaterial)
             }
             .edgesIgnoringSafeArea(.all)
             .onAppear {
@@ -199,6 +176,15 @@ struct PokerTableView: View {
                 gameManager.setProfile(profile: userProfile.profile)
                 Task {
                     await gameManager.startGame()
+                }
+            }.toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack {
+                        Text("\(gameManager.score) / \(gameManager.handsPlayed)")
+                            .font(.system(size: 16, weight: .semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                    }
                 }
             }
     }
@@ -213,7 +199,7 @@ struct CountingText: AnimatableModifier {
     }
     
     func body(content: Content) -> some View {
-        Text("\(String(format: "%.1f", value)) BB")
+        Text("\(value.formattedString()) BB")
             .font(.system(size: 20, weight: .semibold))
             .foregroundColor(.white)
             .padding(12)
@@ -225,11 +211,6 @@ struct CountingText: AnimatableModifier {
     }
 }
 
-extension View {
-    func countingText(to value: Double) -> some View {
-        self.modifier(CountingText(value: value))
-    }
-}
 
 #Preview("6 Player") {
     let schema = Schema([
