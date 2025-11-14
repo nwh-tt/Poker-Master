@@ -93,11 +93,11 @@ struct ChallengesView: View {
     sampleChallenges.forEach { context.insert($0) }
     
     // Add in sample game and sample hands
-    let sampleGame = Game(date: Date(), totalHands: 0, duration: 0.0)
+    let sampleGame = Game(date: Date(), gameType: .preFlop, totalHands: 0, duration: 0.0)
     context.insert(sampleGame)
     // Loop through and add 21 hands to the handlog
     for _ in 1...250 {
-        let sampleHandLog = HandLog(typeOfHand: .preflop, position: .sb, hand: "AsAs", pair: true, action: .call, raiseType: .open, betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
+        let sampleHandLog = HandLog(position: .sb, hand: "AsAs", pair: true, action: .call, raiseType: .open, betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
         context.insert(sampleHandLog)
     }
     

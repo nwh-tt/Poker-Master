@@ -34,10 +34,10 @@ class DecisionMaker {
             return .fold
         }
 
-        if raiseHands.contains(hero.getHand()) {
+        if raiseHands.contains(hero.hand.handToString()) {
             return .raise
         }
-        if callHands.contains(hero.getHand()) {
+        if callHands.contains(hero.hand.handToString()) {
             return .call
         }
         

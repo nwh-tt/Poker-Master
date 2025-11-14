@@ -63,7 +63,7 @@ class SimplePreFlopManager: ObservableObject {
         self.size = size
         print("Size: \(size)")
         // create game to later be inserted
-        game = Game(date: Date(), totalHands: 0, duration: 0.0)
+        game = Game(date: Date(), gameType: .preFlop, totalHands: 0, duration: 0.0)
         
         players = createRandomPlayers()
         user = players[0]
@@ -262,7 +262,7 @@ class SimplePreFlopManager: ObservableObject {
         score = 0
         handsPlayed = 0
         isGameOver = false
-        game = Game(date: Date(), totalHands: 0, duration: 0.0)
+        game = Game(date: Date(), gameType: .preFlop, totalHands: 0, duration: 0.0)
         resetAndStartNewGame()
     }
     
@@ -385,7 +385,17 @@ class SimplePreFlopManager: ObservableObject {
                 return
             }
             
-            let handLog = HandLog(typeOfHand: .preflop, position: pos, hand: user?.getHand() ?? "", pair: user?.handIsPair() ?? false, action: action, raiseType: raiseType, betAmount: betAmountValue, pot: pot, xpEarned: 0, isCorrect: false, game: game)
+            let handLog = HandLog(
+                position: pos,
+                hand: user?.hand.handToString() ?? "",
+                pair: user?.handIsPair() ?? false,
+                action: action, raiseType: raiseType,
+                betAmount: betAmountValue,
+                pot: pot,
+                xpEarned: 0,
+                isCorrect: false,
+                game: game
+            )
             context?.insert(handLog)
             if userDecision == idealDecision {
                 players[turn] = playerCopy

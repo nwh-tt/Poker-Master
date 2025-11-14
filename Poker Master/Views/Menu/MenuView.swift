@@ -26,12 +26,13 @@ struct MenuView: View {
     
     
     var needsAd: Bool {
-        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
-        let recentEquityHands = handLogs.filter {
-            $0.typeOfHand == .equity && $0.date >= cutoff
-        }
-        print("Printing recent equity count: \(recentEquityHands.count)")
-        return recentEquityHands.count >= 200
+        false
+//        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
+//        let recentEquityHands = handLogs.filter {
+//            $0.typeOfHand == .equity && $0.date >= cutoff
+//        }
+//        print("Printing recent equity count: \(recentEquityHands.count)")
+//        return recentEquityHands.count >= 200
     }
 
     var body: some View {

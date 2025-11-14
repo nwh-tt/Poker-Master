@@ -168,7 +168,7 @@ struct PokerTableView: View {
                 // This will run when the sheet is dismissed by any means
                 gameManager.resetAndStartNewGame()
             }) {
-                IncorrectSelectionView(showPopup: $gameManager.showIncorrectPopup, adviceText: gameManager.adviceText, keyUsed: gameManager.rangesUsed, hand: gameManager.user?.getHand() ?? "", playerCount: size)
+                IncorrectSelectionView(showPopup: $gameManager.showIncorrectPopup, adviceText: gameManager.adviceText, keyUsed: gameManager.rangesUsed, hand: gameManager.user?.hand.handToString() ?? "", playerCount: size)
             }
             .edgesIgnoringSafeArea(.all)
             .onAppear {

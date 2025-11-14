@@ -74,11 +74,11 @@ struct ChallengeCard: View {
         } 
         else if (challenge.title == "Closer") {
             // only count games > 8 hands
-            return games.filter { $0.hands.count > 8 }.count
+            return games.filter { $0.preflopHands.count > 8 }.count
         }
         else if (challenge.title == "Perfect Game") {
             return games.filter { game in
-                !game.hands.isEmpty && game.hands.allSatisfy { $0.isCorrect }
+                !game.preflopHands.isEmpty && game.preflopHands.allSatisfy { $0.isCorrect }
             }.count
         }
             

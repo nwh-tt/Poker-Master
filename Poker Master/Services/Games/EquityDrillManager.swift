@@ -30,6 +30,7 @@ class EquityDrillManager: ObservableObject {
     private var scenarioQueue: [EquityScenario] = []
     private let queueSize = 3
     
+    // User selections
     var street: String = "Any"
     var villainType: String = "Any" // Any, Ranges, Cards
     
@@ -77,16 +78,16 @@ class EquityDrillManager: ObservableObject {
             selectedVillainType = ["Cards", "Ranges"].randomElement()!
         }
         
-        var selectedStreet = street
+        var currentStreet = street
         if street == "Any" {
-            selectedStreet = ["Preflop", "Flop", "Turn"].randomElement()!
+            currentStreet = ["Preflop", "Flop", "Turn"].randomElement()!
         }
         var board: [Card] = []
-        if selectedStreet == "Flop" {
+        if currentStreet == "Flop" {
             for _ in 0..<3 {
                 board.append(deck.dealCard())
             }
-        } else if selectedStreet == "Turn" {
+        } else if currentStreet == "Turn" {
             for _ in 0..<4 {
                 board.append(deck.dealCard())
             }
@@ -106,7 +107,7 @@ class EquityDrillManager: ObservableObject {
             }
         }
         
-        print("Fetching equity for: \(selectedVillainType), \(selectedStreet)")
+        print("Fetching equity for: \(selectedVillainType), \(currentStreet)")
         
         // Fetch equity asynchronously
         do {
@@ -245,6 +246,20 @@ struct EquityScenario {
     let lowEquity: Int
     let highEquity: Int
     let options: [String]
+    
+    // Data for logging
+    var street: Street {
+        switch board.count {
+        case 0: return .preflop
+        case 3: return .flop
+        case 4: return .turn
+        case 5: return .river
+        default: return .preflop
+        }
+    }
+    var villainType: VillainType {
+        villainHand != nil ? .hand : .range
+    }
     
     init(
         heroHand: [Card],

@@ -29,12 +29,11 @@ struct EquityTable: View {
     
     let street: String
     let villainType: String
-    let game: Game
+    @State private var game: Game? = nil
     
     init(street: String, villainType: String, authManager: AuthManager) {
         self.street = street
         self.villainType = villainType
-        self.game = Game()
         _equityDrillManager = StateObject(wrappedValue: EquityDrillManager(street: street, villainType: villainType, authManager: authManager))
     }
     
@@ -291,12 +290,17 @@ struct EquityTable: View {
                 )
             },
             completion: {
-                equityDrillManager.showToast = false
+                DispatchQueue.main.async {
+                    equityDrillManager.showToast = false
+                }
             }
         )
         .edgesIgnoringSafeArea(.all)
         .onAppear() {
-            context.insert(game)
+            let newGame = Game(gameType: .equityDrill)
+            game = newGame
+            print(newGame.id)
+            // context.insert(newGame)
         }.toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Text("\(equityDrillManager.score) / \(equityDrillManager.roundsPlayed)")
@@ -319,16 +323,33 @@ struct EquityTable: View {
 
         equityDrillManager.roundsPlayed += 1
         
+        let isCorrect = option == scenario.correctEquityRange
+        let computedEquity = Int((scenario.lowEquity + scenario.highEquity) / 2)
+        print(scenario.heroHand.handToString())
+        
         // add a hand log entry
-        let handLog = HandLog(typeOfHand: .equity, position: .bb, hand: equityDrillManager.user?.getHand() ?? "", pair: false, action: .none, raiseType: .open, betAmount: 0, pot: 0, xpEarned: 0, isCorrect: option == scenario.correctEquityRange, game: game)
-        
-        context.insert(handLog)
-        
-        do {
-            try context.save()
-        } catch {
-            print("Failed to save HandLog: \(error)")
+        if let currentGame = game {
+            let equityLog = EquityLog(
+                street: scenario.street,
+                villainType: scenario.villainType,
+                hand: scenario.heroHand.handToString(),
+                equity: computedEquity,
+                xpEarned: isCorrect ? 10 : 0,
+                isCorrect: isCorrect,
+                game: currentGame
+            )
+            context.insert(equityLog)
+            do {
+                print("Saving EquityLog: \(equityLog)")
+                try context.save()
+            } catch {
+                print("Failed to save EquityLog: \(error)")
+            }
+        } else {
+            print("Game not found. No log saved")
         }
+        
+        
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             equityDrillManager.stageNextScenario()
@@ -351,6 +372,7 @@ struct EquityTable: View {
     let schema = Schema([
             Game.self,
             HandLog.self,
+            EquityLog.self,
             Challenges.self,
             Item.self,
             Profile.self

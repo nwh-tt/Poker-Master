@@ -19,8 +19,8 @@ struct EquityResponse: Codable {
 
 class EquityAPI {
     let authManager: AuthManager
-    //let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
-    let apiPrefix = "http://127.0.0.1:8000"
+    let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
+    // let apiPrefix = "http://127.0.0.1:8000"
     
     init(authManager: AuthManager) {
         self.authManager = authManager

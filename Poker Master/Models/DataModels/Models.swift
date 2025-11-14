@@ -98,20 +98,31 @@ enum ChallengeTier: String, CaseIterable {
         }
 }
 
+enum GameType: String, Codable {
+    case preFlop
+    case aiVsHuman
+    case equityDrill
+}
+
 // MARK: - Game
 @Model
 class Game {
     @Attribute(.unique) var id: UUID
     var date: Date
-    var totalHands: Int
     
+    var gameType: GameType
+    var totalHands: Int
     var duration: Double
 
     // Relationship: 1 Game → Many Hands
-    var hands: [HandLog] = []
+    var preflopHands: [HandLog] = []
+    var equityHands: [EquityLog] = []
+    var aiGameHands: [AIGameLog] = []
+    
 
-    init(date: Date = Date(), totalHands: Int = 0, duration: Double = 0.0) {
+    init(date: Date = Date(), gameType: GameType, totalHands: Int = 0, duration: Double = 0.0) {
         self.id = UUID()
+        self.gameType = gameType
         self.date = date
         self.totalHands = totalHands
         self.duration = duration
@@ -123,7 +134,6 @@ class Game {
 class HandLog {
     @Attribute(.unique) var id: UUID
     
-    var typeOfHand: TypeOfHand // "preFlop", "equity", "turn", "river", "equity"
     var position: Position
     var hand: String
     var pair: Bool
@@ -141,9 +151,8 @@ class HandLog {
     
     var game: Game?
     
-    init(typeOfHand: TypeOfHand, position: Position, hand: String, pair: Bool, action: Action, raiseType: RaiseType, betAmount: Double, pot: Double = 0, xpEarned: Int, isCorrect: Bool, date: Date = Date(), game: Game) {
+    init(position: Position, hand: String, pair: Bool, action: Action, raiseType: RaiseType, betAmount: Double, pot: Double = 0, xpEarned: Int, isCorrect: Bool, date: Date = Date(), game: Game) {
         self.id = UUID()
-        self.typeOfHand = typeOfHand
         self.position = position
         self.hand = hand
         self.pair = pair
@@ -156,11 +165,6 @@ class HandLog {
         self.date = date
         self.game = game
     }
-}
-
-// MARK: - Enums
-enum TypeOfHand: String, Codable, CaseIterable {
-    case preflop, flop, turn, river, equity
 }
 
 enum Position: String, Codable, CaseIterable {

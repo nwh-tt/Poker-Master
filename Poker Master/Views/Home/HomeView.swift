@@ -202,13 +202,13 @@ struct ActionButton: View {
     
     // insert one game from yesterday
     let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
-    let sampleGame = Game()
+    let sampleGame = Game(gameType: .preFlop)
     sampleGame.duration = 1000
     sampleGame.date = yesterday
     context.insert(sampleGame)
     
     // insert one game from today
-    let sampleGame2 = Game()
+    let sampleGame2 = Game(gameType: .preFlop)
     sampleGame2.duration = 1000
     sampleGame2.date = Date()
     

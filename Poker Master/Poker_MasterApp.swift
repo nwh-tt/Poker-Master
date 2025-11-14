@@ -35,7 +35,9 @@ struct Poker_MasterApp: App {
             Profile.self,
             Challenges.self,
             Game.self,
-            HandLog.self
+            HandLog.self,
+            EquityLog.self,
+            AIGameLog.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
