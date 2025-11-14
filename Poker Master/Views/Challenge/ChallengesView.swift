@@ -24,19 +24,43 @@ struct ChallengesView: View {
         
     var body: some View {
             NavigationStack {
-                        // Scrollable challenge cards
-                        ScrollView {
-                            VStack(spacing: 16) {
-                                ForEach(sortedChallenges) { challenge in
-                                    ChallengeCard(challenge: challenge)
-                                }
-                                Spacer(minLength: 16)
+                ZStack {
+                    VStack(spacing: 0) {
+                            // Top gradient bar
+                        LinearGradient(
+                            colors: [
+                                Color.teal.opacity(0.2),
+                                Color.mint.opacity(0.2)
+                            ],
+                            startPoint: .leading,   // left side
+                            endPoint: .trailing     // right side
+                        )
+                        .frame(height: 400)
+                            .overlay {
+                                LinearGradient(
+                                    colors: [Color.clear, Color.black],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                    )
                             }
-                            .padding(.horizontal)
-                            .padding(.bottom, 40) // leave room for tab bar
-                        }.padding(.top)
+                            
+                            
+                            Spacer() // pushes the rest of the content below
+                    }.ignoresSafeArea()
+                    // Scrollable challenge cards
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            ForEach(sortedChallenges) { challenge in
+                                ChallengeCard(challenge: challenge)
+                            }
+                            Spacer(minLength: 16)
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 40) // leave room for tab bar
+                    }.padding(.top)
                     
-                .navigationTitle("Challenges")
+                        .navigationTitle("Challenges")
+                }
             }
             .preferredColorScheme(.dark)
         }

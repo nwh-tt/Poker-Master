@@ -64,9 +64,30 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack {
+            VStack(spacing: 0) {
+                    // Top gradient bar
+                LinearGradient(
+                    colors: [
+                        Color.teal.opacity(0.2),
+                        Color.mint.opacity(0.2)
+                    ],
+                    startPoint: .leading,   // left side
+                    endPoint: .trailing     // right side
+                )
+                .frame(height: 400)
+                    .overlay {
+                        LinearGradient(
+                            colors: [Color.clear, Color.black],
+                            startPoint: .top,
+                            endPoint: .bottom
+                            )
+                    }
+                    
+                    
+                    Spacer() // pushes the rest of the content below
+            }.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 32) {
-                    
                     // MARK: - Avatar
                     VStack(spacing: 12) {
                         Circle()
@@ -134,11 +155,6 @@ struct ProfileView: View {
 
                     }
                     .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.black.opacity(0.4))
-                            .shadow(radius: 6)
-                    )
                     .padding(.top, 40)
 
 
@@ -241,7 +257,6 @@ struct ProfileView: View {
                 }
                 
             }
-            .background(Color.black.edgesIgnoringSafeArea(.all))
             .fullScreenCover(isPresented: $showPremiumPopup) {
                 PaywallView()
             }

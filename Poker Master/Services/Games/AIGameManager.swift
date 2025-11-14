@@ -29,6 +29,17 @@ class AIGameManager {
     let gameplaySpeed: Double
     let testingMode: Bool
     let tableSize: String = "6"
+    
+    // Computed for simplicity
+    var canSkip: Bool {
+        !skipActive &&
+        !waitingForUserInput &&
+        !waitingForStartButton &&
+        !waitingForContinueButton &&
+        !isLoading
+    }
+    
+    var skipActive: Bool = false
 
     init(gameplaySpeed: Double = 3, testingMode: Bool = false) {
         self.gameplaySpeed = gameplaySpeed
@@ -94,7 +105,9 @@ class AIGameManager {
         }
         
         // Wait half a second
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        if !skipActive {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+        }
         
         var winnerNames: [String] = []
         if remainingPlayers() > 1 {
@@ -107,6 +120,7 @@ class AIGameManager {
         
         processRoundEnd(winners: winnerNames)
         waitingForContinueButton = true
+        skipActive = false
     }
     
     @MainActor
@@ -169,6 +183,7 @@ class AIGameManager {
             }
             
             if currentPlayer.isUser {
+                skipActive = false
                 print("Waiting for user input...")
                 if currentPlayer.stack == 0.0 {
                     print("🟨 \(currentPlayer.name) is all-in. Skipping turn.")
@@ -179,8 +194,10 @@ class AIGameManager {
                 waitingForUserInput = false
             }
             else {
-                // Simulate thinking delay
-                try? await Task.sleep(nanoseconds: sleepTime)
+                if !skipActive {
+                    // Simulate thinking delay
+                    try? await Task.sleep(nanoseconds: sleepTime)
+                }
 
                 print("Making AI decision for \(currentPlayer.name)...")
                 (action, amount) = makeAIDecision(ai: currentPlayer)
@@ -223,7 +240,9 @@ class AIGameManager {
         }
 
         print("=== ROUND COMPLETE ===")
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        if !skipActive {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+        }
         round += 1
         lastPlayerBet = 0
     }
@@ -241,7 +260,9 @@ class AIGameManager {
             board.append(deck.dealCard())
         }
         // wait half a second
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        if !skipActive {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        }
     }
     
     
@@ -250,13 +271,17 @@ class AIGameManager {
         let sbIndex = getActivePlayerInPosition(position: "SB")
         print("Small Blind is position: \(aiPlayers[sbIndex].position) - Name: \(aiPlayers[sbIndex].position)")
         
-        try? await Task.sleep(nanoseconds: sleepTime)
+        if !skipActive {
+            try? await Task.sleep(nanoseconds: sleepTime)
+        }
         print("Posting Small Blind...")
         raise(aiPlayer: aiPlayers[sbIndex], amount: 0.5)
 
         let bbIndex = getActivePlayerInPosition(position: "BB")
         print("Big Blind is position: \(aiPlayers[bbIndex].position) - Name: \(aiPlayers[bbIndex].position)")
-        try? await Task.sleep(nanoseconds: sleepTime)
+        if !skipActive {
+            try? await Task.sleep(nanoseconds: sleepTime)
+        }
         print("Posting Big Blind...")
         raise(aiPlayer: aiPlayers[bbIndex], amount: 1.0)
     }

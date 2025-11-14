@@ -245,6 +245,21 @@ struct AITable: View {
             .padding(.bottom, 16)
 
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if aiManager.canSkip {
+                    // A button with the word skip and forward.fill icon
+                    Button(action: {
+                        aiManager.skipActive = true
+                    }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "forward.fill")
+                        }
+                    }
+                }
+                
+            }
+        }
         .toast(
             isPresenting: $aiManager.showToast,
             duration: 10,
