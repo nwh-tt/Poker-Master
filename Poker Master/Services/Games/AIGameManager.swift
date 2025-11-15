@@ -1,8 +1,14 @@
 import Observation
 import Foundation
+import SwiftData
 
 @Observable
 class AIGameManager {
+    // Data saving info
+    var context: ModelContext?
+    var profile: Profile? = nil
+    var gameLog: Game?
+    var aiGameLog: AIGameLog?
     // Game state variables
     var aiPlayers: [AIPlayer] = []
     var pot = 0.0
@@ -55,6 +61,8 @@ class AIGameManager {
     }
 
     func startGame() async {
+        gameLog = Game(gameType: .aiVsHuman)
+        
         // Create deck and deal cards
         for player in aiPlayers {
             player.hand.append(deck.dealCard())
@@ -72,6 +80,8 @@ class AIGameManager {
         round = 0
         game += 1
         
+        gameLog = Game(gameType: .aiVsHuman)
+        
         // Need to shift positions
         rotatePositions()
         
@@ -86,22 +96,58 @@ class AIGameManager {
         await gameLoop()
     }
     
+    @MainActor
+    func initializeStreetLog() {
+        if let currentGameLog = gameLog {
+            let street = Street.allCases[round]
+            guard let user = aiPlayers.first(where: { $0.isUser }) else { fatalError("Could not find user") }
+            let board = board.map { $0.toString() }
+            aiGameLog = AIGameLog(hand: user.hand.handToString(), board: board, street: street, game: currentGameLog)
+        } else {
+            print("No game log found - No data will be saved")
+        }
+    }
+    
+    @MainActor
+    func saveStreetLog() {
+        if let currentLog = aiGameLog {
+            currentLog.pot = pot
+            context?.insert(currentLog)
+            do {
+                try context?.save()
+            } catch {
+                print("Failed to save game: \(error)")
+            }
+        } else {
+            print("No game log found - No data to be saved")
+        }
+    }
+    
+    @MainActor
     func gameLoop() async {
+        initializeStreetLog()
         await setUpBlinds()
         await playBettingRound()
+        saveStreetLog()
         if remainingPlayers() > 1 {
+            initializeStreetLog()
             await dealBoard(cardsToDeal: 3)
             await playBettingRound()
+            saveStreetLog()
         }
         
         if remainingPlayers() > 1 {
+            initializeStreetLog()
             await dealBoard(cardsToDeal: 1)
             await playBettingRound()
+            saveStreetLog()
         }
         
         if remainingPlayers() > 1 {
+            initializeStreetLog()
             await dealBoard(cardsToDeal: 1)
             await playBettingRound()
+            saveStreetLog()
         }
         
         // Wait half a second
@@ -118,14 +164,22 @@ class AIGameManager {
             winnerNames = [singularWinner!.name]
         }
         
+        let playersLeft = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
+        // set aiGameLog?.reachedShowdown to be true if user hasn't folded
+        if playersLeft.first(where: { $0.isUser }) != nil {
+            aiGameLog?.reachedShowdown = true
+        }
+        
         processRoundEnd(winners: winnerNames)
         waitingForContinueButton = true
         skipActive = false
+        saveStreetLog()
     }
     
     @MainActor
     func playBettingRound() async {
         print("=== 🃏 STARTING BETTING ROUND ===")
+        
 
         let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
 
@@ -142,11 +196,8 @@ class AIGameManager {
         // --- Betting Loop ---
         while true {
             let currentPlayer = aiPlayers[turn]
-            print("\n---> Player \(currentPlayer.name) (\(currentPlayer.position))'s turn")
-
             // Skip folded
             if currentPlayer.lastMove(game: game) == .fold {
-                print("Skipping \(currentPlayer.name): already folded.")
                 turn = (turn + 1) % Int(tableSize)!
                 continue
             }
@@ -170,7 +221,6 @@ class AIGameManager {
             }
             
             if bettingComplete {
-                print("✅ Betting complete: everyone has matched the highest bet or is all-in.")
                 break
             }
             
@@ -184,13 +234,16 @@ class AIGameManager {
             
             if currentPlayer.isUser {
                 skipActive = false
-                print("Waiting for user input...")
                 if currentPlayer.stack == 0.0 {
-                    print("🟨 \(currentPlayer.name) is all-in. Skipping turn.")
                     turn = (turn + 1) % Int(tableSize)!
                     continue
                 }
                 (action, amount) = await getUserDecision()
+                
+                // Give xp for doing a turn
+                aiGameLog?.xpEarned += 1
+                profile?.addXP(amount: 1)
+                
                 waitingForUserInput = false
             }
             else {
@@ -198,33 +251,31 @@ class AIGameManager {
                     // Simulate thinking delay
                     try? await Task.sleep(nanoseconds: sleepTime)
                 }
-
-                print("Making AI decision for \(currentPlayer.name)...")
                 (action, amount) = makeAIDecision(ai: currentPlayer)
             }
             
 
             switch action {
             case "fold":
-                print("🟥 \(currentPlayer.name) folds.")
+                if currentPlayer.isUser {
+                    aiGameLog?.folds += 1
+                }
                 currentPlayer.fold(game: game, round: round)
             case "check":
-                print("\(currentPlayer.name) checks.")
                 currentPlayer.check(game: game, round: round)
             case "call":
-                print("🟨 \(currentPlayer.name) calls")
                 call(aiPlayer: currentPlayer)
 
             case "raise":
-                print("🟩 \(currentPlayer.name) raises to \(amount)!")
                 raise(aiPlayer: currentPlayer, amount: amount)
                 highestBet = amount
-                print("New highest bet = \(highestBet). Last aggressor = \(currentPlayer.name)")
             case "allin":
                 let allInAmount = currentPlayer.stack + currentPlayer.lastBet(game: game, round: round)
-                print("🟨 \(currentPlayer.name) goes all-in for \(allInAmount)!")
                 raise(aiPlayer: currentPlayer, amount: allInAmount)
                 highestBet = max(highestBet, allInAmount)
+                if currentPlayer.isUser {
+                    aiGameLog?.allIns += 1
+                }
             default:
                 print("⚠️ Unknown action from AI: \(action)")
             }
@@ -234,12 +285,10 @@ class AIGameManager {
             // Check if only one player remains
             let activeCount = aiPlayers.filter { $0.lastMove(game: game) != .fold }.count
             if activeCount == 1 {
-                print("🏁 Only one player remains. Game ends.")
                 break
             }
         }
-
-        print("=== ROUND COMPLETE ===")
+        
         if !skipActive {
             try? await Task.sleep(nanoseconds: 500_000_000)
         }
@@ -255,7 +304,6 @@ class AIGameManager {
     }
     
     func dealBoard(cardsToDeal: Int) async {
-        print("=== 🃏 DEALING ===")
         for _ in 0..<cardsToDeal {
             board.append(deck.dealCard())
         }
@@ -269,33 +317,41 @@ class AIGameManager {
     func setUpBlinds() async {
         let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
         let sbIndex = getActivePlayerInPosition(position: "SB")
-        print("Small Blind is position: \(aiPlayers[sbIndex].position) - Name: \(aiPlayers[sbIndex].position)")
         
         if !skipActive {
             try? await Task.sleep(nanoseconds: sleepTime)
         }
-        print("Posting Small Blind...")
+        
         raise(aiPlayer: aiPlayers[sbIndex], amount: 0.5)
 
         let bbIndex = getActivePlayerInPosition(position: "BB")
-        print("Big Blind is position: \(aiPlayers[bbIndex].position) - Name: \(aiPlayers[bbIndex].position)")
         if !skipActive {
             try? await Task.sleep(nanoseconds: sleepTime)
         }
-        print("Posting Big Blind...")
+        
         raise(aiPlayer: aiPlayers[bbIndex], amount: 1.0)
     }
     
     func processRoundEnd(winners: [String]) {
         let potSplit = pot / Double(winners.count)
+        if aiGameLog?.reachedShowdown == true { aiGameLog?.wonHand = false }
+        
         for playerName in winners {
             guard let player = aiPlayers.first(where: { $0.name == playerName }) else { continue }
             player.stack += potSplit
+            if player.isUser {
+                aiGameLog?.wonHand = true
+                let xpEarned = max(Int(potSplit / 10), 5)
+                aiGameLog?.xpEarned += xpEarned
+                profile?.addXP(amount: xpEarned)
+            }
         }
-        pot = 0
         
-        print("=== ROUND END ===")
-        print("Winners: \(winners)")
+        if aiGameLog?.reachedShowdown == true {
+            aiGameLog?.showdownPlayers = winners.filter { $0 != "Hero" }
+        }
+            
+        pot = 0
     }
     
     func rotatePositions() {
@@ -339,12 +395,24 @@ class AIGameManager {
         let potIncrease = aiPlayer.raise(amount: raiseAmount, game: game, round: round)
         pot += potIncrease
         lastPlayerBet = max(lastPlayerBet, raiseAmount) // should never go down
+        
+        if aiPlayer.isUser {
+            // Need to log this in the data
+            aiGameLog?.raises += 1
+            aiGameLog?.totalRaised += raiseAmount
+        }
     }
     
     func call(aiPlayer: AIPlayer) {
         let callAmount = min(lastPlayerBet, aiPlayer.stack + aiPlayer.lastBet(game: game, round: round)) // Can't bet more than you have
         let potIncrease = aiPlayer.call(amount: callAmount, game: game, round: round)
         pot += potIncrease
+        
+        if aiPlayer.isUser {
+            // Need to log this in the data
+            aiGameLog?.calls += 1
+            aiGameLog?.totalCalled += callAmount
+        }
     }
     
     func remainingPlayers() -> Int {
@@ -376,6 +444,19 @@ class AIGameManager {
         
         return -1
     }
+    
+    // MARK: Needed for saving data locally
+    @MainActor
+    func setContext(_ context: ModelContext) {
+        self.context = context
+    }
+    
+    func setProfile(profile: Profile) {
+        self.profile = profile
+        print("Profile set to: \(profile.username)")
+    }
+    
+    
     
     // MARK: UI functions determine what buttons to display to the user
     func getUserDefaultBets() -> [Int] {
@@ -547,7 +628,6 @@ class AIGameManager {
             let decoded = try JSONDecoder().decode(DetermineWinnerResponse.self, from: data)
             
             // Example usage:
-            print("🏆 Winners:", decoded.winners)
             for result in decoded.results {
                 print("\(result.name): \(result.hand_name) (\(result.score))")
             }

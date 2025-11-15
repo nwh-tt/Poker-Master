@@ -20,6 +20,7 @@ struct EquityTable: View {
     @StateObject private var equityDrillManager: EquityDrillManager
     @State private var showResult: Bool = false
     @Environment(\.modelContext) private var context
+    @EnvironmentObject var userProfile: UserProfileState
     
     @Environment(\.dismiss) private var dismiss
     
@@ -325,16 +326,19 @@ struct EquityTable: View {
         
         let isCorrect = option == scenario.correctEquityRange
         let computedEquity = Int((scenario.lowEquity + scenario.highEquity) / 2)
-        print(scenario.heroHand.handToString())
+        let xpEarned = isCorrect ? 10 : 0
+        userProfile.addXP(xpEarned)
         
         // add a hand log entry
         if let currentGame = game {
+            currentGame.totalHands += 1
+            currentGame.duration = Date().timeIntervalSince(currentGame.date)
             let equityLog = EquityLog(
                 street: scenario.street,
                 villainType: scenario.villainType,
                 hand: scenario.heroHand.handToString(),
                 equity: computedEquity,
-                xpEarned: isCorrect ? 10 : 0,
+                xpEarned: xpEarned,
                 isCorrect: isCorrect,
                 game: currentGame
             )

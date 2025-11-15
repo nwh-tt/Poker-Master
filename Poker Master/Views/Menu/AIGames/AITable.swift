@@ -13,6 +13,8 @@ import ActivityIndicatorView
 struct AITable: View {
     @State var aiManager: AIGameManager = AIGameManager()
     @State private var raiseMenuVisible = false
+    @Environment(\.modelContext) private var context
+    @EnvironmentObject var userProfile: UserProfileState
     
     // Used for player info view
     @State private var selectedPlayer: AIPlayer? = nil
@@ -234,12 +236,6 @@ struct AITable: View {
                         .padding(.bottom, 8)
                         
                     }
-                    
-                    
-                    
-                    
-
-
                 }.padding(4)
             }.padding(.horizontal)
             .padding(.bottom, 16)
@@ -259,6 +255,10 @@ struct AITable: View {
                 }
                 
             }
+        }
+        .onAppear {
+            aiManager.setContext(context)
+            aiManager.setProfile(profile: userProfile.profile)
         }
         .toast(
             isPresenting: $aiManager.showToast,
