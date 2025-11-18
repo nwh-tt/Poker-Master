@@ -17,11 +17,6 @@ struct StatsView: View {
     @Query var handLogs: [HandLog]
     @Query var games: [Game]
     
-    var lastMonthLogs: [HandLog] {
-        let oneMonthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
-        return handLogs.filter { $0.date >= oneMonthAgo }
-    }
-    
     var totalHandsPlayed: Int {
         handLogs.count
     }
@@ -44,22 +39,6 @@ struct StatsView: View {
         let totalSeconds = games.reduce(0) { $0 + $1.duration }
         return Int(ceil(totalSeconds / 3600.0))
     }
-
-    
-        
-    var dailyWinPercentages: [(date: Date, winPct: Double)] {
-           let grouped = Dictionary(grouping: lastMonthLogs) { log in
-               Calendar.current.startOfDay(for: log.date)
-           }
-           
-           return grouped.map { (day, logsForDay) in
-               let correct = logsForDay.filter { $0.isCorrect }.count
-               let total = logsForDay.count
-               let pct = total > 0 ? (Double(correct) / Double(total)) * 100 : 0
-               return (day, pct)
-           }
-           .sorted { $0.date < $1.date }
-       }
     
     
     var body: some View {
@@ -85,8 +64,11 @@ struct StatsView: View {
                         }
                         
                         
-                        Spacer() // pushes the rest of the content below
+                        Spacer()
                 }.ignoresSafeArea()
+                
+                EllipticalGradient(colors: [Color.teal.opacity(0.2), Color.mint.opacity(0.1), Color.clear], center: .center)
+                    .ignoresSafeArea()
                 
                 ScrollView {
                     VStack {
@@ -105,7 +87,15 @@ struct StatsView: View {
                             .padding()
                             .padding(.bottom, 10)
                             .frame(maxWidth: .infinity)
-                            .background(.ultraThinMaterial)
+                            .applyGlass { view in
+                                if #available(iOS 26.0, *) {
+                                    view
+                                        .glassEffect(in: .rect(cornerRadius: 16))
+                                } else {
+                                    view
+                                        .background(.ultraThinMaterial)
+                                }
+                            }
                             .cornerRadius(16)
                             .shadow(radius: 1)
                             if isSubscribed {
@@ -137,22 +127,28 @@ struct StatsView: View {
                                 HandsPlayedStatView(symbolName: "lock.fill", totalHandsPlayed: totalHandsPlayed, totalHandsWon: totalHandsWon, totalHandsLost: totalHandsLost)
                             }
                         }
-                        Spacer()
-                        // Put total time played, total pots seen
-                        VStack(alignment: .leading) {
-                            Text("Win % Over Time")
-                                .font(.headline)
-                            
-                            Chart(dailyWinPercentages, id: \.date) { stat in
-                                LineMark(
-                                    x: .value("Date", stat.date),
-                                    y: .value("Win %", stat.winPct)
-                                )
-                                .foregroundStyle(.white.gradient)
+
+                        HStack {
+                            NavigationLink {
                                 
+                            } label: {
+                                DetailedStatOption(gameType: "Preflop", tintColor: .blue)
+                                    .frame(maxWidth: .infinity)
                             }
-                            .frame(height: 220)
-                            .chartYScale(domain: 0...100)
+                            
+                            NavigationLink {
+                                EquityStatsView()
+                            } label: {
+                                DetailedStatOption(gameType: "Equity", tintColor: .green)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            
+                            NavigationLink {
+                                
+                            } label: {
+                                DetailedStatOption(gameType: "VS AI", tintColor: .red)
+                                    .frame(maxWidth: .infinity)
+                            }
                         }
                         Spacer()
                     }
@@ -170,32 +166,97 @@ struct StatsView: View {
     }
 }
 
+struct DetailedStatOption: View {
+    let gameType: String
+    let tintColor: Color
+    var sfIcon: String {
+        switch gameType {
+        case "Preflop":
+            return "suit.club.fill"
+        case "Equity":
+            return "scale.3d"
+        case "VS AI":
+            return "brain.head.profile.fill"
+        default:
+            return "chevron.right"
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: sfIcon)
+                .foregroundColor(.white)
+                .font(.system(size: 24))
+            HStack {
+                Text(gameType)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+            }
+            HStack(spacing: 2) {
+                
+                Text("View More")
+                    .foregroundColor(.gray)
+                    .font(.system(size: 10))
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
+                    .font(.system(size: 8))
+            }
+            .padding(.top, 1)
+        }
+        .padding(.horizontal)
+        .padding(.top)
+        .padding(.bottom, 12)
+        .frame(maxWidth: .infinity)
+        .applyGlass { view in
+            if #available(iOS 26.0, *) {
+                view
+                    .glassEffect(.regular.tint(tintColor.opacity(0.05)), in: .rect(cornerRadius: 16))
+            } else {
+                view
+                    .background(.ultraThinMaterial)
+            }
+        }
+        .cornerRadius(16)
+        .shadow(radius: 1)
+    }
+}
+
 struct WinPercentageStatView: View {
     let symbolName: String // Pass in "chevron.right" or "lock.fill"
     let winPercentage: Double
     
     var body: some View {
-        VStack {
-            Text("Win %")
-                .font(.headline)
-                .foregroundColor(.gray)
-            
-            Text("\(winPercentage, specifier: "%.1f")%")
-                .font(.system(size: 40, weight: .bold))
-                .foregroundColor(.white)
-            HStack {
-                Spacer()
-                Image(systemName: symbolName)
+            VStack {
+                Text("Accuracy")
+                    .font(.headline)
                     .foregroundColor(.gray)
-                    .font(.system(size: 12))
                 
+                Text("\(winPercentage, specifier: "%.1f")%")
+                    .font(.system(size: 40, weight: .bold))
+                    .foregroundColor(.white)
+                HStack {
+                    Spacer()
+                    Image(systemName: symbolName)
+                        .foregroundColor(.gray)
+                        .font(.system(size: 12))
+                    
+                }
             }
-        }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(.ultraThinMaterial)
-        .cornerRadius(16)
-        .shadow(radius: 1)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .cornerRadius(16)
+            .shadow(radius: 1)
+            .applyGlass { view in
+                if #available(iOS 26.0, *) {
+                    view
+                        .glassEffect(in: .rect(cornerRadius: 16))
+                }
+                else {
+                    view
+                        .background(.ultraThinMaterial)
+                }
+            }
     }
 }
 
@@ -258,20 +319,37 @@ struct HandsPlayedStatView: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(.ultraThinMaterial)
+        .applyGlass { view in
+            if #available(iOS 26.0, *) {
+                view
+                    .glassEffect( in: .rect(cornerRadius: 16))
+            }
+            else {
+                view
+                    .background(.ultraThinMaterial)
+            }
+        }
         .cornerRadius(16)
         .shadow(radius: 4)
         .padding(.bottom, 12)
     }
 }
 
+extension View {
+    // A helper to apply a view modifier conditionally
+    @ViewBuilder
+    func applyGlass<Content: View>(@ViewBuilder content: (Self) -> Content) -> some View {
+        content(self)
+    }
+}
 
 
 #Preview {
-    
     let schema = Schema([
             Game.self,
             HandLog.self,
+            EquityLog.self,
+            AIGameLog.self,
             Challenges.self,
             Item.self
         ])
@@ -279,7 +357,7 @@ struct HandsPlayedStatView: View {
             for: schema,
             configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]
         )
-        let context = container.mainContext
+        // let context = container.mainContext
     
     return StatsView()
         .modelContainer(container)

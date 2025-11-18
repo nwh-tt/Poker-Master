@@ -168,7 +168,7 @@ struct HandsPlayedDetailView: View {
             for: schema,
             configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]
         )
-        let context = container.mainContext
+        //let context = container.mainContext
     
     return HandsPlayedDetailView().modelContainer(container)
 }

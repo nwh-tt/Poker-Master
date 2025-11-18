@@ -94,7 +94,7 @@ struct CountingPlayerText: AnimatableModifier {
 
 #Preview {
     let player = Player(position: "BB", stack: 100.0)
-    player.raise(amountRaisingTo: 2.5)
-    player.raise(amountRaisingTo: 10)
+    _ = player.raise(amountRaisingTo: 2.5)
+    _ = player.raise(amountRaisingTo: 10)
     return PlayerPositionView(player: player , direction: "right", isUser: false)
 }
