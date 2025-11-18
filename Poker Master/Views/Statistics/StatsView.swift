@@ -79,7 +79,7 @@ struct StatsView: View {
                                     .foregroundColor(.gray)
                                 
                                 Text("\(hoursPlayed, specifier: "%.1d")h")
-                                    .font(.system(size: 40, weight: .bold))
+                                    .font(.system(size: 32, weight: .bold))
                                     .foregroundColor(.white)
                                 
                                 
@@ -150,6 +150,7 @@ struct StatsView: View {
                                     .frame(maxWidth: .infinity)
                             }
                         }
+                        .padding(.top)
                         Spacer()
                     }
                     .padding()
@@ -233,7 +234,7 @@ struct WinPercentageStatView: View {
                     .foregroundColor(.gray)
                 
                 Text("\(winPercentage, specifier: "%.1f")%")
-                    .font(.system(size: 40, weight: .bold))
+                    .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
                 HStack {
                     Spacer()
@@ -277,7 +278,7 @@ struct HandsPlayedStatView: View {
                     .foregroundColor(.gray)
                 
                 Text("\(totalHandsPlayed)")
-                    .font(.system(size: 40, weight: .bold))
+                    .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
             }
             
@@ -308,14 +309,6 @@ struct HandsPlayedStatView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            
-            // Symbol row
-            HStack {
-                Spacer()
-                Image(systemName: symbolName)
-                    .foregroundColor(.gray)
-                    .font(.system(size: 12))
-            }
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -331,7 +324,6 @@ struct HandsPlayedStatView: View {
         }
         .cornerRadius(16)
         .shadow(radius: 4)
-        .padding(.bottom, 12)
     }
 }
 

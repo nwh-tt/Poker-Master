@@ -60,6 +60,7 @@
 		B690E2342E80CDBB007C601E /* RangeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E2332E80CD9E007C601E /* RangeEditorView.swift */; };
 		B690E2382E80D281007C601E /* RangeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E2372E80D27C007C601E /* RangeHelper.swift */; };
 		B694411B2EC80E0D005C5957 /* EquityStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B694411A2EC80E0D005C5957 /* EquityStatsView.swift */; };
+		B694411D2ECD11A0005C5957 /* PreflopStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B694411C2ECD1199005C5957 /* PreflopStatsView.swift */; };
 		B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7742BC849E700191C7A /* Poker_MasterApp.swift */; };
 		B697E7772BC849E700191C7A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7762BC849E700191C7A /* ContentView.swift */; };
 		B697E7792BC849E700191C7A /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7782BC849E700191C7A /* Item.swift */; };
@@ -159,6 +160,7 @@
 		B690E2332E80CD9E007C601E /* RangeEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeEditorView.swift; sourceTree = "<group>"; };
 		B690E2372E80D27C007C601E /* RangeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeHelper.swift; sourceTree = "<group>"; };
 		B694411A2EC80E0D005C5957 /* EquityStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquityStatsView.swift; sourceTree = "<group>"; };
+		B694411C2ECD1199005C5957 /* PreflopStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopStatsView.swift; sourceTree = "<group>"; };
 		B697E7712BC849E700191C7A /* Poker Master.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Poker Master.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B697E7742BC849E700191C7A /* Poker_MasterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Poker_MasterApp.swift; sourceTree = "<group>"; };
 		B697E7762BC849E700191C7A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -404,6 +406,7 @@
 		B67C5E792E5E11DC0017ECBF /* DetailedStatViews */ = {
 			isa = PBXGroup;
 			children = (
+				B694411C2ECD1199005C5957 /* PreflopStatsView.swift */,
 				B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */,
 				B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */,
 				B694411A2EC80E0D005C5957 /* EquityStatsView.swift */,
@@ -760,6 +763,7 @@
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
 				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
 				B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */,
+				B694411D2ECD11A0005C5957 /* PreflopStatsView.swift in Sources */,
 				B67C5E4F2E2806DD0017ECBF /* StatsView.swift in Sources */,
 				B67C5E472E2802D70017ECBF /* MainView.swift in Sources */,
 				B6EC8AD22E70924100C1AC9B /* VillainRangeView.swift in Sources */,
