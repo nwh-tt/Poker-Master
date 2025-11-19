@@ -37,9 +37,7 @@ struct PreflopStatsView: View {
     var totalBet: String {
         let total = (preflopLogs.reduce(0) { $0 + $1.betAmount }) * 2
         // Format total as currency
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        return formatter.string(from: NSNumber(value: total)) ?? "$0"
+        return total.shortCurrencyString()
     }
     
     var totalHandsPlayed: Int {
@@ -175,9 +173,9 @@ struct PreflopStatsView: View {
                     HandsPlayedStatView(symbolName: "chevron.right", totalHandsPlayed: totalHandsPlayed, totalHandsWon: totalHandsWon, totalHandsLost: totalHandsLost)
                         .padding(.bottom)
                     
-                    EquityWinLossBarChartFromCategory(title: "Win Loss by Position", equityHandsByType: preflopHandsByPosition, isLocked: !isSubscribed, showPremiumCallback: showPremium)
-                    EquityWinLossBarChartFromCategory(title: "Win Loss by Action", equityHandsByType: preflopHandsByAction, isLocked: !isSubscribed, showPremiumCallback: showPremium)
-                    EquityWinLossBarChartFromCategory(title: "Win Loss by Bet Number", equityHandsByType: preflopHandsByRaiseType, isLocked: !isSubscribed, showPremiumCallback: showPremium)
+                    WinLossBarChartFromCategory(title: "Win Loss by Position", equityHandsByType: preflopHandsByPosition, isLocked: !isSubscribed, showPremiumCallback: showPremium)
+                    WinLossBarChartFromCategory(title: "Win Loss by Action", equityHandsByType: preflopHandsByAction, isLocked: !isSubscribed, showPremiumCallback: showPremium)
+                    WinLossBarChartFromCategory(title: "Win Loss by Bet Number", equityHandsByType: preflopHandsByRaiseType, isLocked: !isSubscribed, showPremiumCallback: showPremium)
                     Spacer()
                 }
                 .padding()
@@ -190,7 +188,7 @@ struct PreflopStatsView: View {
             isSubscribed = await SubscriptionManager.isSubscribed()
         }
         .preferredColorScheme(.dark)
-        .navigationTitle("Equity Stats")
+        .navigationTitle("Preflop Stats")
     }
 }
 

@@ -139,15 +139,13 @@ struct EquityStatsView: View {
                     HandsPlayedStatView(symbolName: "chevron.right", totalHandsPlayed: totalHandsPlayed, totalHandsWon: totalHandsWon, totalHandsLost: totalHandsLost)
                         .padding(.bottom)
                     
-                    EquityWinLossBarChartFromCategory(title: "Win Loss by Type", equityHandsByType: equityHandsByType, isLocked: !isSubscribed, showPremiumCallback: showPremium)
+                    WinLossBarChartFromCategory(title: "Win Loss by Type", equityHandsByType: equityHandsByType, isLocked: !isSubscribed, showPremiumCallback: showPremium)
                         .padding(.bottom)
-                    EquityWinLossBarChartFromCategory(title: "Win Loss by Street", equityHandsByType: equityHandsByStreet, isLocked: !isSubscribed, showPremiumCallback: showPremium)
+                    WinLossBarChartFromCategory(title: "Win Loss by Street", equityHandsByType: equityHandsByStreet, isLocked: !isSubscribed, showPremiumCallback: showPremium)
                     Spacer()
                     
                 }
                 .padding()
-                .preferredColorScheme(.dark)
-                
             }
         }
         .fullScreenCover(isPresented: $showPremiumPopup) {
@@ -157,100 +155,6 @@ struct EquityStatsView: View {
         }
         .preferredColorScheme(.dark)
         .navigationTitle("Equity Stats")
-    }
-}
-
-// Structs for chart rendering
-struct WinLossByCategory: Identifiable {
-    let id = UUID()
-    let category: String;
-    let wins: Int;
-    let losses: Int;
-}
-
-struct EquityWinLossBarChartFromCategory: View {
-    let title: String
-    let equityHandsByType: [WinLossByCategory]
-    let isLocked: Bool
-    let showPremiumCallback: () -> Void
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(title)
-                .fontWeight(.semibold)
-                .font(.headline)
-            ZStack {
-                // --- Your chart ---
-                Chart(equityHandsByType) { stat in
-                    BarMark(
-                        x: .value("Category", stat.category.capitalizeFirst),
-                        y: .value("Wins", stat.wins)
-                    )
-                    .foregroundStyle(Color(red: 50/255, green: 130/255, blue: 80/255))
-
-                    BarMark(
-                        x: .value("Category", stat.category.capitalizeFirst),
-                        y: .value("Losses", stat.losses)
-                    )
-                    .foregroundStyle(Color(red: 130/255, green: 50/255, blue: 60/255))
-                }
-                .frame(height: 164)
-                .blur(radius: isLocked ? 6 : 0)
-                .disabled(isLocked)
-                
-                if isLocked {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.black.opacity(0.1))
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(12)
-                        .overlay(
-                            VStack(spacing: 8) {
-                                Image(systemName: "lock.fill")
-                                    .font(.system(size: 26))
-                                Text("Unlock detailed charts with premium")
-                                    .font(.footnote)
-                                    .opacity(0.8)
-                            }
-                            .foregroundColor(.white)
-                        )
-                        .frame(height: 170)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            showPremiumCallback()
-                        }
-                }
-            }
-        }
-    }
-}
-
-struct GenericStatBlock: View {
-    let title: String
-    let metric: String
-    
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.gray)
-            Text(metric)
-                .font(.system(size: 32, weight: .bold))
-                .foregroundColor(.white)
-        }
-        .padding()
-        .cornerRadius(16)
-        .shadow(radius: 1)
-        .frame(maxWidth: .infinity)
-        .applyGlass { view in
-            if #available(iOS 26.0, *) {
-                view
-                    .glassEffect(in: .rect(cornerRadius: 16))
-            }
-            else {
-                view
-                    .background(.ultraThinMaterial)
-            }
-        }
     }
 }
 
@@ -280,7 +184,6 @@ struct GenericStatBlock: View {
         let equityLog = EquityLog(street: street, villainType: villainType, hand: "", equity: 0, xpEarned: 0, isCorrect: Bool.random(), game: game)
         game.equityHands.append(equityLog)
         context.insert(equityLog)
-        game.equityHands.append(equityLog)
     }
     
     do {

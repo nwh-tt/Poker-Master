@@ -82,6 +82,8 @@
 		B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */; };
 		B6D403762DA07098008A83E8 /* Ranges.json in Resources */ = {isa = PBXBuildFile; fileRef = B6D403752DA07098008A83E8 /* Ranges.json */; };
 		B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403772DA07150008A83E8 /* RangesFileManager.swift */; };
+		B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA42ECD29B60015F53D /* AIStatsView.swift */; };
+		B6E29FA72ECD427C0015F53D /* GenericStatViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA62ECD42610015F53D /* GenericStatViews.swift */; };
 		B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */; };
 		B6EC8AC62E621C1C00C1AC9B /* UserProfileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */; };
 		B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */; };
@@ -185,6 +187,8 @@
 		B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManager.swift; sourceTree = "<group>"; };
 		B6D403752DA07098008A83E8 /* Ranges.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Ranges.json; sourceTree = "<group>"; };
 		B6D403772DA07150008A83E8 /* RangesFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesFileManager.swift; sourceTree = "<group>"; };
+		B6E29FA42ECD29B60015F53D /* AIStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStatsView.swift; sourceTree = "<group>"; };
+		B6E29FA62ECD42610015F53D /* GenericStatViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericStatViews.swift; sourceTree = "<group>"; };
 		B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileState.swift; sourceTree = "<group>"; };
 		B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopSettingsView.swift; sourceTree = "<group>"; };
@@ -406,6 +410,8 @@
 		B67C5E792E5E11DC0017ECBF /* DetailedStatViews */ = {
 			isa = PBXGroup;
 			children = (
+				B6E29FA62ECD42610015F53D /* GenericStatViews.swift */,
+				B6E29FA42ECD29B60015F53D /* AIStatsView.swift */,
 				B694411C2ECD1199005C5957 /* PreflopStatsView.swift */,
 				B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */,
 				B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */,
@@ -776,6 +782,7 @@
 				B690E2382E80D281007C601E /* RangeHelper.swift in Sources */,
 				B6EC8ADF2E739BC300C1AC9B /* BoardView.swift in Sources */,
 				B6D205162E82FD0A00E12C49 /* PlayerLayoutView.swift in Sources */,
+				B6E29FA72ECD427C0015F53D /* GenericStatViews.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,
 				B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */,
 				B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */,
@@ -789,6 +796,7 @@
 				B697E7772BC849E700191C7A /* ContentView.swift in Sources */,
 				B690E2342E80CDBB007C601E /* RangeEditorView.swift in Sources */,
 				B649ED572BD70D6B00157267 /* CardBackView.swift in Sources */,
+				B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */,
 				B656DC7E2EC6D09600488B57 /* EquityLog.swift in Sources */,
 				B67C5E602E43D9A20017ECBF /* PokerAPI.swift in Sources */,
 				B67C5E4D2E28065B0017ECBF /* ProfileView.swift in Sources */,

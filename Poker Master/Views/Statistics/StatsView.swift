@@ -130,7 +130,7 @@ struct StatsView: View {
 
                         HStack {
                             NavigationLink {
-                                
+                                PreflopStatsView()
                             } label: {
                                 DetailedStatOption(gameType: "Preflop", tintColor: .blue)
                                     .frame(maxWidth: .infinity)
@@ -144,7 +144,7 @@ struct StatsView: View {
                             }
                             
                             NavigationLink {
-                                
+                                AIStatsView()
                             } label: {
                                 DetailedStatOption(gameType: "VS AI", tintColor: .red)
                                     .frame(maxWidth: .infinity)
@@ -208,7 +208,7 @@ struct DetailedStatOption: View {
         .padding(.horizontal)
         .padding(.top)
         .padding(.bottom, 12)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, minHeight: 110, maxHeight: 110)
         .applyGlass { view in
             if #available(iOS 26.0, *) {
                 view
@@ -228,113 +228,38 @@ struct WinPercentageStatView: View {
     let winPercentage: Double
     
     var body: some View {
-            VStack {
-                Text("Accuracy")
-                    .font(.headline)
-                    .foregroundColor(.gray)
-                
-                Text("\(winPercentage, specifier: "%.1f")%")
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.white)
-                HStack {
-                    Spacer()
-                    Image(systemName: symbolName)
-                        .foregroundColor(.gray)
-                        .font(.system(size: 12))
-                    
-                }
-            }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .cornerRadius(16)
-            .shadow(radius: 1)
-            .applyGlass { view in
-                if #available(iOS 26.0, *) {
-                    view
-                        .glassEffect(in: .rect(cornerRadius: 16))
-                }
-                else {
-                    view
-                        .background(.ultraThinMaterial)
-                }
-            }
-    }
-}
-
-struct HandsPlayedStatView: View {
-    let symbolName: String // Pass in "chevron.right" or "lock.fill"
-    
-    // Example data; you can also make these parameters if you want full flexibility
-    let totalHandsPlayed: Int
-    let totalHandsWon: Int
-    let totalHandsLost: Int
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            // Main header
-            VStack(spacing: 4) {
-                Text("Hands Played")
-                    .font(.headline)
-                    .foregroundColor(.gray)
-                
-                Text("\(totalHandsPlayed)")
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.white)
-            }
+        VStack {
+            Text("Accuracy")
+                .font(.headline)
+                .foregroundColor(.gray)
             
-            Divider()
-                .background(Color.gray.opacity(0.5))
-            
-            // Won / Lost section
-            HStack(spacing: 0) {
-                VStack {
-                    Text("Hands Won")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                    Text("\(totalHandsWon)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(red: 50/255, green: 130/255, blue: 80/255))
-                }
-                .frame(maxWidth: .infinity)
+            Text("\(winPercentage, specifier: "%.1f")%")
+                .font(.system(size: 32, weight: .bold))
+                .foregroundColor(.white)
+            HStack {
+                Spacer()
+                Image(systemName: symbolName)
+                    .foregroundColor(.gray)
+                    .font(.system(size: 12))
                 
-                VStack {
-                    Text("Hands Lost")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                    Text("\(totalHandsLost)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(red: 130/255, green: 50/255, blue: 60/255))
-                }
-                .frame(maxWidth: .infinity)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
+        .cornerRadius(16)
+        .shadow(radius: 1)
         .applyGlass { view in
             if #available(iOS 26.0, *) {
                 view
-                    .glassEffect( in: .rect(cornerRadius: 16))
+                    .glassEffect(in: .rect(cornerRadius: 16))
             }
             else {
                 view
                     .background(.ultraThinMaterial)
             }
         }
-        .cornerRadius(16)
-        .shadow(radius: 4)
     }
 }
-
-extension View {
-    // A helper to apply a view modifier conditionally
-    @ViewBuilder
-    func applyGlass<Content: View>(@ViewBuilder content: (Self) -> Content) -> some View {
-        content(self)
-    }
-}
-
 
 #Preview {
     let schema = Schema([

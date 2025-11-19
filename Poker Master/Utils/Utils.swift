@@ -16,6 +16,36 @@ extension Double {
     }
 }
 
+extension Double {
+    /// Converts a number into a short currency string: 1_200 -> $1.2K, 2_500_000 -> $2.5M
+    func shortCurrencyString() -> String {
+        let absValue = abs(self)
+        let sign = self < 0 ? "-" : ""
+        
+        switch absValue {
+        case 0..<1_000:
+            return "\(sign)$\(Int(self))"
+        case 1_000..<1_000_000:
+            let formatted = (self / 1_000).rounded(toPlaces: 1)
+            return "\(sign)$\(formatted)K"
+        case 1_000_000..<1_000_000_000:
+            let formatted = (self / 1_000_000).rounded(toPlaces: 1)
+            return "\(sign)$\(formatted)M"
+        default:
+            let formatted = (self / 1_000_000_000).rounded(toPlaces: 1)
+            return "\(sign)$\(formatted)B"
+        }
+    }
+}
+
+// Helper to round to decimal places
+extension Double {
+    func rounded(toPlaces places:Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
+
 extension String {
     var capitalizeFirst: String {
         guard let first = first else { return self }
@@ -74,5 +104,13 @@ extension View {
 extension View {
     func countingText(to value: Double) -> some View {
         self.modifier(CountingText(value: value))
+    }
+}
+
+extension View {
+    // A helper to apply a view modifier conditionally
+    @ViewBuilder
+    func applyGlass<Content: View>(@ViewBuilder content: (Self) -> Content) -> some View {
+        content(self)
     }
 }
