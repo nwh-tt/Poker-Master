@@ -73,32 +73,13 @@ struct AIStatsView: View {
         vsAiLogs.reduce(0) { $0 + $1.totalBet }
     }
     
+    private func showPremium() {
+        showPremiumPopup = true
+    }
+
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                // Top gradient bar
-                LinearGradient(
-                    colors: [
-                        Color.teal.opacity(0.2),
-                        Color.mint.opacity(0.2)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .frame(height: 400)
-                .overlay {
-                    LinearGradient(
-                        colors: [Color.clear, Color.black],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                }
-                Spacer() // pushes the rest of the content below
-            }.ignoresSafeArea()
-            
-            EllipticalGradient(colors: [Color.teal.opacity(0.2), Color.mint.opacity(0.1), Color.clear], center: .center)
-                .ignoresSafeArea()
-            
+            GradientBackgroundView()
             ScrollView {
                 VStack {
                     HStack {
@@ -106,7 +87,17 @@ struct AIStatsView: View {
                         GenericStatBlock(title:"Games", metric: gamesPlayed)
                     }
                     GenericStatBlock(title:"Amount Won", metric: totalAmountWon)
-                    ThreeStatBlock()
+                    ThreeStatBlock(folds: totalFolds, calls: totalCalls, raises: totalRaises)
+                    PieChart(values: [
+                            PieChartSlice(label: "Folds", value: totalFolds),
+                            PieChartSlice(label: "Calls", value: totalCalls),
+                            PieChartSlice(label: "Raises", value: totalRaises),
+                            PieChartSlice(label: "All-Ins", value: totalAllIns),
+                        ],
+                                   isLocked: !isSubscribed,
+                                showPremiumCallback: showPremium
+                    )
+                        .padding(.vertical)
                 }.padding()
             }
             .fullScreenCover(isPresented: $showPremiumPopup) {
@@ -122,6 +113,10 @@ struct AIStatsView: View {
 }
 
 struct ThreeStatBlock: View {
+    let folds: Int
+    let calls: Int
+    let raises: Int
+    
     
     var body: some View {
         HStack {
@@ -129,7 +124,7 @@ struct ThreeStatBlock: View {
                 Text("Folds")
                     .font(.headline)
                     .foregroundColor(.gray)
-                Text("22")
+                Text("\(folds)")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
             }.frame(maxWidth: .infinity)
@@ -141,7 +136,7 @@ struct ThreeStatBlock: View {
                 Text("Calls")
                     .font(.headline)
                     .foregroundColor(.gray)
-                Text("22")
+                Text("\(calls)")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
             }.frame(maxWidth: .infinity)
@@ -153,7 +148,7 @@ struct ThreeStatBlock: View {
                 Text("Raises")
                     .font(.headline)
                     .foregroundColor(.gray)
-                Text("2")
+                Text("\(raises)")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
             }.frame(maxWidth: .infinity)
@@ -203,6 +198,10 @@ struct ThreeStatBlock: View {
         let aiLog = AIGameLog(hand: "", street: street, game: game)
         aiLog.wonHand = true
         aiLog.pot = 1000
+        aiLog.raises = Int.random(in: 0...5)
+        aiLog.calls = Int.random(in: 0...8)
+        aiLog.folds = Int.random(in: 0...10)
+        aiLog.allIns = Int.random(in: 0...1)
         game.aiGameHands.append(aiLog)
         context.insert(aiLog)
     }

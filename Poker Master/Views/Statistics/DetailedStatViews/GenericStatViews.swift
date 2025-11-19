@@ -7,6 +7,37 @@
 import SwiftUI
 import Charts
 
+struct GradientBackgroundView: View {
+    
+    var body: some View {
+        VStack(spacing: 0) {
+                // Top gradient bar
+            LinearGradient(
+                colors: [
+                    Color.teal.opacity(0.2),
+                    Color.mint.opacity(0.2)
+                ],
+                startPoint: .leading,   // left side
+                endPoint: .trailing     // right side
+            )
+            .frame(height: 400)
+                .overlay {
+                    LinearGradient(
+                        colors: [Color.clear, Color.black],
+                        startPoint: .top,
+                        endPoint: .bottom
+                        )
+                }
+                
+                
+                Spacer()
+        }.ignoresSafeArea()
+        
+        EllipticalGradient(colors: [Color.teal.opacity(0.2), Color.mint.opacity(0.1), Color.clear], center: .center)
+            .ignoresSafeArea()
+    }
+}
+
 struct HandsPlayedStatView: View {
     let symbolName: String // Pass in "chevron.right" or "lock.fill"
     
@@ -167,4 +198,87 @@ struct WinLossBarChartFromCategory: View {
         }
     }
 }
+
+struct PieChartSlice: Identifiable {
+    let id = UUID()
+    let label: String
+    let value: Int
+}
+
+struct PieChart: View {
+    let values: [PieChartSlice]
+    let isLocked: Bool
+    let showPremiumCallback: () -> Void
+    
+    let colors: [Color] = [.red, .green, .blue, .yellow, .orange, .purple]
+    
+    
+    // Pair values with colors cleanly
+    private var coloredData: [(slice: PieChartSlice, color: Color)] {
+        Array(zip(values, colors))
+    }
+
+    var body: some View {
+        ZStack {
+            VStack(spacing: 16) {
+                // MARK: Pie Chart
+                Chart(coloredData, id: \.slice.id) { item in
+                    SectorMark(
+                        angle: .value("Count", item.slice.value),
+                        innerRadius: .ratio(0.5),
+                        angularInset: 1.5
+                    )
+                    .foregroundStyle(item.color.opacity(0.9))
+                    .annotation(position: .overlay) {
+                        if item.slice.value > 0 {
+                            Text("\(item.slice.value)")
+                                .font(.caption)
+                                .foregroundColor(.black)
+                                .bold()
+                        }
+                    }
+                }
+                .frame(width: 270, height: 220)
+                
+                // MARK: Legend
+                HStack(spacing: 16) {
+                    ForEach(coloredData, id: \.slice.id) { item in
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(item.color.opacity(0.9))
+                                .frame(width: 12, height: 12)
+                            
+                            Text(item.slice.label)
+                                .foregroundColor(.white)
+                                .font(.subheadline)
+                        }
+                    }
+                }
+            }
+            
+            if isLocked {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.black.opacity(0.1))
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .overlay(
+                        VStack(spacing: 8) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 26))
+                            Text("Unlock Detailed Charts with Premium")
+                                .font(.footnote)
+                                .opacity(0.8)
+                        }
+                        .foregroundColor(.white)
+                    )
+                    .frame(height: 280)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        showPremiumCallback()
+                    }
+            }
+        }
+    }
+}
+
 

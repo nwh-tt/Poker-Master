@@ -14,19 +14,31 @@ struct StatsView: View {
     @State private var showPremiumPopup = false
     @State private var isSubscribed = true
     
+    @EnvironmentObject var userProfileState: UserProfileState
+    
     @Query var handLogs: [HandLog]
     @Query var games: [Game]
     
-    var totalHandsPlayed: Int {
-        handLogs.count
+    var hoursPlayed: String {
+        let totalSeconds = games.reduce(0) { $0 + $1.duration }
+        let hours = Int(ceil(totalSeconds / 3600.0))
+        return "\(hours)h"
     }
     
-    var totalHandsWon: Int {
-        handLogs.filter { $0.isCorrect }.count
+    var currentUser: Profile {
+        userProfileState.profile
     }
     
-    var totalHandsLost: Int {
-        handLogs.filter { !$0.isCorrect }.count
+    var preflopGames: Int {
+        games.filter { $0.gameType == .preFlop }.count
+    }
+    
+    var equityGames: Int {
+        games.filter { $0.gameType == .equityDrill }.count
+    }
+    
+    var vsAIGames: Int {
+        games.filter { $0.gameType == .aiVsHuman }.count
     }
     
     var winPercentage: Double {
@@ -35,99 +47,30 @@ struct StatsView: View {
         return total > 0 ? (Double(correct) / Double(total)) * 100 : 0
     }
     
-    var hoursPlayed: Int {
-        let totalSeconds = games.reduce(0) { $0 + $1.duration }
-        return Int(ceil(totalSeconds / 3600.0))
-    }
-    
     
     var body: some View {
         NavigationStack {
             ZStack {
-                VStack(spacing: 0) {
-                        // Top gradient bar
-                    LinearGradient(
-                        colors: [
-                            Color.teal.opacity(0.2),
-                            Color.mint.opacity(0.2)
-                        ],
-                        startPoint: .leading,   // left side
-                        endPoint: .trailing     // right side
-                    )
-                    .frame(height: 400)
-                        .overlay {
-                            LinearGradient(
-                                colors: [Color.clear, Color.black],
-                                startPoint: .top,
-                                endPoint: .bottom
-                                )
-                        }
-                        
-                        
-                        Spacer()
-                }.ignoresSafeArea()
-                
-                EllipticalGradient(colors: [Color.teal.opacity(0.2), Color.mint.opacity(0.1), Color.clear], center: .center)
-                    .ignoresSafeArea()
-                
+                GradientBackgroundView()
                 ScrollView {
                     VStack {
                         HStack {
-                            VStack {
-                                Text("Total Time")
-                                    .font(.headline)
-                                    .foregroundColor(.gray)
-                                
-                                Text("\(hoursPlayed, specifier: "%.1d")h")
-                                    .font(.system(size: 32, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                
-                            }
-                            .padding()
-                            .padding(.bottom, 10)
-                            .frame(maxWidth: .infinity)
-                            .applyGlass { view in
-                                if #available(iOS 26.0, *) {
-                                    view
-                                        .glassEffect(in: .rect(cornerRadius: 16))
-                                } else {
-                                    view
-                                        .background(.ultraThinMaterial)
-                                }
-                            }
-                            .cornerRadius(16)
-                            .shadow(radius: 1)
-                            if isSubscribed {
-                                NavigationLink {
-                                    WinPercentageDetailView(overallWinPct: winPercentage)
-                                } label: {
-                                    WinPercentageStatView(symbolName: "chevron.right", winPercentage: winPercentage)
-                                }
-                            } else {
-                                Button {
-                                    showPremiumPopup = true
-                                } label: {
-                                    WinPercentageStatView(symbolName: "lock.fill", winPercentage: winPercentage)
-                                }
-                            }
-                            
+                            GenericStatBlock(title:"Time Played", metric: hoursPlayed)
+                            GenericStatBlock(title: "Level", metric: String(currentUser.level))
                         }
-                        if isSubscribed {
-                            NavigationLink {
-                                HandsPlayedDetailView()
-                            } label: {
-                                HandsPlayedStatView(symbolName: "chevron.right", totalHandsPlayed: totalHandsPlayed, totalHandsWon: totalHandsWon, totalHandsLost: totalHandsLost)
-                            }
-                        } else {
-                            Button {
-                                showPremiumPopup = true
-                            }
-                            label: {
-                                HandsPlayedStatView(symbolName: "lock.fill", totalHandsPlayed: totalHandsPlayed, totalHandsWon: totalHandsWon, totalHandsLost: totalHandsLost)
-                            }
-                        }
+                        
+                        PieChart(values: [
+                            PieChartSlice(label: "Preflop", value: preflopGames),
+                            PieChartSlice(label: "Equity", value: equityGames),
+                            PieChartSlice(label: "AI", value: vsAIGames)
+                        ], isLocked: false, showPremiumCallback: {})
+                            .padding(.top)
+                        
+                        Divider()
+                            .background(Color.gray.opacity(0.2))
+                            .padding(.top)
 
+                        
                         HStack {
                             NavigationLink {
                                 PreflopStatsView()
@@ -261,21 +204,65 @@ struct WinPercentageStatView: View {
     }
 }
 
+
+
+
 #Preview {
     let schema = Schema([
-            Game.self,
-            HandLog.self,
-            EquityLog.self,
-            AIGameLog.self,
-            Challenges.self,
-            Item.self
-        ])
-        let container = try! ModelContainer(
-            for: schema,
-            configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]
-        )
-        // let context = container.mainContext
+        Game.self,
+        HandLog.self,
+        EquityLog.self,
+        AIGameLog.self,
+        Challenges.self,
+        Item.self
+    ])
+    let container = try! ModelContainer(
+        for: schema,
+        configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]
+    )
+    let context = container.mainContext
+    let sampleUser = Profile(username: "Test")
+    sampleUser.level = 10
+    context.insert(sampleUser)
+    
+    let game = Game(gameType: .equityDrill)
+    game.duration = 20000
+    game.totalHands = 10
+    context.insert(game)
+    
+    for _ in 0..<10 {
+        var hand = Position.allCases.randomElement()!
+        var raiseType = RaiseType.allCases.randomElement()!
+        var action = Action.allCases.randomElement()!
+        var betAmount = Double.random(in: 0...70)
+        var pot = Double.random(in: 0...200)
+        
+        let handLog = HandLog(position: hand, hand: "", pair: false, action: action, raiseType: raiseType, betAmount: betAmount, pot: pot, xpEarned: 0, isCorrect: Bool.random(), game: game)
+        game.preflopHands.append(handLog)
+        context.insert(handLog)
+    }
+    
+    let eqGame = Game(gameType: .aiVsHuman)
+    eqGame.duration = 20000
+    eqGame.totalHands = 10
+    context.insert(eqGame)
+    
+    for _ in 0..<10 {
+        var street = Street.allCases.randomElement()!
+        var villainType = VillainType.allCases.randomElement()!
+        let equityLog = EquityLog(street: street, villainType: villainType, hand: "", equity: 0, xpEarned: 0, isCorrect: Bool.random(), game: eqGame)
+        eqGame.equityHands.append(equityLog)
+        context.insert(equityLog)
+    }
+    
+    
+    do {
+        try context.save()
+    } catch {
+        print(error)
+    }
     
     return StatsView()
         .modelContainer(container)
+        .environmentObject(UserProfileState(context: context))
 }

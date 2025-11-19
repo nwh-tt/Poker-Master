@@ -137,32 +137,7 @@ struct PreflopStatsView: View {
     
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                // Top gradient bar
-                LinearGradient(
-                    colors: [
-                        Color.teal.opacity(0.2),
-                        Color.mint.opacity(0.2)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .frame(height: 400)
-                .overlay {
-                    LinearGradient(
-                        colors: [Color.clear, Color.black],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                }
-                
-                
-                Spacer() // pushes the rest of the content below
-            }.ignoresSafeArea()
-            
-            EllipticalGradient(colors: [Color.teal.opacity(0.2), Color.mint.opacity(0.1), Color.clear], center: .center)
-                .ignoresSafeArea()
-            
+            GradientBackgroundView()
             ScrollView {
                 VStack {
                     HStack {
@@ -206,7 +181,7 @@ struct PreflopStatsView: View {
         configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]
     )
     let context = container.mainContext
-    // Add dummy EquityLogs and 2 Equity Games
+    // Add dummy data
     let game = Game(gameType: .equityDrill)
     game.duration = 20000
     game.totalHands = 10

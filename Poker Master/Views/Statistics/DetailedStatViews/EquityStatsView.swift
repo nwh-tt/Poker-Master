@@ -45,6 +45,7 @@ struct EquityStatsView: View {
         let percent = total > 0 ? (Double(correct) / Double(total)) * 100 : 0
         return "\(percent.formattedString())%"
     }
+    
     var equityHandsByType: [WinLossByCategory] {
         let grouped = Dictionary(grouping: equityLogs, by: { $0.villainType })
         
@@ -104,32 +105,7 @@ struct EquityStatsView: View {
 
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                // Top gradient bar
-                LinearGradient(
-                    colors: [
-                        Color.teal.opacity(0.2),
-                        Color.mint.opacity(0.2)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .frame(height: 400)
-                .overlay {
-                    LinearGradient(
-                        colors: [Color.clear, Color.black],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                }
-                
-                
-                Spacer() // pushes the rest of the content below
-            }.ignoresSafeArea()
-            
-            EllipticalGradient(colors: [Color.teal.opacity(0.2), Color.mint.opacity(0.1), Color.clear], center: .center)
-                .ignoresSafeArea()
-            
+            GradientBackgroundView()
             ScrollView {
                 VStack {
                     HStack {
