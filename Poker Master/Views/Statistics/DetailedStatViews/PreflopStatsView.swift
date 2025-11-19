@@ -21,113 +21,63 @@ struct PreflopStatsView: View {
     })
     var preflopGames: [Game]
     
-    var hoursPlayed: String {
+    @State private var hoursPlayed: String = "0h"
+    @State private var accuracyPercent: String = "0%"
+    @State private var totalBet: String = "$0"
+    @State private var totalHandsPlayed: Int = 0
+    @State private var totalHandsWon: Int = 0
+    @State private var totalHandsLost: Int = 0
+    @State private var preflopHandsByPosition: [WinLossByCategory] = []
+    @State private var preflopHandsByAction: [WinLossByCategory] = []
+    @State private var preflopHandsByRaiseType: [WinLossByCategory] = []
+
+    // MARK: - Function to Calculate All Stats
+    private func calculatePreflopStats() {
+        // Hours played
         let totalSeconds = preflopGames.reduce(0) { $0 + $1.duration }
         let hours = Int(ceil(totalSeconds / 3600.0))
-        return "\(hours)h"
-    }
-    
-    var accuracyPercent: String {
+        hoursPlayed = "\(hours)h"
+        
+        // Accuracy
         let correct = preflopLogs.filter { $0.isCorrect }.count
         let total = preflopLogs.count
         let percent = total > 0 ? (Double(correct) / Double(total)) * 100 : 0
-        return "\(percent.formattedString())%"
-    }
-    
-    var totalBet: String {
-        let total = (preflopLogs.reduce(0) { $0 + $1.betAmount }) * 2
-        // Format total as currency
-        return total.shortCurrencyString()
-    }
-    
-    var totalHandsPlayed: Int {
-        preflopLogs.count
-    }
-    
-    var totalHandsWon: Int {
-        preflopLogs.filter { $0.isCorrect }.count
-    }
-    
-    var totalHandsLost: Int {
-        preflopLogs.filter { !$0.isCorrect }.count
-    }
-    
-    var preflopHandsByPosition: [WinLossByCategory] {
-        let grouped = Dictionary(grouping: preflopLogs, by: { $0.position })
+        accuracyPercent = "\(percent.formattedString())%"
         
-        var results = grouped.map { (category, logs) in
-            let total = logs.count
-            let wins = logs.filter { $0.isCorrect }.count
-            let losses = total - wins
-            return WinLossByCategory(category: category.rawValue, wins: wins, losses: losses)
+        // Total bet
+        let totalBetted = preflopLogs.reduce(0) { $0 + $1.betAmount } * 2
+        totalBet = totalBetted.shortCurrencyString()
+        
+        // Hands played/won/lost
+        totalHandsPlayed = preflopLogs.count
+        totalHandsWon = correct
+        totalHandsLost = totalHandsPlayed - correct
+        
+        // Helper to generate WinLossByCategory
+        func aggregateBy<T: RawRepresentable & CaseIterable & Hashable>(_ allCases: [T], groupBy: (HandLog) -> T) -> [WinLossByCategory] where T.RawValue == String {
+            let grouped = Dictionary(grouping: preflopLogs, by: groupBy)
+            var results = grouped.map { (category, logs) in
+                let total = logs.count
+                let wins = logs.filter { $0.isCorrect }.count
+                let losses = total - wins
+                return WinLossByCategory(category: category.rawValue, wins: wins, losses: losses)
+            }
+            let missing = allCases.filter { category in
+                !results.contains(where: { $0.category == category.rawValue })
+            }
+            for category in missing {
+                results.append(WinLossByCategory(category: category.rawValue, wins: 0, losses: 0))
+            }
+            return results.sorted { a, b in
+                let aIndex = allCases.firstIndex { $0.rawValue == a.category } ?? 0
+                let bIndex = allCases.firstIndex { $0.rawValue == b.category } ?? 0
+                return aIndex < bIndex
+            }
         }
         
-        let allCategories = Position.allCases
-        let missingCategories = allCategories.filter { category in
-            !results.contains(where: { $0.category == category.rawValue })
-        }
-        
-        for category in missingCategories {
-            results.append(WinLossByCategory(category: category.rawValue, wins: 0, losses: 0))
-        }
-        
-        return results.sorted { a, b in
-            let aIndex = Position.allCases.firstIndex { $0.rawValue == a.category } ?? 0
-            let bIndex = Position.allCases.firstIndex { $0.rawValue == b.category } ?? 0
-            return aIndex < bIndex
-        }
-    }
-    
-    var preflopHandsByAction: [WinLossByCategory] {
-        let grouped = Dictionary(grouping: preflopLogs, by: { $0.action })
-        
-        var results = grouped.map { (category, logs) in
-            let total = logs.count
-            let wins = logs.filter { $0.isCorrect }.count
-            let losses = total - wins
-            return WinLossByCategory(category: category.rawValue, wins: wins, losses: losses)
-        }
-        
-        let allCategories = Action.allCases
-        let missingCategories = allCategories.filter { category in
-            !results.contains(where: { $0.category == category.rawValue })
-        }
-        
-        for category in missingCategories {
-            results.append(WinLossByCategory(category: category.rawValue, wins: 0, losses: 0))
-        }
-        
-        return results.sorted { a, b in
-            let aIndex = Action.allCases.firstIndex { $0.rawValue == a.category } ?? 0
-            let bIndex = Action.allCases.firstIndex { $0.rawValue == b.category } ?? 0
-            return aIndex < bIndex
-        }
-    }
-    
-    var preflopHandsByRaiseType: [WinLossByCategory] {
-        let grouped = Dictionary(grouping: preflopLogs, by: { $0.raiseType })
-        
-        var results = grouped.map { (category, logs) in
-            let total = logs.count
-            let wins = logs.filter { $0.isCorrect }.count
-            let losses = total - wins
-            return WinLossByCategory(category: category.rawValue, wins: wins, losses: losses)
-        }
-        
-        let allCategories = RaiseType.allCases
-        let missingCategories = allCategories.filter { category in
-            !results.contains(where: { $0.category == category.rawValue })
-        }
-        
-        for category in missingCategories {
-            results.append(WinLossByCategory(category: category.rawValue, wins: 0, losses: 0))
-        }
-        
-        return results.sorted { a, b in
-            let aIndex = RaiseType.allCases.firstIndex { $0.rawValue == a.category } ?? 0
-            let bIndex = RaiseType.allCases.firstIndex { $0.rawValue == b.category } ?? 0
-            return aIndex < bIndex
-        }
+        preflopHandsByPosition = aggregateBy(Position.allCases, groupBy: { $0.position })
+        preflopHandsByAction = aggregateBy(Action.allCases, groupBy: { $0.action })
+        preflopHandsByRaiseType = aggregateBy(RaiseType.allCases, groupBy: { $0.raiseType })
     }
     
     
@@ -156,6 +106,9 @@ struct PreflopStatsView: View {
                 .padding()
                 .preferredColorScheme(.dark)
             }
+        }
+        .onAppear {
+            calculatePreflopStats()
         }
         .fullScreenCover(isPresented: $showPremiumPopup) {
             PaywallView()

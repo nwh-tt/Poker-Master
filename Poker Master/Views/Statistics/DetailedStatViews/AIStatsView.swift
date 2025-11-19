@@ -20,57 +20,56 @@ struct AIStatsView: View {
     })
     var aiGames: [Game]
     
-    var hoursPlayed: String {
+    // All metrics
+    @State private var hoursPlayed: String = "0h"
+    @State private var gamesPlayed: String = "0"
+    @State private var totalWins: Int = 0
+    @State private var totalAmountWon: String = "$0"
+    @State private var totalRaises: Int = 0
+    @State private var totalAmountRaised: String = "$0"
+    @State private var totalCalls: Int = 0
+    @State private var totalAmountCalled: String = "$0"
+    @State private var totalFolds: Int = 0
+    @State private var totalAllIns: Int = 0
+    @State private var totalBet: Double = 0.0
+
+    // MARK: - Function to Calculate All Stats
+    private func calculateStats() {
+        // Hours played
         let totalSeconds = aiGames.reduce(0) { $0 + $1.duration }
         let hours = Int(ceil(totalSeconds / 3600.0))
-        return "\(hours)h"
-    }
-    
-    var gamesPlayed: String {
-        String(aiGames.count)
-    }
-    
-    var totalWins: Int {
-        vsAiLogs.filter { $0.wonHand == true }.count
-    }
-    
-    var totalAmountWon: String {
-        let total = vsAiLogs.filter { $0.wonHand == true }.reduce(0) { $0 + $1.pot } * 2
+        hoursPlayed = "\(hours)h"
         
-        return total.shortCurrencyString()
-    }
-    
-    // Sum up the raises field from the AIGameLog
-    var totalRaises: Int {
-        vsAiLogs.reduce(0) { $0 + $1.raises }
-    }
-    
-    var totalAmountRaised: String {
-        let total = vsAiLogs.reduce(0) { $0 + $1.totalRaised } * 2
+        // Games played
+        gamesPlayed = String(aiGames.count)
         
-        return total.shortCurrencyString()
-    }
-    
-    var totalCalls: Int {
-        vsAiLogs.reduce(0) { $0 + $1.calls }
-    }
-    
-    var totalAmountCalled: String {
-        let total = vsAiLogs.reduce(0) { $0 + $1.totalCalled } * 2
+        // Wins
+        totalWins = vsAiLogs.filter { $0.wonHand == true }.count
         
-        return total.shortCurrencyString()
-    }
-    
-    var totalFolds: Int {
-        vsAiLogs.reduce(0) { $0 + $1.folds }
-    }
-    
-    var totalAllIns: Int {
-        vsAiLogs.reduce(0) { $0 + $1.allIns }
-    }
-    
-    var totalBet: Double {
-        vsAiLogs.reduce(0) { $0 + $1.totalBet }
+        vsAiLogs.filter { $0.wonHand == true }.forEach { print($0.pot) }
+        
+        // Amount won
+        let totalWon = vsAiLogs.filter { $0.wonHand == true }.reduce(0) { $0 + $1.pot } * 2
+        totalAmountWon = totalWon.shortCurrencyString()
+        
+        // Raises
+        totalRaises = vsAiLogs.reduce(0) { $0 + $1.raises }
+        let totalRaised = vsAiLogs.reduce(0) { $0 + $1.totalRaised } * 2
+        totalAmountRaised = totalRaised.shortCurrencyString()
+        
+        // Calls
+        totalCalls = vsAiLogs.reduce(0) { $0 + $1.calls }
+        let totalCalled = vsAiLogs.reduce(0) { $0 + $1.totalCalled } * 2
+        totalAmountCalled = totalCalled.shortCurrencyString()
+        
+        // Folds
+        totalFolds = vsAiLogs.reduce(0) { $0 + $1.folds }
+        
+        // All-ins
+        totalAllIns = vsAiLogs.reduce(0) { $0 + $1.allIns }
+        
+        // Total bet
+        totalBet = vsAiLogs.reduce(0) { $0 + $1.totalBet }
     }
     
     private func showPremium() {
@@ -86,7 +85,7 @@ struct AIStatsView: View {
                         GenericStatBlock(title:"Time Played", metric: hoursPlayed)
                         GenericStatBlock(title:"Games", metric: gamesPlayed)
                     }
-                    GenericStatBlock(title:"Amount Won", metric: totalAmountWon)
+                    GenericStatBlock(title:"Total Winnings", metric: totalAmountWon)
                     ThreeStatBlock(folds: totalFolds, calls: totalCalls, raises: totalRaises)
                     PieChart(values: [
                             PieChartSlice(label: "Folds", value: totalFolds),
@@ -107,6 +106,9 @@ struct AIStatsView: View {
             }
             .preferredColorScheme(.dark)
             .navigationTitle("AI Stats")
+        }
+        .onAppear {
+            calculateStats()
         }
     
     }

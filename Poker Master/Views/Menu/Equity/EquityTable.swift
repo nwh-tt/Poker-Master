@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import ActivityIndicatorView
 import AlertToast
+import ConfettiSwiftUI
 
 let darkGreen = Color(red: 0, green: 0.15, blue: 0)
 let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
@@ -27,6 +28,7 @@ struct EquityTable: View {
     @State private var cardAnimations: [Bool] = [false, false]
     @State private var villainCardAnimations: [Bool] = [false, false]
     @State private var showGameOver: Bool = false
+    @State private var triggerMoneyConfetti: Int = 0
     
     let street: String
     let villainType: String
@@ -240,6 +242,7 @@ struct EquityTable: View {
                         }
                         .padding()
                         .padding(.bottom)
+                        .confettiCannon(trigger: $triggerMoneyConfetti, num: 50, confettis: [.text("💵"), .text("💰")])
                     }
                 } else {
                     if equityDrillManager.errorMessage == nil {
@@ -300,8 +303,7 @@ struct EquityTable: View {
         .onAppear() {
             let newGame = Game(gameType: .equityDrill)
             game = newGame
-            print(newGame.id)
-            // context.insert(newGame)
+            context.insert(newGame)
         }.toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Text("\(equityDrillManager.score) / \(equityDrillManager.roundsPlayed)")
@@ -326,6 +328,9 @@ struct EquityTable: View {
         
         let isCorrect = option == scenario.correctEquityRange
         let computedEquity = Int((scenario.lowEquity + scenario.highEquity) / 2)
+        if isCorrect {
+            triggerMoneyConfetti += 1
+        }
         let xpEarned = isCorrect ? 10 : 0
         userProfile.addXP(xpEarned)
         

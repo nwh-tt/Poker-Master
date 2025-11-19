@@ -21,82 +21,51 @@ struct EquityStatsView: View {
     })
     var equityGames: [Game]
     
-    var hoursPlayed: String {
+    @State private var hoursPlayed: String = "0h"
+    @State private var totalHandsPlayed: Int = 0
+    @State private var totalHandsWon: Int = 0
+    @State private var totalHandsLost: Int = 0
+    @State private var accuracyPercent: String = "0%"
+    @State private var equityHandsByType: [WinLossByCategory] = []
+    @State private var equityHandsByStreet: [WinLossByCategory] = []
+
+    // Call this once in .onAppear
+    private func calculateEquityStats() {
+        // Basic totals
         let totalSeconds = equityGames.reduce(0) { $0 + $1.duration }
         let hours = Int(ceil(totalSeconds / 3600.0))
-        return "\(hours)h"
-    }
-    
-    var totalHandsPlayed: Int {
-        equityLogs.count
-    }
-    
-    var totalHandsWon: Int {
-        equityLogs.filter { $0.isCorrect }.count
-    }
-    
-    var totalHandsLost: Int {
-        equityLogs.filter { !$0.isCorrect }.count
-    }
-    
-    var accuracyPercent: String {
-        let correct = equityLogs.filter { $0.isCorrect }.count
-        let total = equityLogs.count
-        let percent = total > 0 ? (Double(correct) / Double(total)) * 100 : 0
-        return "\(percent.formattedString())%"
-    }
-    
-    var equityHandsByType: [WinLossByCategory] {
-        let grouped = Dictionary(grouping: equityLogs, by: { $0.villainType })
+        hoursPlayed = "\(hours)h"
         
-        var results = grouped.map { (category, logs) in
-            let total = logs.count
-            let wins = logs.filter { $0.isCorrect }.count
-            let losses = total - wins
-            return WinLossByCategory(category: category.rawValue, wins: wins, losses: losses)
+        totalHandsPlayed = equityLogs.count
+        totalHandsWon = equityLogs.filter { $0.isCorrect }.count
+        totalHandsLost = equityLogs.filter { !$0.isCorrect }.count
+        
+        let percent = totalHandsPlayed > 0 ? (Double(totalHandsWon) / Double(totalHandsPlayed)) * 100 : 0
+        accuracyPercent = "\(percent.formattedString())%"
+        
+        // Aggregate helper
+        func aggregateBy<T: RawRepresentable & CaseIterable & Hashable>(_ allCases: [T], keyPath: KeyPath<EquityLog, T>) -> [WinLossByCategory] where T.RawValue == String {
+            let grouped = Dictionary(grouping: equityLogs, by: { $0[keyPath: keyPath] })
+            var results = grouped.map { (category, logs) in
+                let wins = logs.filter { $0.isCorrect }.count
+                let losses = logs.count - wins
+                return WinLossByCategory(category: category.rawValue, wins: wins, losses: losses)
+            }
+            let missing = allCases.filter { category in
+                !results.contains(where: { $0.category == category.rawValue })
+            }
+            for category in missing {
+                results.append(WinLossByCategory(category: category.rawValue, wins: 0, losses: 0))
+            }
+            return results.sorted { a, b in
+                let aIndex = allCases.firstIndex { $0.rawValue == a.category } ?? 0
+                let bIndex = allCases.firstIndex { $0.rawValue == b.category } ?? 0
+                return aIndex < bIndex
+            }
         }
         
-        let allCategories = VillainType.allCases
-        let missingCategories = allCategories.filter { category in
-            !results.contains(where: { $0.category == category.rawValue })
-        }
-        
-        for category in missingCategories {
-            results.append(WinLossByCategory(category: category.rawValue, wins: 0, losses: 0))
-        }
-        
-        return results.sorted { a, b in
-            let aIndex = VillainType.allCases.firstIndex { $0.rawValue == a.category } ?? 0
-            let bIndex = VillainType.allCases.firstIndex { $0.rawValue == b.category } ?? 0
-            return aIndex < bIndex
-        }
-    }
-    
-    var equityHandsByStreet: [WinLossByCategory] {
-        let grouped = Dictionary(grouping: equityLogs, by: { $0.street })
-        
-        var results = grouped.map { (category, logs) in
-            let total = logs.count
-            let wins = logs.filter { $0.isCorrect }.count
-            let losses = total - wins
-            return WinLossByCategory(category: category.rawValue, wins: wins, losses: losses)
-        }
-        
-        // Fill in the gaps. Add 0s for missing categories
-        let allCategories = Street.allCases
-        let missingCategories = allCategories.filter { category in
-            !results.contains(where: { $0.category == category.rawValue })
-        }
-        
-        for category in missingCategories {
-            results.append(WinLossByCategory(category: category.rawValue, wins: 0, losses: 0))
-        }
-        
-        return results.sorted { a, b in
-            let aIndex = Street.allCases.firstIndex { $0.rawValue == a.category } ?? 0
-            let bIndex = Street.allCases.firstIndex { $0.rawValue == b.category } ?? 0
-            return aIndex < bIndex
-        }
+        equityHandsByType = aggregateBy(VillainType.allCases, keyPath: \.villainType)
+        equityHandsByStreet = aggregateBy(Street.allCases, keyPath: \.street)
     }
     
     private func showPremium() {
@@ -123,6 +92,9 @@ struct EquityStatsView: View {
                 }
                 .padding()
             }
+        }
+        .onAppear {
+            calculateEquityStats()
         }
         .fullScreenCover(isPresented: $showPremiumPopup) {
             PaywallView()

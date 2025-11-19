@@ -62,6 +62,7 @@ class AIGameManager {
 
     func startGame() async {
         gameLog = Game(gameType: .aiVsHuman)
+        context?.insert(gameLog!)
         
         // Create deck and deal cards
         for player in aiPlayers {
@@ -81,6 +82,7 @@ class AIGameManager {
         game += 1
         
         gameLog = Game(gameType: .aiVsHuman)
+        context?.insert(gameLog!)
         
         // Need to shift positions
         rotatePositions()
@@ -173,6 +175,7 @@ class AIGameManager {
         processRoundEnd(winners: winnerNames)
         waitingForContinueButton = true
         skipActive = false
+        
         saveStreetLog()
     }
     
@@ -300,7 +303,7 @@ class AIGameManager {
         board = []
         deck.resetDeck() // Creates new shuffled deck
         round = 0
-        pot = 0
+        pot = 0.0
     }
     
     func dealBoard(cardsToDeal: Int) async {
@@ -317,10 +320,6 @@ class AIGameManager {
     func setUpBlinds() async {
         let sleepTime = UInt64((5 - gameplaySpeed) * 600_000_000) // Scale from 0s to ~3s
         let sbIndex = getActivePlayerInPosition(position: "SB")
-        
-        if !skipActive {
-            try? await Task.sleep(nanoseconds: sleepTime)
-        }
         
         raise(aiPlayer: aiPlayers[sbIndex], amount: 0.5)
 
@@ -350,8 +349,6 @@ class AIGameManager {
         if aiGameLog?.reachedShowdown == true {
             aiGameLog?.showdownPlayers = winners.filter { $0 != "Hero" }
         }
-            
-        pot = 0
     }
     
     func rotatePositions() {
@@ -548,10 +545,12 @@ class AIGameManager {
     
     // TODO: Move all these to a different file
     func fetchAIPlayers() async -> [FetchPlayerResponse] {
+        let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
+        // let apiPrefix = "http://127.0.0.1:8000"
         isLoading = true
         errorMessage = nil
 
-        guard let url = URL(string: "http://127.0.0.1:8000/api/ai/players?table_size=\(tableSize)") else {
+        guard let url = URL(string: "\(apiPrefix)/api/ai/players?table_size=\(tableSize)") else {
             errorMessage = "Invalid URL"
             showToast = true
             return []
@@ -599,7 +598,9 @@ class AIGameManager {
     }
     
     func determineWinners() async -> [String] {
-        guard let url = URL(string: "http://127.0.0.1:8000/api/ai/determine-winner") else {
+        let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
+        // let apiPrefix = "http://127.0.0.1:8000"
+        guard let url = URL(string: "\(apiPrefix)/api/ai/determine-winner") else {
             errorMessage = "Invalid URL"
             showToast = true
             return []

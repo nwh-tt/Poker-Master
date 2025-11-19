@@ -53,8 +53,6 @@
 		B67C5E672E591EF20017ECBF /* ChallengeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E662E591EF20017ECBF /* ChallengeCard.swift */; };
 		B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E6D2E59F3B40017ECBF /* Models.swift */; };
 		B67C5E742E5A092C0017ECBF /* ChallengeDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */; };
-		B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */; };
-		B67C5E7F2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */; };
 		B690E22A2E7DE52F007C601E /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = B690E2292E7DE52F007C601E /* GoogleMobileAds */; };
 		B690E2322E80B564007C601E /* RangeViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E2312E80B564007C601E /* RangeViewer.swift */; };
 		B690E2342E80CDBB007C601E /* RangeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E2332E80CD9E007C601E /* RangeEditorView.swift */; };
@@ -83,7 +81,7 @@
 		B6D403762DA07098008A83E8 /* Ranges.json in Resources */ = {isa = PBXBuildFile; fileRef = B6D403752DA07098008A83E8 /* Ranges.json */; };
 		B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403772DA07150008A83E8 /* RangesFileManager.swift */; };
 		B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA42ECD29B60015F53D /* AIStatsView.swift */; };
-		B6E29FA72ECD427C0015F53D /* GenericStatViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA62ECD42610015F53D /* GenericStatViews.swift */; };
+		B6E29FA72ECD427C0015F53D /* GenericStatViewComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */; };
 		B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */; };
 		B6EC8AC62E621C1C00C1AC9B /* UserProfileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */; };
 		B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */; };
@@ -156,8 +154,6 @@
 		B67C5E662E591EF20017ECBF /* ChallengeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCard.swift; sourceTree = "<group>"; };
 		B67C5E6D2E59F3B40017ECBF /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeDataManager.swift; sourceTree = "<group>"; };
-		B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinPercentageDetailView.swift; sourceTree = "<group>"; };
-		B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandsPlayedDetailView.swift; sourceTree = "<group>"; };
 		B690E2312E80B564007C601E /* RangeViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeViewer.swift; sourceTree = "<group>"; };
 		B690E2332E80CD9E007C601E /* RangeEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeEditorView.swift; sourceTree = "<group>"; };
 		B690E2372E80D27C007C601E /* RangeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeHelper.swift; sourceTree = "<group>"; };
@@ -188,7 +184,7 @@
 		B6D403752DA07098008A83E8 /* Ranges.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Ranges.json; sourceTree = "<group>"; };
 		B6D403772DA07150008A83E8 /* RangesFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesFileManager.swift; sourceTree = "<group>"; };
 		B6E29FA42ECD29B60015F53D /* AIStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStatsView.swift; sourceTree = "<group>"; };
-		B6E29FA62ECD42610015F53D /* GenericStatViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericStatViews.swift; sourceTree = "<group>"; };
+		B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericStatViewComponents.swift; sourceTree = "<group>"; };
 		B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileState.swift; sourceTree = "<group>"; };
 		B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopSettingsView.swift; sourceTree = "<group>"; };
@@ -410,11 +406,9 @@
 		B67C5E792E5E11DC0017ECBF /* DetailedStatViews */ = {
 			isa = PBXGroup;
 			children = (
-				B6E29FA62ECD42610015F53D /* GenericStatViews.swift */,
+				B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */,
 				B6E29FA42ECD29B60015F53D /* AIStatsView.swift */,
 				B694411C2ECD1199005C5957 /* PreflopStatsView.swift */,
-				B67C5E7A2E5E11FD0017ECBF /* WinPercentageDetailView.swift */,
-				B67C5E7E2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift */,
 				B694411A2EC80E0D005C5957 /* EquityStatsView.swift */,
 			);
 			path = DetailedStatViews;
@@ -764,7 +758,6 @@
 				B6BB625B2E9AD06F00F1E565 /* AIPlayerLayoutView.swift in Sources */,
 				B694411B2EC80E0D005C5957 /* EquityStatsView.swift in Sources */,
 				B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */,
-				B67C5E7B2E5E11FD0017ECBF /* WinPercentageDetailView.swift in Sources */,
 				B67C5E512E2806F30017ECBF /* HomeView.swift in Sources */,
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
 				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
@@ -782,7 +775,7 @@
 				B690E2382E80D281007C601E /* RangeHelper.swift in Sources */,
 				B6EC8ADF2E739BC300C1AC9B /* BoardView.swift in Sources */,
 				B6D205162E82FD0A00E12C49 /* PlayerLayoutView.swift in Sources */,
-				B6E29FA72ECD427C0015F53D /* GenericStatViews.swift in Sources */,
+				B6E29FA72ECD427C0015F53D /* GenericStatViewComponents.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,
 				B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */,
 				B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */,
@@ -804,7 +797,6 @@
 				B697E7792BC849E700191C7A /* Item.swift in Sources */,
 				B67C5E432E208A950017ECBF /* MenuView.swift in Sources */,
 				B656DC722EC2D87B00488B57 /* PlayerInfoSheet.swift in Sources */,
-				B67C5E7F2E5E1D1E0017ECBF /* HandsPlayedDetailView.swift in Sources */,
 				B67C5E452E208AD70017ECBF /* MenuOption.swift in Sources */,
 				B649ED4A2BD1B0C900157267 /* Player.swift in Sources */,
 				B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */,

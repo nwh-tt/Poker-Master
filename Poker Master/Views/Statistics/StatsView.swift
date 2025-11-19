@@ -19,32 +19,23 @@ struct StatsView: View {
     @Query var handLogs: [HandLog]
     @Query var games: [Game]
     
-    var hoursPlayed: String {
+    @State private var hoursPlayed: String = "0h"
+    @State private var preflopGames: Int = 0
+    @State private var equityGames: Int = 0
+    @State private var vsAIGames: Int = 0
+    
+    // Call this once in .onAppear
+    private func calculateStats() {
         let totalSeconds = games.reduce(0) { $0 + $1.duration }
-        let hours = Int(ceil(totalSeconds / 3600.0))
-        return "\(hours)h"
+        hoursPlayed = "\(Int(ceil(totalSeconds / 3600.0)))h"
+        
+        preflopGames = games.filter { $0.gameType == .preFlop }.count
+        equityGames = games.filter { $0.gameType == .equityDrill }.count
+        vsAIGames = games.filter { $0.gameType == .aiVsHuman }.count
     }
     
     var currentUser: Profile {
         userProfileState.profile
-    }
-    
-    var preflopGames: Int {
-        games.filter { $0.gameType == .preFlop }.count
-    }
-    
-    var equityGames: Int {
-        games.filter { $0.gameType == .equityDrill }.count
-    }
-    
-    var vsAIGames: Int {
-        games.filter { $0.gameType == .aiVsHuman }.count
-    }
-    
-    var winPercentage: Double {
-        let correct = handLogs.filter { $0.isCorrect }.count
-        let total = handLogs.count
-        return total > 0 ? (Double(correct) / Double(total)) * 100 : 0
     }
     
     
@@ -100,6 +91,9 @@ struct StatsView: View {
                     .preferredColorScheme(.dark)
                 .navigationTitle("Stats")
                 }
+            }
+            .onAppear {
+                calculateStats()
             }
         }
         .fullScreenCover(isPresented: $showPremiumPopup) {
