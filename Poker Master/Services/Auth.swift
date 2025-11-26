@@ -34,7 +34,7 @@ class AuthManager: ObservableObject {
                 } else {
                     // User is signed out set isAuthenticated to false
                     self?.isAuthenticated = false
-                    slelf?.user = nil
+                    self?.user = nil
                     
                     // If user signs out, log out of RevenueCat too
                     Purchases.shared.logOut { customerInfo, error in
