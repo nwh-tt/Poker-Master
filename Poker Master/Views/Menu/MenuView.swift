@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import GoogleMobileAds
 import RevenueCat
 import RevenueCatUI
 
@@ -15,7 +14,6 @@ struct MenuView: View {
     @EnvironmentObject var authManager: AuthManager
     
     @State private var navigateToEquityDrill = false
-    @State private var rewardedAd: RewardedAd?
     
     @State private var showPremiumPopup = false
     @State private var showCreateAccount = false
@@ -180,17 +178,6 @@ struct MenuView: View {
         }.preferredColorScheme(.dark)
     }
     
-    // MARK: - Rewarded Ad Functions
-        func loadRewardedAd() async {
-            do {
-                rewardedAd = try await RewardedAd.load(
-                    with: "ca-app-pub-3940256099942544/1712485313", // test ad unit
-                    request: Request()
-                )
-            } catch {
-                print("Failed to load rewarded ad: \(error.localizedDescription)")
-            }
-        }
     
     private func presentEquityDrillFlow() {
         if !authManager.isAuthenticated {
@@ -200,29 +187,9 @@ struct MenuView: View {
             return
         }
         
-        if needsAd {
-            guard let ad = rewardedAd else {
-                print("Rewarded ad not ready")
-                return
-            }
-            
-            if let root = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .first?.windows
-                .first(where: { $0.isKeyWindow })?
-                .rootViewController {
-                ad.present(from: root) {
-                    let reward = ad.adReward
-                    print("Reward received with currency \(reward.amount), amount \(reward.amount.doubleValue)")
-                    // TODO: Reward the user
-                    navigateToEquityDrill = true
-                }
-            } else {
-                print("Unable to find root view controller to present from")
-            }
-        } else {
-            navigateToEquityDrill = true
-        }
+        
+        navigateToEquityDrill = true
+        
     }
 }
 

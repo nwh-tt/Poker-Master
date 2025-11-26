@@ -17,7 +17,9 @@ struct ProfileView: View {
     @State private var tempUsername: String = ""
     @State private var isEditing: Bool = false
     @State private var showPremiumPopup: Bool = false
+    
     @State private var showCreateAccount: Bool = false
+    @State private var showLoginView: Bool = false
     
     @State private var isSubscribed: Bool = true
     
@@ -33,6 +35,14 @@ struct ProfileView: View {
     }
     @State private var selectedTheme: String = "Default"
     @State private var didLevelUp: Bool = false
+    
+    func showLoginScreen() {
+        showLoginView = true
+    }
+    
+    func showCreateAccountScreen() {
+        showCreateAccount = true
+    }
     
     
     func currentStreak() -> Int {
@@ -261,9 +271,12 @@ struct ProfileView: View {
                 PaywallView()
             }
             .fullScreenCover(isPresented: $showCreateAccount) {
-                CreateAccountView()
-            }.task {
-                // await loadRewardedAd()
+                CreateAccountView(showLoginCallback: showLoginScreen)
+            }
+            .fullScreenCover(isPresented: $showLoginView) {
+                LoginView(showCreateAccountCallback: showCreateAccountScreen)
+            }
+            .task {
                 isSubscribed = await SubscriptionManager.isSubscribed()
             }.preferredColorScheme(.dark)
             if currentUser.leveledUP {

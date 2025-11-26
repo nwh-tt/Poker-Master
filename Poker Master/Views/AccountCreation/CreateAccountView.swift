@@ -6,11 +6,9 @@
 //
 
 import SwiftUI
-import AnimatedGradient
 import ActivityIndicatorView
 import AuthenticationServices
-import CryptoKit
-import FirebaseAuth
+import AlertToast
 
 struct CreateAccountView: View {
     @Environment(\.dismiss) var dismiss
@@ -18,8 +16,13 @@ struct CreateAccountView: View {
     
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var confirmPassword: String = ""
     
-    @State var currentNonce: String?
+    @State private var passwordError: String? = nil
+    
+    @State private var showToast: Bool = false
+    
+    let showLoginCallback: () -> Void
     
     var body: some View {
         ScrollView {
@@ -50,11 +53,33 @@ struct CreateAccountView: View {
                         .background(Color.white.opacity(0.2))
                         .cornerRadius(10)
                         .foregroundColor(.white)
+                    
+                    SecureField("Confirm Password", text: $confirmPassword)
+                        .padding()
+                        .background(Color.white.opacity(0.2))
+                        .cornerRadius(10)
+                        .foregroundColor(.white)
+
+                    if let error = passwordError {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .font(.caption)
+                            .padding(.top, -10)
+                    } else {
+                        Color.clear.frame(height: 0)
+                    }
                 }
                 .padding(.horizontal, 40)
                 
                 // MARK: Sign up button
                 Button(action: {
+                    passwordError = nil  // clear old errors
+
+                    guard password == confirmPassword else {
+                        passwordError = "Passwords do not match."
+                        return
+                    }
+                    
                     authManager.signUp(email: email, password: password)
                 }) {
                     HStack {
@@ -63,16 +88,16 @@ struct CreateAccountView: View {
                                 .frame(width: 17, height: 17)
                         } else {
                             Text("Create Account")
-                                .foregroundColor(email.isEmpty || password.isEmpty ? Color.gray.opacity(0.3) : Color.white.opacity(0.8))
+                                .foregroundColor(email.isEmpty || password.isEmpty || confirmPassword.isEmpty ? Color.gray.opacity(0.3) : Color.white.opacity(0.8))
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(email.isEmpty || password.isEmpty ? Color.green.opacity(0.3) : Color.green.opacity(0.8))
+                    .background(email.isEmpty || password.isEmpty || confirmPassword.isEmpty ? Color.green.opacity(0.3) : Color.green.opacity(0.8))
                     .cornerRadius(10)
                 }
                 .padding(.horizontal, 40)
-                .disabled(authManager.isLoading || email.isEmpty || password.isEmpty)
+                .disabled(authManager.isLoading || email.isEmpty || password.isEmpty || confirmPassword.isEmpty)
                 
                 // Divider
                 HStack {
@@ -89,59 +114,22 @@ struct CreateAccountView: View {
                 
                 // Third-party sign in buttons
                 SignInWithAppleButton(
-                    onRequest: { request in
-                        // configure request here
-                        let nonce = randomNonceString()
-                        currentNonce = nonce
-                        request.requestedScopes = [.email, .fullName]
-                        request.nonce = sha256(nonce)
-                    },
-                    onCompletion: { result in
-                        switch result {
-                        case .success(let authResults):
-                            switch authResults.credential {
-                            case let appleIDCredential as ASAuthorizationAppleIDCredential:
-                                
-                                guard let nonce = currentNonce else {
-                                    fatalError("Invalid state: A login callback was received, but no login request was sent.")
-                                }
-                                guard let appleIDToken = appleIDCredential.identityToken else {
-                                    fatalError("Invalid state: A login callback was received, but no login request was sent.")
-                                }
-                                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-                                    print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
-                                    return
-                                }
-                                
-                                let credential = OAuthProvider.appleCredential(withIDToken: idTokenString, rawNonce: nonce, fullName: appleIDCredential.fullName)
-                                Auth.auth().signIn(with: credential) { (authResult, error) in
-                                    if (error != nil) {
-                                        // Error. If error.code == .MissingOrInvalidNonce, make sure
-                                        // you're sending the SHA256-hashed nonce as a hex string with
-                                        // your request to Apple.
-                                        print(error?.localizedDescription as Any)
-                                        return
-                                    }
-                                    print("signed in")
-                                    authManager.isAuthenticated = true
-                                }
-                                
-                                print("\(String(describing: Auth.auth().currentUser?.uid))")
-                            default:
-                                break
-                                
-                            }
-                        default:
-                            break
-                        }
-                    }
+                    onRequest: authManager.prepareAppleRequest,
+                    onCompletion: authManager.handleAppleCompletion
                 )
                 .signInWithAppleButtonStyle(.white)
                 .frame(height: 52)
                 .cornerRadius(12)
                 .padding(.horizontal, 40)
-                
-                
+                Button(action: {
+                    dismiss()
+                    showLoginCallback()
+                }) {
+                    Text("Already have an account? Log In")
+                        .foregroundColor(.white.opacity(0.8))
+                        .underline()
+                }
+                Spacer()
                 
                 Button(action: {
                     dismiss()
@@ -151,51 +139,42 @@ struct CreateAccountView: View {
                         .underline()
                 }
             }
+            .onReceive(authManager.$errorMessage) { msg in
+                if msg != nil { showToast = true }
+            }
+            .toast(
+                isPresenting: $showToast,
+                duration: 10,
+                tapToDismiss: true,
+                alert: {
+                    AlertToast(
+                        displayMode: .hud,
+                        type: .error(.red),
+                        title: authManager.errorMessage,
+                        subTitle: nil
+                    )
+                },
+                completion: {
+                    DispatchQueue.main.async {
+                        showToast = false
+                        authManager.errorMessage = nil
+                    }
+                }
+            )
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .preferredColorScheme(.dark)
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .onChange(of: authManager.isAuthenticated) { isAuthenticated in
+            .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
                 if isAuthenticated {
                     dismiss()
                 }
             }
         }
     }
-    private func randomNonceString(length: Int = 32) -> String {
-      precondition(length > 0)
-      var randomBytes = [UInt8](repeating: 0, count: length)
-      let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-      if errorCode != errSecSuccess {
-        fatalError(
-          "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
-        )
-      }
-
-      let charset: [Character] =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-
-      let nonce = randomBytes.map { byte in
-        // Pick a random character from the set, wrapping around if needed.
-        charset[Int(byte) % charset.count]
-      }
-
-      return String(nonce)
-    }
-
-    @available(iOS 13, *)
-    private func sha256(_ input: String) -> String {
-      let inputData = Data(input.utf8)
-      let hashedData = SHA256.hash(data: inputData)
-      let hashString = hashedData.compactMap {
-        String(format: "%02x", $0)
-      }.joined()
-
-      return hashString
-    }
 }
 
 #Preview {
     @Previewable @StateObject var authManager = AuthManager()
-    return CreateAccountView()
+    return CreateAccountView(showLoginCallback: {})
         .environmentObject(authManager)
 }

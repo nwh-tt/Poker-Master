@@ -11,6 +11,8 @@ class AuthManager: ObservableObject {
     // States to handle the UI
     @Published var errorMessage: String? = nil
     @Published var isLoading: Bool = false
+    
+    private var currentNonce: String?
 
     init() {
             // Listen for changes in the authentication state
@@ -30,6 +32,10 @@ class AuthManager: ObservableObject {
                         }
                     }
                 } else {
+                    // User is signed out set isAuthenticated to false
+                    self?.isAuthenticated = false
+                    slelf?.user = nil
+                    
                     // If user signs out, log out of RevenueCat too
                     Purchases.shared.logOut { customerInfo, error in
                         if let error = error {
@@ -72,7 +78,8 @@ class AuthManager: ObservableObject {
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
             if let error = error {
                 // Handle sign-in failure (e.g., incorrect password, no user)
-                self?.errorMessage = error.localizedDescription
+                print("Firebase sign-in error: \(error.localizedDescription)")
+                self?.errorMessage = "Username or password incorrect"
                 self?.isAuthenticated = false
             } else {
                 // Sign-in successful
@@ -96,7 +103,7 @@ class AuthManager: ObservableObject {
                 self?.isLoading = false
                 if let error = error {
                     // Sign-up failed
-                    self?.errorMessage = error.localizedDescription
+                    self?.errorMessage = "Sign-up failed"
                     self?.isAuthenticated = false
                 } else {
                     // Sign-up succeeded, user is automatically logged in
@@ -118,20 +125,94 @@ class AuthManager: ObservableObject {
         }
     }
     
-    // MARK: Apple Sign in functions
-    func signInWithApple(credential: AuthCredential) {
-        Auth.auth().signIn(with: credential) { (authResult, error) in
-            if (error != nil) {
-                // Error. If error.code == .MissingOrInvalidNonce, make sure
-                // you're sending the SHA256-hashed nonce as a hex string with
-                // your request to Apple.
-                print(error?.localizedDescription as Any)
+    func prepareAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
+        let nonce = appleSignInRandomNonceString()
+        currentNonce = nonce
+        
+        request.requestedScopes = [.email, .fullName]
+        request.nonce = sha256(nonce)
+    }
+    
+    func handleAppleCompletion(_ result: Result<ASAuthorization, Error>) {
+        switch result {
+        case .success(let authResults):
+            guard let appleIDCredential = authResults.credential as? ASAuthorizationAppleIDCredential else {
+                errorMessage = "Unable to read token"
                 return
             }
-            print("signed in")
-            self.isAuthenticated = true
+            signInWithAppleCredential(appleIDCredential)
+            
+        case .failure(let error):
+            errorMessage = "Apple Sign-in failed"
+            print("Apple Sign-in failed: \(error.localizedDescription)")
         }
     }
+
+    // MARK: - Step 3: Convert to Firebase Credential & Sign In
+
+    private func signInWithAppleCredential(_ appleIDCredential: ASAuthorizationAppleIDCredential) {
+        guard let nonce = currentNonce else {
+            errorMessage = "Please try again"
+            return
+        }
+        
+        guard let appleIDToken = appleIDCredential.identityToken,
+              let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+            errorMessage = "Please try again"
+            print("Failed to get token from AppleIDCredential")
+            return
+        }
+        
+        let credential = OAuthProvider.appleCredential(
+            withIDToken: idTokenString,
+            rawNonce: nonce,
+            fullName: appleIDCredential.fullName
+        )
+        
+        Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
+            if let error = error {
+                print("Firebase sign-in error: \(error.localizedDescription)")
+                self?.errorMessage = "Firebase sign-in error"
+                return
+            }
+            self?.isAuthenticated = true
+        }
+    }
+    
+    // MARK: Apple Sign in functions
+    private func appleSignInRandomNonceString(length: Int = 32) -> String {
+      precondition(length > 0)
+      var randomBytes = [UInt8](repeating: 0, count: length)
+      let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
+      if errorCode != errSecSuccess {
+        fatalError(
+          "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
+        )
+      }
+
+      let charset: [Character] =
+        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+
+      let nonce = randomBytes.map { byte in
+        // Pick a random character from the set, wrapping around if needed.
+        charset[Int(byte) % charset.count]
+      }
+
+      return String(nonce)
+    }
+
+    @available(iOS 13, *)
+    private func sha256(_ input: String) -> String {
+      let inputData = Data(input.utf8)
+      let hashedData = SHA256.hash(data: inputData)
+      let hashString = hashedData.compactMap {
+        String(format: "%02x", $0)
+      }.joined()
+
+      return hashString
+    }
+    
+    
 }
 
 // Custom error to make token retrieval errors clear

@@ -281,6 +281,19 @@ struct EquityTable: View {
             }
             
         }
+        .edgesIgnoringSafeArea(.all)
+        .onAppear() {
+            let newGame = Game(gameType: .equityDrill)
+            game = newGame
+            context.insert(newGame)
+        }.toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Text("\(equityDrillManager.score) / \(equityDrillManager.roundsPlayed)")
+                    .font(.system(size: 16, weight: .semibold))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+            }
+        }
         .toast(
             isPresenting: $equityDrillManager.showToast,
             duration: 10,
@@ -299,19 +312,6 @@ struct EquityTable: View {
                 }
             }
         )
-        .edgesIgnoringSafeArea(.all)
-        .onAppear() {
-            let newGame = Game(gameType: .equityDrill)
-            game = newGame
-            context.insert(newGame)
-        }.toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Text("\(equityDrillManager.score) / \(equityDrillManager.roundsPlayed)")
-                    .font(.system(size: 16, weight: .semibold))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-            }
-        }
         .preferredColorScheme(.dark)
     }
     
