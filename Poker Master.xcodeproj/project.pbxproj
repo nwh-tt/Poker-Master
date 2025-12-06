@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -46,7 +46,6 @@
 		B67C5E572E283F600017ECBF /* Exo2-Italic-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E552E283F600017ECBF /* Exo2-Italic-VariableFont_wght.ttf */; };
 		B67C5E582E283F600017ECBF /* Exo2-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E562E283F600017ECBF /* Exo2-VariableFont_wght.ttf */; };
 		B67C5E5B2E28423F0017ECBF /* Audiowide-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E5A2E28423F0017ECBF /* Audiowide-Regular.ttf */; };
-		B67C5E602E43D9A20017ECBF /* PokerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */; };
 		B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */; };
 		B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */; };
 		B67C5E672E591EF20017ECBF /* ChallengeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E662E591EF20017ECBF /* ChallengeCard.swift */; };
@@ -146,7 +145,6 @@
 		B67C5E562E283F600017ECBF /* Exo2-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Exo2-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		B67C5E592E283FED0017ECBF /* Poker-Master-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Poker-Master-Info.plist"; sourceTree = SOURCE_ROOT; };
 		B67C5E5A2E28423F0017ECBF /* Audiowide-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Audiowide-Regular.ttf"; sourceTree = "<group>"; };
-		B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerAPI.swift; sourceTree = "<group>"; };
 		B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPreflopManager.swift; sourceTree = "<group>"; };
 		B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedDecisionMaker.swift; sourceTree = "<group>"; };
 		B67C5E662E591EF20017ECBF /* ChallengeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCard.swift; sourceTree = "<group>"; };
@@ -168,7 +166,6 @@
 		B697E78D2BC849E800191C7A /* Poker MasterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Poker MasterUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B697E7912BC849E800191C7A /* Poker_MasterUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Poker_MasterUITests.swift; sourceTree = "<group>"; };
 		B697E7932BC849E800191C7A /* Poker_MasterUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Poker_MasterUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		B6ADA4232C0135B700358F34 /* BTN_strategy_chart.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BTN_strategy_chart.json; sourceTree = "<group>"; };
 		B6ADA4242C06490E00358F34 /* DecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionMaker.swift; sourceTree = "<group>"; };
 		B6BB62542E97340A00F1E565 /* AITable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AITable.swift; sourceTree = "<group>"; };
 		B6BB62562E998F8E00F1E565 /* AIGameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIGameManager.swift; sourceTree = "<group>"; };
@@ -196,6 +193,10 @@
 		B6EC8ADE2E739BC300C1AC9B /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		B6EC8AE02E78A71600C1AC9B /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B6DCA8A32EE33FDA006E7F74 /* APIs */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = APIs; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		B697E76E2BC849E700191C7A /* Frameworks */ = {
@@ -289,12 +290,12 @@
 		B649ED4B2BD1B2CE00157267 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B6DCA8A32EE33FDA006E7F74 /* APIs */,
 				B63574402EB4434400F1212D /* SubscriptionManager.swift */,
 				B690E2372E80D27C007C601E /* RangeHelper.swift */,
 				B67C5E722E5A09180017ECBF /* Data */,
 				B67C5E632E50D8F10017ECBF /* DecisionMakers */,
 				B6D403722D9D74F1008A83E8 /* Games */,
-				B67C5E5F2E43D9A20017ECBF /* PokerAPI.swift */,
 				B6EC8AE02E78A71600C1AC9B /* Auth.swift */,
 			);
 			path = Services;
@@ -486,7 +487,6 @@
 				B67C5E592E283FED0017ECBF /* Poker-Master-Info.plist */,
 				B67C5E542E283F220017ECBF /* Fonts */,
 				B6870FFD2D6E061D00A1EAB1 /* Utils */,
-				B6ADA4222C01351500358F34 /* Resources */,
 				B649ED582BD7108B00157267 /* Images */,
 				B649ED4B2BD1B2CE00157267 /* Services */,
 				B649ED482BD1B09300157267 /* Models */,
@@ -526,14 +526,6 @@
 				B697E7932BC849E800191C7A /* Poker_MasterUITestsLaunchTests.swift */,
 			);
 			path = "Poker MasterUITests";
-			sourceTree = "<group>";
-		};
-		B6ADA4222C01351500358F34 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				B6ADA4232C0135B700358F34 /* BTN_strategy_chart.json */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		B6BB62532E9733E700F1E565 /* AIGames */ = {
@@ -599,6 +591,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B6DCA8A32EE33FDA006E7F74 /* APIs */,
 			);
 			name = "Poker Master";
 			packageProductDependencies = (
@@ -783,7 +778,6 @@
 				B649ED572BD70D6B00157267 /* CardBackView.swift in Sources */,
 				B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */,
 				B656DC7E2EC6D09600488B57 /* EquityLog.swift in Sources */,
-				B67C5E602E43D9A20017ECBF /* PokerAPI.swift in Sources */,
 				B67C5E4D2E28065B0017ECBF /* ProfileView.swift in Sources */,
 				B63574372EB1402300F1212D /* AIBoardView.swift in Sources */,
 				B697E7792BC849E700191C7A /* Item.swift in Sources */,

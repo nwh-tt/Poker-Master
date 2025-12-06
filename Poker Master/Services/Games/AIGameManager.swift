@@ -6,6 +6,8 @@ import SwiftData
 class AIGameManager {
     // Data saving info
     var context: ModelContext?
+    var vsAiAPI: VsAIAPI?
+    
     var profile: Profile? = nil
     var gameLog: Game?
     var aiGameLog: AIGameLog?
@@ -54,7 +56,7 @@ class AIGameManager {
     
     func populateAINames() async {
         isLoading = true
-        let aiNames = await fetchAIPlayers()
+        let aiNames = await getAIPlayerNames()
         aiPlayers = createRandomPlayers(aiNames: aiNames)
         isLoading = false
         waitingForStartButton = true
@@ -254,7 +256,7 @@ class AIGameManager {
                     // Simulate thinking delay
                     try? await Task.sleep(nanoseconds: sleepTime)
                 }
-                (action, amount) = makeAIDecision(ai: currentPlayer)
+                (action, amount) = await makeAIDecision(ai: currentPlayer)
             }
             
 
@@ -365,12 +367,9 @@ class AIGameManager {
     }
     
     // TODO: Implement real ai logic with backend
-    func makeAIDecision(ai: AIPlayer) -> (String, Double) {
-        var actions = ["call", "raise", "fold"]
-        if lastPlayerBet == 0 {
-            actions = ["check", "raise"]
-        }
-        let action = actions.randomElement()!
+    @MainActor
+    func makeAIDecision(ai: AIPlayer) async -> (String, Double) {
+        let action = await getAIMove(ai: ai)
         var amount = 0.0
         
         if action == "raise" {
@@ -453,6 +452,9 @@ class AIGameManager {
         print("Profile set to: \(profile.username)")
     }
     
+    func setAPIManager(authManager: AuthManager) {
+        self.vsAiAPI = VsAIAPI(authManager: authManager)
+    }
     
     
     // MARK: UI functions determine what buttons to display to the user
@@ -537,37 +539,16 @@ class AIGameManager {
         return playersReordered
     }
     
-    
-    struct FetchPlayerResponse: Codable {
-        let name: String
-        let full_name: String
-    }
-    
     // TODO: Move all these to a different file
-    func fetchAIPlayers() async -> [FetchPlayerResponse] {
-        let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
-        // let apiPrefix = "http://127.0.0.1:8000"
-        isLoading = true
-        errorMessage = nil
-
-        guard let url = URL(string: "\(apiPrefix)/api/ai/players?table_size=\(tableSize)") else {
-            errorMessage = "Invalid URL"
+    func getAIPlayerNames() async -> [FetchPlayerResponse] {
+        guard let api = vsAiAPI else {
+            errorMessage = "Internal Error"
             showToast = true
             return []
         }
 
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                errorMessage = "Server error"
-                showToast = true
-                return []
-            }
-
-            let decoded = try JSONDecoder().decode([FetchPlayerResponse].self, from: data)
-            return decoded
-
+            return try await api.fetchAIPlayers(tableSize: tableSize)
         } catch {
             errorMessage = "Failed to fetch AI players"
             showToast = true
@@ -575,69 +556,50 @@ class AIGameManager {
         }
     }
     
-    struct WinnerRequestPlayerDetails: Codable {
-        let name: String
-        let hand: [String]
-    }
-
-    struct DetermineWinnerRequest: Codable {
-        let players: [WinnerRequestPlayerDetails]
-        let board: [String]
-    }
-
-    struct DetermineWinnerResponse: Codable {
-        struct Result: Codable {
-            let name: String
-            let hand: [String]
-            let score: Int
-            let hand_name: String
+    func getAIMove(ai: AIPlayer) async -> String {
+        guard let api = vsAiAPI else {
+            errorMessage = "Internal Error"
+            showToast = true
+            return "fold"
         }
-
-        let winners: [String]
-        let results: [Result]
+        
+        let potOdds: Double
+        if pot == 0 {
+            potOdds = 0
+        } else {
+            potOdds = ai.lastBet(game: game, round: round) / pot
+        }
+        
+        var possibleMoves = ["call", "raise", "fold"]
+        if lastPlayerBet == 0 {
+            possibleMoves = ["check", "raise"]
+        }
+        
+        do {
+            return try await api.fetchAiDecision(aiName: ai.name, aiHole: ai.hand.map { $0.toString() }, board: board.map { $0.toString() }, potOdds: potOdds, opponentCount: remainingPlayers(), possibleMoves: possibleMoves)
+            
+        } catch {
+            errorMessage = "Failed to get AI move"
+            showToast = true
+            return "fold"
+        }
     }
     
     func determineWinners() async -> [String] {
-        let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
-        // let apiPrefix = "http://127.0.0.1:8000"
-        guard let url = URL(string: "\(apiPrefix)/api/ai/determine-winner") else {
-            errorMessage = "Invalid URL"
+        let playersLeft = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
+        
+        guard let api = vsAiAPI else {
+            errorMessage = "Internal Error"
             showToast = true
             return []
         }
         
-        let playersLeft = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
-        let players = playersLeft.map { player in
-            WinnerRequestPlayerDetails(name: player.name, hand: player.hand.map { $0.toString() })
-        }
-        let requestBody = DetermineWinnerRequest(players: players, board: board.map { $0.toString() })
-
         do {
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try JSONEncoder().encode(requestBody)
-            
-            let (data, response) = try await URLSession.shared.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                errorMessage = "Server error"
-                showToast = true
-                return []
-            }
-            
-            let decoded = try JSONDecoder().decode(DetermineWinnerResponse.self, from: data)
-            
-            // Example usage:
-            for result in decoded.results {
-                print("\(result.name): \(result.hand_name) (\(result.score))")
-            }
-            
-            // Optionally update your AI player list if desired
-            return decoded.winners
-            
+            let response = try await api.processWinners(playersLeft: playersLeft, board: board)
+            return response.winners
         } catch {
-            errorMessage = "Failed to determine winners: \(error.localizedDescription)"
+            print(error)
+            errorMessage = "Failed to determine winners"
             showToast = true
             return []
         }

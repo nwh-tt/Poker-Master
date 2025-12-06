@@ -19,8 +19,7 @@ struct EquityResponse: Codable {
 
 class EquityAPI {
     let authManager: AuthManager
-    let apiPrefix = "https://pokerapi-887971801517.us-east4.run.app"
-    // let apiPrefix = "http://127.0.0.1:8000"
+    let apiPrefix = APIConfig.baseURL
     
     init(authManager: AuthManager) {
         self.authManager = authManager
@@ -34,7 +33,7 @@ class EquityAPI {
         let authToken = try await authManager.getIDToken(forceRefresh: false) // Use try await
 
         // Build the request after we have a valid token
-        guard let url = URL(string: "\(apiPrefix)/api/equity/from-range") else {
+        guard let url = URL(string: "\(apiPrefix)/equity/from-range") else {
             // Use throws instead of calling completion(nil)
             throw URLError(.badURL)
         }
@@ -80,7 +79,7 @@ class EquityAPI {
         let authToken = try await authManager.getIDToken(forceRefresh: false) // Use try await
 
         // Build the request after we have a valid token
-        guard let url = URL(string: "\(apiPrefix)/api/equity/from-hand") else {
+        guard let url = URL(string: "\(apiPrefix)/equity/from-hand") else {
             // Use throws instead of calling completion(nil)
             throw URLError(.badURL)
         }

@@ -92,7 +92,7 @@ struct LoginView: View {
                     dismiss()
                     showCreateAccountCallback()
                 }) {
-                    Text("Don't have an account? Create One here")
+                    Text("Don't have an account? Click here")
                         .foregroundColor(.white.opacity(0.8))
                         .underline()
                 }

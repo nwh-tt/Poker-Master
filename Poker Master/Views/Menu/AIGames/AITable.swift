@@ -15,6 +15,7 @@ struct AITable: View {
     @State private var raiseMenuVisible = false
     @Environment(\.modelContext) private var context
     @EnvironmentObject var userProfile: UserProfileState
+    @EnvironmentObject var authManager: AuthManager
     
     // Used for player info view
     @State private var selectedPlayer: AIPlayer? = nil
@@ -259,6 +260,7 @@ struct AITable: View {
         .onAppear {
             aiManager.setContext(context)
             aiManager.setProfile(profile: userProfile.profile)
+            aiManager.setAPIManager(authManager: authManager)
         }
         .toast(
             isPresenting: $aiManager.showToast,
