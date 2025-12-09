@@ -15,7 +15,7 @@ struct PreflopStatsView: View {
     @State private var showPremiumPopup = false
     @State private var isSubscribed = true
     
-    @Query var preflopLogs: [HandLog]
+    @Query var preflopLogs: [PreflopLog]
     @Query(filter: #Predicate<Game> { game in
         game.preflopHands.count > 0
     })
@@ -54,7 +54,7 @@ struct PreflopStatsView: View {
         totalHandsLost = totalHandsPlayed - correct
         
         // Helper to generate WinLossByCategory
-        func aggregateBy<T: RawRepresentable & CaseIterable & Hashable>(_ allCases: [T], groupBy: (HandLog) -> T) -> [WinLossByCategory] where T.RawValue == String {
+        func aggregateBy<T: RawRepresentable & CaseIterable & Hashable>(_ allCases: [T], groupBy: (PreflopLog) -> T) -> [WinLossByCategory] where T.RawValue == String {
             let grouped = Dictionary(grouping: preflopLogs, by: groupBy)
             var results = grouped.map { (category, logs) in
                 let total = logs.count
@@ -123,7 +123,7 @@ struct PreflopStatsView: View {
 #Preview {
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             EquityLog.self,
             AIGameLog.self,
             Challenges.self,
@@ -147,7 +147,7 @@ struct PreflopStatsView: View {
         var betAmount = Double.random(in: 0...70)
         var pot = Double.random(in: 0...200)
         
-        let handLog = HandLog(position: hand, hand: "", pair: false, action: action, raiseType: raiseType, betAmount: betAmount, pot: pot, xpEarned: 0, isCorrect: Bool.random(), game: game)
+        let handLog = PreflopLog(position: hand, hand: "", pair: false, action: action, raiseType: raiseType, betAmount: betAmount, pot: pot, xpEarned: 0, isCorrect: Bool.random(), game: game)
         game.preflopHands.append(handLog)
         context.insert(handLog)
     }

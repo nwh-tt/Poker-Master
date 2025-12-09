@@ -24,7 +24,6 @@
 		B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C42E7DA494005F78BA /* CreateAccountView.swift */; };
 		B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645C6C62E7DA49D005F78BA /* LoginView.swift */; };
 		B649ED4A2BD1B0C900157267 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED492BD1B0C900157267 /* Player.swift */; };
-		B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED4C2BD1B2E100157267 /* GameManager.swift */; };
 		B649ED512BD6DA6500157267 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED502BD6DA6500157267 /* Card.swift */; };
 		B649ED532BD6E78200157267 /* Deck.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED522BD6E78200157267 /* Deck.swift */; };
 		B649ED552BD6FE5000157267 /* DeckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B649ED542BD6FE5000157267 /* DeckTests.swift */; };
@@ -46,10 +45,8 @@
 		B67C5E572E283F600017ECBF /* Exo2-Italic-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E552E283F600017ECBF /* Exo2-Italic-VariableFont_wght.ttf */; };
 		B67C5E582E283F600017ECBF /* Exo2-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E562E283F600017ECBF /* Exo2-VariableFont_wght.ttf */; };
 		B67C5E5B2E28423F0017ECBF /* Audiowide-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C5E5A2E28423F0017ECBF /* Audiowide-Regular.ttf */; };
-		B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */; };
-		B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */; };
 		B67C5E672E591EF20017ECBF /* ChallengeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E662E591EF20017ECBF /* ChallengeCard.swift */; };
-		B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E6D2E59F3B40017ECBF /* Models.swift */; };
+		B67C5E6E2E59F3B40017ECBF /* SharedEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E6D2E59F3B40017ECBF /* SharedEnums.swift */; };
 		B67C5E742E5A092C0017ECBF /* ChallengeDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */; };
 		B690E2322E80B564007C601E /* RangeViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E2312E80B564007C601E /* RangeViewer.swift */; };
 		B690E2342E80CDBB007C601E /* RangeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B690E2332E80CD9E007C601E /* RangeEditorView.swift */; };
@@ -77,6 +74,10 @@
 		B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */; };
 		B6D403762DA07098008A83E8 /* Ranges.json in Resources */ = {isa = PBXBuildFile; fileRef = B6D403752DA07098008A83E8 /* Ranges.json */; };
 		B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D403772DA07150008A83E8 /* RangesFileManager.swift */; };
+		B6DCA8AB2EE7CC3C006E7F74 /* PreflopLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8AA2EE7CC37006E7F74 /* PreflopLog.swift */; };
+		B6DCA8AD2EE7CC64006E7F74 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8AC2EE7CC5F006E7F74 /* Game.swift */; };
+		B6DCA8AF2EE7CC84006E7F74 /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8AE2EE7CC7D006E7F74 /* Challenge.swift */; };
+		B6DCA8B12EE7CCBE006E7F74 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8B02EE7CCBB006E7F74 /* Profile.swift */; };
 		B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA42ECD29B60015F53D /* AIStatsView.swift */; };
 		B6E29FA72ECD427C0015F53D /* GenericStatViewComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */; };
 		B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */; };
@@ -123,7 +124,6 @@
 		B645C6C42E7DA494005F78BA /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
 		B645C6C62E7DA49D005F78BA /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		B649ED492BD1B0C900157267 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		B649ED4C2BD1B2E100157267 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		B649ED502BD6DA6500157267 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		B649ED522BD6E78200157267 /* Deck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deck.swift; sourceTree = "<group>"; };
 		B649ED542BD6FE5000157267 /* DeckTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckTests.swift; sourceTree = "<group>"; };
@@ -145,10 +145,8 @@
 		B67C5E562E283F600017ECBF /* Exo2-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Exo2-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		B67C5E592E283FED0017ECBF /* Poker-Master-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Poker-Master-Info.plist"; sourceTree = SOURCE_ROOT; };
 		B67C5E5A2E28423F0017ECBF /* Audiowide-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Audiowide-Regular.ttf"; sourceTree = "<group>"; };
-		B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPreflopManager.swift; sourceTree = "<group>"; };
-		B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedDecisionMaker.swift; sourceTree = "<group>"; };
 		B67C5E662E591EF20017ECBF /* ChallengeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCard.swift; sourceTree = "<group>"; };
-		B67C5E6D2E59F3B40017ECBF /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		B67C5E6D2E59F3B40017ECBF /* SharedEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedEnums.swift; sourceTree = "<group>"; };
 		B67C5E732E5A092C0017ECBF /* ChallengeDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeDataManager.swift; sourceTree = "<group>"; };
 		B690E2312E80B564007C601E /* RangeViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeViewer.swift; sourceTree = "<group>"; };
 		B690E2332E80CD9E007C601E /* RangeEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeEditorView.swift; sourceTree = "<group>"; };
@@ -178,6 +176,10 @@
 		B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplePreFlopManager.swift; sourceTree = "<group>"; };
 		B6D403752DA07098008A83E8 /* Ranges.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Ranges.json; sourceTree = "<group>"; };
 		B6D403772DA07150008A83E8 /* RangesFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangesFileManager.swift; sourceTree = "<group>"; };
+		B6DCA8AA2EE7CC37006E7F74 /* PreflopLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopLog.swift; sourceTree = "<group>"; };
+		B6DCA8AC2EE7CC5F006E7F74 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		B6DCA8AE2EE7CC7D006E7F74 /* Challenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
+		B6DCA8B02EE7CCBB006E7F74 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		B6E29FA42ECD29B60015F53D /* AIStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStatsView.swift; sourceTree = "<group>"; };
 		B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericStatViewComponents.swift; sourceTree = "<group>"; };
 		B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -301,13 +303,6 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		B649ED582BD7108B00157267 /* Images */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Images;
-			sourceTree = "<group>";
-		};
 		B67C5E3F2E2088A70017ECBF /* Menu */ = {
 			isa = PBXGroup;
 			children = (
@@ -377,7 +372,6 @@
 			isa = PBXGroup;
 			children = (
 				B6ADA4242C06490E00358F34 /* DecisionMaker.swift */,
-				B67C5E642E50D9360017ECBF /* AdvancedDecisionMaker.swift */,
 			);
 			path = DecisionMakers;
 			sourceTree = "<group>";
@@ -385,9 +379,13 @@
 		B67C5E6C2E59F1F60017ECBF /* DataModels */ = {
 			isa = PBXGroup;
 			children = (
+				B6DCA8B02EE7CCBB006E7F74 /* Profile.swift */,
+				B6DCA8AE2EE7CC7D006E7F74 /* Challenge.swift */,
+				B6DCA8AC2EE7CC5F006E7F74 /* Game.swift */,
+				B6DCA8AA2EE7CC37006E7F74 /* PreflopLog.swift */,
 				B656DC7D2EC6D08F00488B57 /* EquityLog.swift */,
 				B656DC7B2EC6D05D00488B57 /* AIGameLog.swift */,
-				B67C5E6D2E59F3B40017ECBF /* Models.swift */,
+				B67C5E6D2E59F3B40017ECBF /* SharedEnums.swift */,
 			);
 			path = DataModels;
 			sourceTree = "<group>";
@@ -487,7 +485,6 @@
 				B67C5E592E283FED0017ECBF /* Poker-Master-Info.plist */,
 				B67C5E542E283F220017ECBF /* Fonts */,
 				B6870FFD2D6E061D00A1EAB1 /* Utils */,
-				B649ED582BD7108B00157267 /* Images */,
 				B649ED4B2BD1B2CE00157267 /* Services */,
 				B649ED482BD1B09300157267 /* Models */,
 				B6870FFB2D6E05F400A1EAB1 /* Views */,
@@ -544,9 +541,7 @@
 			isa = PBXGroup;
 			children = (
 				B6BB62562E998F8E00F1E565 /* AIGameManager.swift */,
-				B649ED4C2BD1B2E100157267 /* GameManager.swift */,
 				B6D403732D9D751F008A83E8 /* SimplePreFlopManager.swift */,
-				B67C5E612E4C04F90017ECBF /* AdvancedPreflopManager.swift */,
 				B6EC8AD32E70AF6200C1AC9B /* EquityDrillManager.swift */,
 			);
 			path = Games;
@@ -739,7 +734,6 @@
 				B672D7DD2BC87E6300E7F5F6 /* PokerTableView.swift in Sources */,
 				B6D403742D9D751F008A83E8 /* SimplePreFlopManager.swift in Sources */,
 				B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */,
-				B67C5E622E4C04F90017ECBF /* AdvancedPreflopManager.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
 				B6EC8AD82E735C4F00C1AC9B /* EquitySettingsView.swift in Sources */,
 				B6BB625B2E9AD06F00F1E565 /* AIPlayerLayoutView.swift in Sources */,
@@ -748,7 +742,8 @@
 				B67C5E512E2806F30017ECBF /* HomeView.swift in Sources */,
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
 				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
-				B67C5E6E2E59F3B40017ECBF /* Models.swift in Sources */,
+				B67C5E6E2E59F3B40017ECBF /* SharedEnums.swift in Sources */,
+				B6DCA8AB2EE7CC3C006E7F74 /* PreflopLog.swift in Sources */,
 				B694411D2ECD11A0005C5957 /* PreflopStatsView.swift in Sources */,
 				B67C5E4F2E2806DD0017ECBF /* StatsView.swift in Sources */,
 				B67C5E472E2802D70017ECBF /* MainView.swift in Sources */,
@@ -765,8 +760,6 @@
 				B6E29FA72ECD427C0015F53D /* GenericStatViewComponents.swift in Sources */,
 				B649ED532BD6E78200157267 /* Deck.swift in Sources */,
 				B645C6C52E7DA494005F78BA /* CreateAccountView.swift in Sources */,
-				B67C5E652E50D9360017ECBF /* AdvancedDecisionMaker.swift in Sources */,
-				B649ED4D2BD1B2E100157267 /* GameManager.swift in Sources */,
 				B6BB62552E97340A00F1E565 /* AITable.swift in Sources */,
 				B6ADA4252C06490E00358F34 /* DecisionMaker.swift in Sources */,
 				B656DC742EC5209300488B57 /* Utils.swift in Sources */,
@@ -777,6 +770,7 @@
 				B690E2342E80CDBB007C601E /* RangeEditorView.swift in Sources */,
 				B649ED572BD70D6B00157267 /* CardBackView.swift in Sources */,
 				B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */,
+				B6DCA8AF2EE7CC84006E7F74 /* Challenge.swift in Sources */,
 				B656DC7E2EC6D09600488B57 /* EquityLog.swift in Sources */,
 				B67C5E4D2E28065B0017ECBF /* ProfileView.swift in Sources */,
 				B63574372EB1402300F1212D /* AIBoardView.swift in Sources */,
@@ -786,10 +780,12 @@
 				B67C5E452E208AD70017ECBF /* MenuOption.swift in Sources */,
 				B649ED4A2BD1B0C900157267 /* Player.swift in Sources */,
 				B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */,
+				B6DCA8B12EE7CCBE006E7F74 /* Profile.swift in Sources */,
 				B6EC8AD42E70AF6200C1AC9B /* EquityDrillManager.swift in Sources */,
 				B690E2322E80B564007C601E /* RangeViewer.swift in Sources */,
 				B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */,
 				B6EC8ADD2E7392D500C1AC9B /* CardBackViewScaled.swift in Sources */,
+				B6DCA8AD2EE7CC64006E7F74 /* Game.swift in Sources */,
 				B6BB625D2E9AD0B700F1E565 /* AIPlayerPositionView.swift in Sources */,
 				B6BB62572E998F9400F1E565 /* AIGameManager.swift in Sources */,
 				B6D403782DA07150008A83E8 /* RangesFileManager.swift in Sources */,

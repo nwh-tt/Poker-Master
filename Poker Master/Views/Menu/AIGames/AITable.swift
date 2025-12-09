@@ -296,7 +296,7 @@ struct AITable: View {
 #Preview {
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             EquityLog.self,
             Challenges.self,
             Item.self,

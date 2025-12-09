@@ -177,7 +177,7 @@ struct ThreeStatBlock: View {
 #Preview {
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             EquityLog.self,
             AIGameLog.self,
             Challenges.self,

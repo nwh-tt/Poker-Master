@@ -16,7 +16,7 @@ struct StatsView: View {
     
     @EnvironmentObject var userProfileState: UserProfileState
     
-    @Query var handLogs: [HandLog]
+    @Query var handLogs: [PreflopLog]
     @Query var games: [Game]
     
     @State private var hoursPlayed: String = "0h"
@@ -204,7 +204,7 @@ struct WinPercentageStatView: View {
 #Preview {
     let schema = Schema([
         Game.self,
-        HandLog.self,
+        PreflopLog.self,
         EquityLog.self,
         AIGameLog.self,
         Challenges.self,
@@ -231,7 +231,7 @@ struct WinPercentageStatView: View {
         var betAmount = Double.random(in: 0...70)
         var pot = Double.random(in: 0...200)
         
-        let handLog = HandLog(position: hand, hand: "", pair: false, action: action, raiseType: raiseType, betAmount: betAmount, pot: pot, xpEarned: 0, isCorrect: Bool.random(), game: game)
+        let handLog = PreflopLog(position: hand, hand: "", pair: false, action: action, raiseType: raiseType, betAmount: betAmount, pot: pot, xpEarned: 0, isCorrect: Bool.random(), game: game)
         game.preflopHands.append(handLog)
         context.insert(handLog)
     }

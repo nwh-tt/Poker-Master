@@ -215,7 +215,7 @@ struct CountingText: AnimatableModifier {
 #Preview("6 Player") {
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             Challenges.self,
             Item.self,
             Profile.self
@@ -238,7 +238,7 @@ struct CountingText: AnimatableModifier {
 #Preview("9 player") {
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             Challenges.self,
             Item.self,
             Profile.self

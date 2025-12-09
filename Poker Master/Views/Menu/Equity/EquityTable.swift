@@ -380,7 +380,7 @@ struct EquityTable: View {
     @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             EquityLog.self,
             Challenges.self,
             Item.self,

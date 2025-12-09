@@ -20,7 +20,7 @@ struct MenuView: View {
     
     @State private var isSubscribed = true
     
-    @Query var handLogs: [HandLog]
+    @Query var handLogs: [PreflopLog]
     
     
     var needsAd: Bool {
@@ -198,7 +198,7 @@ struct MenuView: View {
     @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             Challenges.self,
             Item.self,
             Profile.self

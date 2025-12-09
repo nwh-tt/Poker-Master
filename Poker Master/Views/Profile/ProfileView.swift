@@ -322,7 +322,7 @@ struct ProfileView: View {
     @Previewable @StateObject var authManager = AuthManager()
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             Challenges.self,
             Item.self,
             Profile.self

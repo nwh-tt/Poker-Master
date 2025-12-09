@@ -385,7 +385,7 @@ class SimplePreFlopManager: ObservableObject {
                 return
             }
             
-            let handLog = HandLog(
+            let handLog = PreflopLog(
                 position: pos,
                 hand: user?.hand.handToString() ?? "",
                 pair: user?.handIsPair() ?? false,

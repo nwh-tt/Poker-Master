@@ -34,7 +34,7 @@ struct Poker_MasterApp: App {
             Profile.self,
             Challenges.self,
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             EquityLog.self,
             AIGameLog.self
         ])

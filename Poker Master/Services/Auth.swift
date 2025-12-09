@@ -15,38 +15,38 @@ class AuthManager: ObservableObject {
     private var currentNonce: String?
 
     init() {
-            // Listen for changes in the authentication state
-            Auth.auth().addStateDidChangeListener { [weak self] _, user in
-                self?.user = user
-                self?.isAuthenticated = user != nil
-                
-                if let user = user {
-                    let firebaseUID = user.uid
-                    Purchases.shared.logIn(firebaseUID) { customerInfo, created, error in
-                        if let error = error {
-                            print("❌ Failed to log in to RevenueCat: \(error.localizedDescription)")
-                        } else {
-                            print("✅ Linked Firebase user to RevenueCat with UID: \(firebaseUID)")
-                            print("Customer info: \(String(describing: customerInfo))")
-                            print("New RevenueCat user created: \(created)")
-                        }
+        // Listen for changes in the authentication state
+        Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            self?.user = user
+            self?.isAuthenticated = user != nil
+            
+            if let user = user {
+                let firebaseUID = user.uid
+                Purchases.shared.logIn(firebaseUID) { customerInfo, created, error in
+                    if let error = error {
+                        print("❌ Failed to log in to RevenueCat: \(error.localizedDescription)")
+                    } else {
+                        print("✅ Linked Firebase user to RevenueCat with UID: \(firebaseUID)")
+                        print("Customer info: \(String(describing: customerInfo))")
+                        print("New RevenueCat user created: \(created)")
                     }
-                } else {
-                    // User is signed out set isAuthenticated to false
-                    self?.isAuthenticated = false
-                    self?.user = nil
-                    
-                    // If user signs out, log out of RevenueCat too
-                    Purchases.shared.logOut { customerInfo, error in
-                        if let error = error {
-                            print("⚠️ RevenueCat logout failed: \(error.localizedDescription)")
-                        } else {
-                            print("👋 Logged out of RevenueCat.")
-                        }
+                }
+            } else {
+                // User is signed out set isAuthenticated to false
+                self?.isAuthenticated = false
+                self?.user = nil
+                
+                // If user signs out, log out of RevenueCat too
+                Purchases.shared.logOut { customerInfo, error in
+                    if let error = error {
+                        print("⚠️ RevenueCat logout failed: \(error.localizedDescription)")
+                    } else {
+                        print("👋 Logged out of RevenueCat.")
                     }
                 }
             }
         }
+    }
     
     func getIDToken(forceRefresh: Bool = false) async throws -> String {
         // 1. Check if a user is currently signed in.

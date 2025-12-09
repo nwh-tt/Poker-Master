@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ChallengeCard: View {
-    @Query<HandLog>(sort: []) var handLogs: [HandLog]
+    @Query<PreflopLog>(sort: []) var handLogs: [PreflopLog]
     @Query<Game>(sort: []) var games: [Game]
     
     @State private var showGlow = false
@@ -86,7 +86,7 @@ struct ChallengeCard: View {
         return 0
     }
         
-    func countStreaksOf(atLeast streakLength: Int, in hands: [HandLog]) -> Int {
+    func countStreaksOf(atLeast streakLength: Int, in hands: [PreflopLog]) -> Int {
         var count = 0
         var currentStreak = 0
         

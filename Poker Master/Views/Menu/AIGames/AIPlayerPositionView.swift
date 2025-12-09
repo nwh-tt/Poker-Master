@@ -118,6 +118,13 @@ struct AIPlayerPositionView: View {
                         isFaceUp: isShowdown,
                         offset: CGSize(width: cardOffsets[1], height: isShowdown ? -34 : -30)
                     )
+                } else {
+                    ZStack {
+                        // Hacky way to hold space (minimizes layouts moving around)
+                        CardView(card: Card(suit: "heart", rank: "K"))
+                            .scaleEffect(0.5)
+                            .offset(y: -34)
+                    }.opacity(0)
                 }
                 
             }.preferredColorScheme(.dark)

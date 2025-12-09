@@ -69,7 +69,7 @@ struct ChallengesView: View {
 #Preview {
     let schema = Schema([
             Game.self,
-            HandLog.self,
+            PreflopLog.self,
             Challenges.self,
             Item.self,
             Profile.self
@@ -97,7 +97,7 @@ struct ChallengesView: View {
     context.insert(sampleGame)
     // Loop through and add 21 hands to the handlog
     for _ in 1...250 {
-        let sampleHandLog = HandLog(position: .sb, hand: "AsAs", pair: true, action: .call, raiseType: .open, betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
+        let sampleHandLog = PreflopLog(position: .sb, hand: "AsAs", pair: true, action: .call, raiseType: .open, betAmount: 0, pot: 0, xpEarned: 0, isCorrect: false, game: sampleGame)
         context.insert(sampleHandLog)
     }
     
