@@ -19,6 +19,7 @@ class AIGameManager {
     var lastPlayerBet = 0.0
     let deck = Deck() // Create a shared deck
     var board: [Card] = []
+    var isShowdown = false
     
     // Used to handle user input
     var waitingForUserInput: Bool = false
@@ -78,6 +79,7 @@ class AIGameManager {
     
     func startNextGame() async {
         // Reset necessarry variables and trigger a new hand deal out
+        isShowdown = false
         board = []
         deck.resetDeck() // Creates new shuffled deck
         round = 0
@@ -163,6 +165,7 @@ class AIGameManager {
         if remainingPlayers() > 1 {
             let winnersList = await determineWinners()
             winnerNames = winnersList
+            isShowdown = true
         } else {
             let singularWinner = aiPlayers.first(where: { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game) })
             winnerNames = [singularWinner!.name]

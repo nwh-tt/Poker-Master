@@ -16,6 +16,7 @@ struct AIPlayerPositionView: View {
     let isUser: Bool
     let game: Int
     let round: Int
+    var isShowdown: Bool
     
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     
@@ -103,21 +104,63 @@ struct AIPlayerPositionView: View {
                     }
                 }
                 .animation(.easeInOut(duration: 0.4), value: player.lastMoveForRound(game: game, round: round))
-                if (!isUser && player.lastMove(game: game) != Action.fold) {
-                    CardBackView()
-                        .offset(CGSize(width: cardOffsets[0], height: -30))
-                    CardBackView()
-                        .offset(CGSize(width: cardOffsets[1], height: -30))
+                if (!isUser  && player.hand.count == 2 && player.lastMove(game: game) != Action.fold) {
+                    FlippingCardView(
+                        front: CardView(card: player.hand[0]),
+                        back: CardBackView(),
+                        isFaceUp: isShowdown,
+                        offset: CGSize(width: cardOffsets[0], height: isShowdown ? -34 : -30)
+                    )
+
+                    FlippingCardView(
+                        front: CardView(card: player.hand[1]),
+                        back: CardBackView(),
+                        isFaceUp: isShowdown,
+                        offset: CGSize(width: cardOffsets[1], height: isShowdown ? -34 : -30)
+                    )
                 }
                 
-            }
+            }.preferredColorScheme(.dark)
         }
+    }
+}
+
+struct FlippingCardView<Front: View, Back: View>: View {
+    let front: Front
+    let back: Back
+    let isFaceUp: Bool
+    let offset: CGSize
+
+    var body: some View {
+        ZStack {
+            // FRONT
+            front
+                .scaleEffect(0.5)
+                .opacity(isFaceUp ? 1 : 0)
+                .rotation3DEffect(
+                    .degrees(isFaceUp ? 0 : 180),
+                    axis: (x: 0, y: 1, z: 0)
+                )
+
+            // BACK
+            back
+                //.scaleEffect(size * 0.8)        // back is slightly smaller
+                .opacity(isFaceUp ? 0 : 1)
+                .rotation3DEffect(
+                    .degrees(isFaceUp ? 180 : 0),
+                    axis: (x: 0, y: 1, z: 0)
+                )
+        }
+        .offset(offset)
+        .animation(.easeInOut(duration: 0.6), value: isFaceUp)
     }
 }
 
 #Preview {
     let player = AIPlayer(name: "ATW", fullName: "test", position: "BB", stack: 100.0)
+    player.hand = [Card(suit: "heart", rank: "2"), Card(suit: "heart", rank: "2")]
+    
     //player.raise(amountRaisingTo: 2.5)
-    let _ = player.raise(amount: 20, game: 1, round: 0)
-    return AIPlayerPositionView(player: player, direction: "right", isUser: true, game: 1, round: 0)
+    //let _ = player.fold(game: 0, round: 0)
+    return AIPlayerPositionView(player: player, direction: "right", isUser: false, game: 1, round: 0, isShowdown: false)
 }

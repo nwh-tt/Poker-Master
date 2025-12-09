@@ -9,6 +9,7 @@
 import SwiftUI
 import AlertToast
 import ActivityIndicatorView
+import SwiftData
 
 struct AITable: View {
     @State var aiManager: AIGameManager = AIGameManager()
@@ -45,7 +46,7 @@ struct AITable: View {
                     .frame(width: 50, height: 50)
                     .foregroundColor(Color(red: 1,green: 1,blue: 0.95).opacity(0.2))
             } else {
-                AIPlayerLayoutView(players: aiManager.aiPlayers, game: aiManager.game, round: aiManager.round) { tappedPlayer in
+                AIPlayerLayoutView(players: aiManager.aiPlayers, game: aiManager.game, round: aiManager.round, isShowdown: aiManager.isShowdown) { tappedPlayer in
                     selectedPlayer = tappedPlayer
                 }
                 AIBoardView(board: aiManager.board)
@@ -293,6 +294,26 @@ struct AITable: View {
 }
 
 #Preview {
-    AITable(tableSize: "6")
+    let schema = Schema([
+            Game.self,
+            HandLog.self,
+            EquityLog.self,
+            Challenges.self,
+            Item.self,
+            Profile.self
+        ])
+    let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+    let container = try! ModelContainer(for: schema, configurations: [config])
+    let context = ModelContext(container)
+
+    // Add some mock data so the preview isn't empty
+    let user = Profile(username: "Ned Whittleton")
+    context.insert(user)
+    
+    return AITable(tableSize: "6")
+        .environment(\.modelContext, context)
+        .environmentObject(UserProfileState(context: context))
+        .environmentObject(AuthManager())
 }
 

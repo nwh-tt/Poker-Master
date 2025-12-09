@@ -11,13 +11,15 @@ struct AIPlayerLayoutView: View {
     let size: String        // "6" or "9"
     let game: Int
     let round: Int
+    let isShowdown: Bool
     let onPlayerTapped: (AIPlayer) -> Void
     
-    init(players: [AIPlayer], game: Int, round: Int, onPlayerTapped: @escaping (AIPlayer) -> Void) {
+    init(players: [AIPlayer], game: Int, round: Int, isShowdown: Bool, onPlayerTapped: @escaping (AIPlayer) -> Void) {
         self.players = players
         self.size = String(players.count)
         self.game = game
         self.round = round
+        self.isShowdown = isShowdown
         self.onPlayerTapped = onPlayerTapped
     }
     
@@ -37,19 +39,19 @@ struct AIPlayerLayoutView: View {
     
     private var sixMaxLayout: some View {
         VStack(alignment: .center) {
-            AIPlayerPositionView(player: players[3], direction: "right", isUser: false, game: game, round: round).padding(.top, 14)
+            AIPlayerPositionView(player: players[3], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown).padding(.top, 14)
                 .onTapGesture {
                     onPlayerTapped(players[3])
                 }
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[2], direction: "right", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[2], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[2])
                     }
                 Spacer()
-                AIPlayerPositionView(player: players[4], direction: "left", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[4], direction: "left", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[4])
                     }
@@ -59,12 +61,12 @@ struct AIPlayerLayoutView: View {
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[1], direction: "right", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[1], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[1])
                     }
                 Spacer()
-                AIPlayerPositionView(player: players[5], direction: "left", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[5], direction: "left", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[5])
                     }
@@ -73,7 +75,7 @@ struct AIPlayerLayoutView: View {
             .padding(.top, 40.0)
             .padding(.bottom, 40.0)
             Spacer()
-            AIPlayerPositionView(player: players[0], direction: "right", isUser: true, game: game, round: round).padding(.bottom, 14)
+            AIPlayerPositionView(player: players[0], direction: "right", isUser: true, game: game, round: round, isShowdown: isShowdown).padding(.bottom, 14)
                 .onTapGesture {
                     onPlayerTapped(players[0])
                 }
@@ -84,11 +86,11 @@ struct AIPlayerLayoutView: View {
     private var nineMaxLayout: some View {
         VStack {
             HStack(alignment: .center, spacing: 60) {
-                AIPlayerPositionView(player: players[4], direction: "right", isUser: false, game: game, round: round).padding(.top, 14)
+                AIPlayerPositionView(player: players[4], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown).padding(.top, 14)
                     .onTapGesture {
                         onPlayerTapped(players[4])
                     }
-                AIPlayerPositionView(player: players[5], direction: "right", isUser: false, game: game, round: round).padding(.top, 14)
+                AIPlayerPositionView(player: players[5], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown).padding(.top, 14)
                     .onTapGesture {
                         onPlayerTapped(players[5])
                     }
@@ -97,12 +99,12 @@ struct AIPlayerLayoutView: View {
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[3], direction: "right", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[3], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[3])
                     }
                 Spacer()
-                AIPlayerPositionView(player: players[6], direction: "left", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[6], direction: "left", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[6])
                     }
@@ -110,12 +112,12 @@ struct AIPlayerLayoutView: View {
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[2], direction: "right", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[2], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[2])
                     }
                 Spacer()
-                AIPlayerPositionView(player: players[7], direction: "left", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[7], direction: "left", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[7])
                     }
@@ -123,18 +125,18 @@ struct AIPlayerLayoutView: View {
             Spacer()
             HStack(alignment: .center)
             {
-                AIPlayerPositionView(player: players[1], direction: "right", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[1], direction: "right", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[1])
                     }
                 Spacer()
-                AIPlayerPositionView(player: players[8], direction: "left", isUser: false, game: game, round: round)
+                AIPlayerPositionView(player: players[8], direction: "left", isUser: false, game: game, round: round, isShowdown: isShowdown)
                     .onTapGesture {
                         onPlayerTapped(players[8])
                     }
             }
             Spacer()
-            AIPlayerPositionView(player: players[0], direction: "right", isUser: true, game: game, round: round)
+            AIPlayerPositionView(player: players[0], direction: "right", isUser: true, game: game, round: round, isShowdown: isShowdown)
                 .onTapGesture {
                     onPlayerTapped(players[0])
                 }
@@ -152,7 +154,7 @@ struct AIPlayerLayoutView: View {
         AIPlayer(name: "ETW", fullName: "p1", position: "UTG2", stack: 100.0),
         AIPlayer(name: "BIG", fullName: "p1", position: "MP2", stack: 100.0)
     ]
-    AIPlayerLayoutView(players: players, game: 0, round: 0,onPlayerTapped: { _ in print("test")})
+    AIPlayerLayoutView(players: players, game: 0, round: 0, isShowdown: false, onPlayerTapped: { _ in print("test")})
 }
 
 
@@ -168,5 +170,5 @@ struct AIPlayerLayoutView: View {
         AIPlayer(name: "BIG", fullName: "p1", position: "MP2", stack: 100.0),
         AIPlayer(name: "BIG", fullName: "p1", position: "MP2", stack: 100.0)
     ]
-    AIPlayerLayoutView(players: players, game: 0, round: 0, onPlayerTapped: { _ in print("test")})
+    AIPlayerLayoutView(players: players, game: 0, round: 0, isShowdown: false, onPlayerTapped: { _ in print("test")})
 }

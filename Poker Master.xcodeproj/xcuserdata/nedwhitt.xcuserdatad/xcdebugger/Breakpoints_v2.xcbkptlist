@@ -46,8 +46,8 @@
             filePath = "Poker Master/Services/Games/AIGameManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "383"
-            endingLineNumber = "383"
+            startingLineNumber = "386"
+            endingLineNumber = "386"
             landmarkName = "makeAIDecision(ai:)"
             landmarkType = "7">
          </BreakpointContent>
