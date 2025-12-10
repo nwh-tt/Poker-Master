@@ -94,22 +94,8 @@ struct PokerTableView: View {
                             .zIndex(1)
                 }
                 
-                EllipticalGradient(colors: [darkBlue, Color.black], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.9)
-                VStack {
-                    Capsule()
-                        .fill(darkGreen)
-                        .overlay(
-                            Capsule()
-                                .stroke(borderColor, lineWidth: 5)
-                        )
-                }
-                .padding(.horizontal, 48)
-                .padding(.vertical, 128)
-                
-                EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
-                
-                
-                PlayerLayoutView(players: gameManager.players)
+            PokerTableComponent()
+            PlayerLayoutView(players: gameManager.players)
                 
                 // add buttons
                 VStack {
@@ -217,7 +203,6 @@ struct CountingText: AnimatableModifier {
             Game.self,
             PreflopLog.self,
             Challenges.self,
-            Item.self,
             Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
@@ -240,7 +225,6 @@ struct CountingText: AnimatableModifier {
             Game.self,
             PreflopLog.self,
             Challenges.self,
-            Item.self,
             Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

@@ -29,18 +29,8 @@ struct AITable: View {
     
     var body: some View {
         ZStack {
-            EllipticalGradient(colors: [darkBlue, Color.black], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.9)
-            VStack {
-                Capsule()
-                    .fill(darkGreen)
-                    .overlay(
-                        Capsule()
-                            .stroke(borderColor, lineWidth: 5)
-                    )
-            }
-            .padding(.horizontal, 48)
-            .padding(.vertical, 128)
-            EllipticalGradient(colors: [Color.green.opacity(0.25), Color.clear], center: .center, startRadiusFraction: 0.0, endRadiusFraction: 0.5)
+            PokerTableComponent()
+            
             if aiManager.isLoading {
                 ActivityIndicatorView(isVisible: .constant(true), type: .arcs(count: 3, lineWidth: 2))
                     .frame(width: 50, height: 50)
@@ -299,7 +289,6 @@ struct AITable: View {
             PreflopLog.self,
             EquityLog.self,
             Challenges.self,
-            Item.self,
             Profile.self
         ])
     let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

@@ -383,7 +383,6 @@ struct EquityTable: View {
             PreflopLog.self,
             EquityLog.self,
             Challenges.self,
-            Item.self,
             Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

@@ -207,8 +207,7 @@ struct WinPercentageStatView: View {
         PreflopLog.self,
         EquityLog.self,
         AIGameLog.self,
-        Challenges.self,
-        Item.self
+        Challenges.self
     ])
     let container = try! ModelContainer(
         for: schema,

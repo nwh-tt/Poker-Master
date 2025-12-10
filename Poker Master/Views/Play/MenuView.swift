@@ -200,7 +200,6 @@ struct MenuView: View {
             Game.self,
             PreflopLog.self,
             Challenges.self,
-            Item.self,
             Profile.self
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

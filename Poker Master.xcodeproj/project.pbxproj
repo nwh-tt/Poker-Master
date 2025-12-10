@@ -55,7 +55,6 @@
 		B694411D2ECD11A0005C5957 /* PreflopStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B694411C2ECD1199005C5957 /* PreflopStatsView.swift */; };
 		B697E7752BC849E700191C7A /* Poker_MasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7742BC849E700191C7A /* Poker_MasterApp.swift */; };
 		B697E7772BC849E700191C7A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7762BC849E700191C7A /* ContentView.swift */; };
-		B697E7792BC849E700191C7A /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7782BC849E700191C7A /* Item.swift */; };
 		B697E77B2BC849E800191C7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B697E77A2BC849E800191C7A /* Assets.xcassets */; };
 		B697E77E2BC849E800191C7A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B697E77D2BC849E800191C7A /* Preview Assets.xcassets */; };
 		B697E7882BC849E800191C7A /* Poker_MasterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B697E7872BC849E800191C7A /* Poker_MasterTests.swift */; };
@@ -78,6 +77,7 @@
 		B6DCA8AD2EE7CC64006E7F74 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8AC2EE7CC5F006E7F74 /* Game.swift */; };
 		B6DCA8AF2EE7CC84006E7F74 /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8AE2EE7CC7D006E7F74 /* Challenge.swift */; };
 		B6DCA8B12EE7CCBE006E7F74 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8B02EE7CCBB006E7F74 /* Profile.swift */; };
+		B6DCA8B42EE88CE1006E7F74 /* PokerTableComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8B32EE88CD8006E7F74 /* PokerTableComponent.swift */; };
 		B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA42ECD29B60015F53D /* AIStatsView.swift */; };
 		B6E29FA72ECD427C0015F53D /* GenericStatViewComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */; };
 		B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */; };
@@ -156,7 +156,6 @@
 		B697E7712BC849E700191C7A /* Poker Master.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Poker Master.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B697E7742BC849E700191C7A /* Poker_MasterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Poker_MasterApp.swift; sourceTree = "<group>"; };
 		B697E7762BC849E700191C7A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B697E7782BC849E700191C7A /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		B697E77A2BC849E800191C7A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B697E77D2BC849E800191C7A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B697E7832BC849E800191C7A /* Poker MasterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Poker MasterTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -180,6 +179,7 @@
 		B6DCA8AC2EE7CC5F006E7F74 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		B6DCA8AE2EE7CC7D006E7F74 /* Challenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
 		B6DCA8B02EE7CCBB006E7F74 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		B6DCA8B32EE88CD8006E7F74 /* PokerTableComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerTableComponent.swift; sourceTree = "<group>"; };
 		B6E29FA42ECD29B60015F53D /* AIStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStatsView.swift; sourceTree = "<group>"; };
 		B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericStatViewComponents.swift; sourceTree = "<group>"; };
 		B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -239,6 +239,7 @@
 		B635742D2EA1497500F1212D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B649ED542BD6FE5000157267 /* DeckTests.swift */,
 				B635742E2EA1498100F1212D /* AIPlayerTests.swift */,
 			);
 			path = Models;
@@ -303,17 +304,17 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		B67C5E3F2E2088A70017ECBF /* Menu */ = {
+		B67C5E3F2E2088A70017ECBF /* Play */ = {
 			isa = PBXGroup;
 			children = (
+				B6DCA8B22EE88C15006E7F74 /* SharedComponents */,
 				B6BB62532E9733E700F1E565 /* AIGames */,
 				B6EC8ACE2E707D9300C1AC9B /* Equity */,
-				B6870FFE2D6E079000A1EAB1 /* Card */,
 				B6EC8AC72E63817000C1AC9B /* BasicPreflop */,
 				B67C5E422E208A950017ECBF /* MenuView.swift */,
 				B67C5E442E208AD70017ECBF /* MenuOption.swift */,
 			);
-			path = Menu;
+			path = Play;
 			sourceTree = "<group>";
 		};
 		B67C5E482E2806190017ECBF /* Home */ = {
@@ -418,7 +419,7 @@
 				B67C5E4A2E2806370017ECBF /* Statistics */,
 				B67C5E492E2806230017ECBF /* Challenge */,
 				B67C5E482E2806190017ECBF /* Home */,
-				B67C5E3F2E2088A70017ECBF /* Menu */,
+				B67C5E3F2E2088A70017ECBF /* Play */,
 				B697E7762BC849E700191C7A /* ContentView.swift */,
 				B67C5E462E2802D70017ECBF /* MainView.swift */,
 			);
@@ -489,7 +490,6 @@
 				B649ED482BD1B09300157267 /* Models */,
 				B6870FFB2D6E05F400A1EAB1 /* Views */,
 				B697E7742BC849E700191C7A /* Poker_MasterApp.swift */,
-				B697E7782BC849E700191C7A /* Item.swift */,
 				B697E77A2BC849E800191C7A /* Assets.xcassets */,
 				B697E77C2BC849E800191C7A /* Preview Content */,
 			);
@@ -510,7 +510,6 @@
 				B63574302EA14FA800F1212D /* Services */,
 				B635742D2EA1497500F1212D /* Models */,
 				B697E7872BC849E800191C7A /* Poker_MasterTests.swift */,
-				B649ED542BD6FE5000157267 /* DeckTests.swift */,
 				B6D403672D8A09D3008A83E8 /* PlayerTests.swift */,
 			);
 			path = "Poker MasterTests";
@@ -545,6 +544,15 @@
 				B6EC8AD32E70AF6200C1AC9B /* EquityDrillManager.swift */,
 			);
 			path = Games;
+			sourceTree = "<group>";
+		};
+		B6DCA8B22EE88C15006E7F74 /* SharedComponents */ = {
+			isa = PBXGroup;
+			children = (
+				B6DCA8B32EE88CD8006E7F74 /* PokerTableComponent.swift */,
+				B6870FFE2D6E079000A1EAB1 /* Card */,
+			);
+			path = SharedComponents;
 			sourceTree = "<group>";
 		};
 		B6EC8AC72E63817000C1AC9B /* BasicPreflop */ = {
@@ -742,6 +750,7 @@
 				B67C5E512E2806F30017ECBF /* HomeView.swift in Sources */,
 				B67C5E532E2807160017ECBF /* ChallengesView.swift in Sources */,
 				B6EC8AE12E78A71600C1AC9B /* Auth.swift in Sources */,
+				B6DCA8B42EE88CE1006E7F74 /* PokerTableComponent.swift in Sources */,
 				B67C5E6E2E59F3B40017ECBF /* SharedEnums.swift in Sources */,
 				B6DCA8AB2EE7CC3C006E7F74 /* PreflopLog.swift in Sources */,
 				B694411D2ECD11A0005C5957 /* PreflopStatsView.swift in Sources */,
@@ -774,7 +783,6 @@
 				B656DC7E2EC6D09600488B57 /* EquityLog.swift in Sources */,
 				B67C5E4D2E28065B0017ECBF /* ProfileView.swift in Sources */,
 				B63574372EB1402300F1212D /* AIBoardView.swift in Sources */,
-				B697E7792BC849E700191C7A /* Item.swift in Sources */,
 				B67C5E432E208A950017ECBF /* MenuView.swift in Sources */,
 				B656DC722EC2D87B00488B57 /* PlayerInfoSheet.swift in Sources */,
 				B67C5E452E208AD70017ECBF /* MenuOption.swift in Sources */,

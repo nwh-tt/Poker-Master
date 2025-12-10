@@ -187,7 +187,6 @@ struct ActionButton: View {
             Game.self,
             PreflopLog.self,
             Challenges.self,
-            Item.self,
             Profile.self
         ])
         let container = try! ModelContainer(

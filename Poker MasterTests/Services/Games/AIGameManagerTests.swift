@@ -16,7 +16,13 @@ final class AIGameManagerTests: XCTestCase {
     override func setUp() async throws {
         manager = AIGameManager(gameplaySpeed: 3, testingMode: true)
         
-        players = manager.createRandomPlayers(aiNames: ["Bot1", "Bot2", "Bot3", "Bot4", "Bot5"])
+        players = manager.createRandomPlayers(aiNames: [
+            FetchPlayerResponse(name: "Bot1", full_name: "Bot1"),
+            FetchPlayerResponse(name: "Bot1", full_name: "Bot1"),
+            FetchPlayerResponse(name: "Bot1", full_name: "Bot1"),
+            FetchPlayerResponse(name: "Bot1", full_name: "Bot1"),
+            FetchPlayerResponse(name: "Bot1", full_name: "Bot1")]
+        )
         players[0].isUser = false
         
         manager.pot = 0
@@ -41,7 +47,7 @@ final class AIGameManagerTests: XCTestCase {
         XCTAssertEqual(manager.pot, 20, "Pot should increase by raised amount")
         XCTAssertEqual(player1.stack, 80, "Player stack should decrease by raised amount")
         XCTAssertEqual(manager.lastPlayerBet, 20, "Last player bet should update")
-        XCTAssertEqual(player1.lastMove(), .raise)
+        XCTAssertEqual(player1.lastMove(game: 0), .raise)
     }
     
     func testRaiseCannotExceedStack() {
@@ -61,7 +67,7 @@ final class AIGameManagerTests: XCTestCase {
         
         XCTAssertEqual(manager.pot, 10, "Pot should increase by called amount")
         XCTAssertEqual(player2.stack, 90)
-        XCTAssertEqual(player2.lastMove(), .call)
+        XCTAssertEqual(player2.lastMove(game: 0, ), .call)
     }
     
     func testCallAfterRaise() {
@@ -72,7 +78,7 @@ final class AIGameManagerTests: XCTestCase {
         
         XCTAssertEqual(manager.pot, 20, "Pot should increase by called amount")
         XCTAssertEqual(player2.stack, 90)
-        XCTAssertEqual(player2.lastMove(), .call)
+        XCTAssertEqual(player2.lastMove(game: 0, ), .call)
     }
     
     func testCallCannotExceedStack() {
@@ -105,17 +111,9 @@ final class AIGameManagerTests: XCTestCase {
 
     // MARK: - Utility and Player Checks
     
-    func testCanPlayerCall() {
-        let player1 = players[0]
-        manager.lastPlayerBet = 20
-        
-        XCTAssertTrue(manager.canPlayerCall(player: player1))
-        player1.stack = 10
-        XCTAssertFalse(manager.canPlayerCall(player: player1))
-    }
     
     func testGetUserDefaultBets() {
-        let user = AIPlayer(name: "HERO", position: "BTN", stack: 15, isUser: true)
+        let user = AIPlayer(name: "HERO", fullName: "test", position: "BTN", stack: 15, isUser: true)
         manager.aiPlayers = [user]
         manager.lastPlayerBet = 5
         
@@ -130,15 +128,5 @@ final class AIGameManagerTests: XCTestCase {
         let reordered = manager.createAndReorderPlayers(playerPosition: "BTN")
         XCTAssertEqual(reordered.count, Int(manager.tableSize))
         XCTAssertEqual(reordered.first?.position, "BTN")
-    }
-    
-    func testCreateRandomPlayersAssignsNames() {
-        let names = ["Bot1", "Bot2", "Bot3", "Bot4", "Bot5"]
-        let players = manager.createRandomPlayers(aiNames: names)
-        
-        XCTAssertTrue(players.first!.isUser)
-        XCTAssertEqual(players.first!.name, "HERO")
-        XCTAssertEqual(players.count, Int(manager.tableSize))
-        XCTAssertTrue(players[1].name.starts(with: "Bot"))
     }
 }

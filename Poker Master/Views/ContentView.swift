@@ -9,8 +9,6 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
     
     let darkGreen = Color(red: 0, green: 0.15, blue: 0)
     let darkBlue = Color(red: 0.3, green: 0.3, blue: 0.3)
@@ -26,5 +24,4 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }

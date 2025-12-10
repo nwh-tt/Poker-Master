@@ -30,7 +30,6 @@ struct Poker_MasterApp: App {
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
             Profile.self,
             Challenges.self,
             Game.self,
