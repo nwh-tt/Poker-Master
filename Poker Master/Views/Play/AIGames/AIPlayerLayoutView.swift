@@ -29,8 +29,6 @@ struct AIPlayerLayoutView: View {
                 sixMaxLayout
             } else if size == "9" {
                 nineMaxLayout
-            } else {
-                Text("Unsupported table size")
             }
         }
         .padding(4)

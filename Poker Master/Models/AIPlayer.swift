@@ -52,11 +52,20 @@ class AIPlayer: Identifiable {
         return 0
     }
     
-    func lastMove(game: Int) -> Action {
-        guard let lastAction = moveHistory.last else { return .none }
-        if lastAction.game != game { return .none }
+    func totalContribution(game: Int) -> Double {
+        var total = 0.0
         
-        return lastAction.action
+        // Loop thtrough each round - last bet is highest bet always unless folded
+        for round in Street.allCases.indices {
+            let lastBet = lastBet(game: game, round: round)
+            total += lastBet
+        }
+        
+        return total
+    }
+    
+    func lastMove(game: Int) -> Action {
+        moveHistory.last(where: { $0.game == game })?.action ?? .none
     }
     
     func lastMoveForRound(game: Int, round: Int) -> Action {
@@ -68,12 +77,7 @@ class AIPlayer: Identifiable {
     }
     
     private func getLastAction(game: Int, round: Int) -> ActionRecord? {
-        guard let lastAction = moveHistory.last else { return nil }
-        if lastAction.round != round || lastAction.game != game {
-            return nil
-        }
-        
-        return lastAction
+        moveHistory.last(where: { $0.game == game && $0.round == round })
     }
 
     

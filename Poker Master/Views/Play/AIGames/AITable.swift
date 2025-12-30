@@ -14,7 +14,10 @@ import SwiftData
 struct AITable: View {
     @State var aiManager: AIGameManager = AIGameManager()
     @State private var raiseMenuVisible = false
+    
     @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    
     @EnvironmentObject var userProfile: UserProfileState
     @EnvironmentObject var authManager: AuthManager
     
@@ -42,7 +45,7 @@ struct AITable: View {
                 AIBoardView(board: aiManager.board)
                 VStack {
                     Spacer()
-                    if aiManager.aiPlayers[0].hand.count != 0 {
+                    if aiManager.aiPlayers.count > 0 && aiManager.aiPlayers[0].hand.count != 0 {
                         HStack(spacing: -10) {
                             CardView(card: aiManager.aiPlayers[0].hand[0])
                             CardView(card: aiManager.aiPlayers[0].hand[1])
@@ -114,7 +117,7 @@ struct AITable: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
                 ZStack {
-                    if aiManager.waitingForStartButton {
+                    if aiManager.waitingForStartorRetryButton {
                         if aiManager.errorMessage != nil {
                             HStack(spacing: 10) {
                                 Button(action: {
@@ -142,7 +145,7 @@ struct AITable: View {
                             HStack(spacing: 10) {
                                 Button(action: {
                                     // Keep playing action
-                                    aiManager.waitingForStartButton = false
+                                    aiManager.waitingForStartorRetryButton = false
                                     Task {
                                         await aiManager.startGame()
                                     }
@@ -165,8 +168,7 @@ struct AITable: View {
                     else if aiManager.waitingForContinueButton {
                         HStack(spacing: 10) {
                             Button(action: {
-                                // Leave table action
-                                
+                                dismiss()
                             }) {
                                 HStack(spacing: 6) {
                                     Image(systemName: "rectangle.portrait.and.arrow.right")
@@ -178,23 +180,24 @@ struct AITable: View {
                                 .clipShape(Capsule())
                                 .foregroundColor(.white)
                             }
-
-                            Button(action: {
-                                // Keep playing action
-                                aiManager.waitingForContinueButton = false
-                                Task {
-                                    await aiManager.startNextGame()
+                            if aiManager.canStartNewGame() {
+                                Button(action: {
+                                    // Keep playing action
+                                    aiManager.waitingForContinueButton = false
+                                    Task {
+                                        await aiManager.startNextGame()
+                                    }
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "play.circle")
+                                        Text("Keep Playing")
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(darkBlue)
+                                    .clipShape(Capsule())
+                                    .foregroundColor(.white)
                                 }
-                            }) {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "play.circle")
-                                    Text("Keep Playing")
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(darkBlue)
-                                .clipShape(Capsule())
-                                .foregroundColor(.white)
                             }
                         }
                         .padding(.horizontal, 8)
@@ -249,8 +252,8 @@ struct AITable: View {
             }
         }
         .onAppear {
-            aiManager.setContext(context)
-            aiManager.setProfile(profile: userProfile.profile)
+            aiManager.context = context
+            aiManager.profile = userProfile.profile
             aiManager.setAPIManager(authManager: authManager)
         }
         .toast(

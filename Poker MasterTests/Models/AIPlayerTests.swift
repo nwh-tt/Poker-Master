@@ -290,4 +290,24 @@ final class AIPlayerTests: XCTestCase {
         _ = player.call(amount: 100, game: 0, round: 0)
         XCTAssertFalse(player.isOutOfMoney(game: 0))
     }
+    
+    func testTotalContribution_simple() {
+        _ = player.raise(amount: 10, game: 0, round: 0)
+        _ = player.call(amount: 20, game: 0, round: 0)
+        _ = player.raise(amount: 10, game: 0, round: 1)
+        _ = player.raise(amount: 10, game: 0, round: 2)
+        _ = player.raise(amount: 10, game: 0, round: 3)
+        
+        let contribution = player.totalContribution(game: 0)
+        XCTAssertEqual(contribution, 50)
+    }
+    
+    func testTotalContribution_ignoresOtherGames() {
+        _ = player.raise(amount: 10, game: 0, round: 0)
+        _ = player.raise(amount: 10, game: 1, round: 2)
+        _ = player.raise(amount: 10, game: 2, round: 3)
+        
+        let contribution = player.totalContribution(game: 0)
+        XCTAssertEqual(contribution, 10)
+    }
 }

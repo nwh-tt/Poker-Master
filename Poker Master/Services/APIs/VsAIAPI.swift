@@ -30,14 +30,14 @@ struct DetermineWinnerRequest: Codable {
     let board: [String]
 }
 
-struct DetermineWinnerResponse: Codable {
-    struct PlayerDetails: Codable {
-        let name: String
-        let hand: [String]
-        let score: Int
-        let hand_name: String
-    }
+struct PlayerDetails: Codable {
+    let name: String
+    let hand: [String]
+    let score: Int
+    let hand_name: String
+}
 
+struct DetermineWinnerResponse: Codable {
     let winners: [String]
     let player_details: [PlayerDetails]
 }
@@ -100,7 +100,7 @@ class VsAIAPI {
     }
     
     
-    func processWinners(playersLeft: [AIPlayer], board: [Card]) async throws -> DetermineWinnerResponse {
+    func processWinners(playersLeft: [AIPlayer], board: [String]) async throws -> DetermineWinnerResponse {
         guard let url = URL(string: "\(apiPrefix)/ai/determine-winner") else {
             throw URLError(.badURL)
         }
@@ -108,7 +108,7 @@ class VsAIAPI {
         let playerDetails = playersLeft.map { player in
             PlayersLeftDetails(name: player.name, hand: player.hand.map { $0.toString() })
         }
-        let requestBody = DetermineWinnerRequest(players: playerDetails, board: board.map { $0.toString() })
+        let requestBody = DetermineWinnerRequest(players: playerDetails, board: board)
         
         do {
             var request = URLRequest(url: url)

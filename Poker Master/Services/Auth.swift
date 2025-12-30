@@ -3,6 +3,60 @@ import AuthenticationServices
 import FirebaseAuth
 import CryptoKit
 import RevenueCat
+import Combine
+
+protocol AuthUser {
+    var uid: String { get }
+    var email: String? { get }
+}
+
+protocol AuthServiceProtocol {
+    var currentUser: User? { get }
+    var isAuthenticated: Bool { get }
+    func addStateDidChangeListener(_ listener: @escaping (User?) -> Void)
+    func signIn(email: String, password: String, completion: @escaping (Error?) -> Void)
+    func signUp(email: String, password: String, completion: @escaping (Error?) -> Void)
+    func signOut() throws
+    func getIDToken(forceRefresh: Bool) async throws -> String
+}
+
+class FirebaseAuthService: AuthServiceProtocol {
+    var currentUser: User? { Auth.auth().currentUser }
+    var isAuthenticated: Bool { Auth.auth().currentUser != nil }
+
+    private var listeners: [(User?) -> Void] = []
+
+    init() {
+        Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            self?.listeners.forEach { $0(user) }
+        }
+    }
+
+    func addStateDidChangeListener(_ listener: @escaping (User?) -> Void) {
+        listeners.append(listener)
+    }
+
+    func signIn(email: String, password: String, completion: @escaping (Error?) -> Void) {
+        Auth.auth().signIn(withEmail: email, password: password) { _, error in
+            completion(error)
+        }
+    }
+
+    func signUp(email: String, password: String, completion: @escaping (Error?) -> Void) {
+        Auth.auth().createUser(withEmail: email, password: password) { _, error in
+            completion(error)
+        }
+    }
+
+    func signOut() throws {
+        try Auth.auth().signOut()
+    }
+
+    func getIDToken(forceRefresh: Bool = false) async throws -> String {
+        guard let user = Auth.auth().currentUser else { throw TokenError.userNotAuthenticated }
+        return try await user.getIDTokenResult(forcingRefresh: forceRefresh).token
+    }
+}
 
 class AuthManager: ObservableObject {
     @Published var user: User? // The current authenticated user
@@ -13,31 +67,29 @@ class AuthManager: ObservableObject {
     @Published var isLoading: Bool = false
     
     private var currentNonce: String?
+    private let authService: AuthServiceProtocol
 
-    init() {
-        // Listen for changes in the authentication state
-        Auth.auth().addStateDidChangeListener { [weak self] _, user in
-            self?.user = user
-            self?.isAuthenticated = user != nil
+    init(authService: AuthServiceProtocol = FirebaseAuthService()) {
+        self.authService = authService
+        setupListener()
+    }
+    
+    private func setupListener() {
+        authService.addStateDidChangeListener { [weak self] user in
+            guard let self = self else { return }
+            self.user = user
+            self.isAuthenticated = user != nil
             
             if let user = user {
-                let firebaseUID = user.uid
-                Purchases.shared.logIn(firebaseUID) { customerInfo, created, error in
+                Purchases.shared.logIn(user.uid) { _, created, error in
                     if let error = error {
                         print("❌ Failed to log in to RevenueCat: \(error.localizedDescription)")
                     } else {
-                        print("✅ Linked Firebase user to RevenueCat with UID: \(firebaseUID)")
-                        print("Customer info: \(String(describing: customerInfo))")
-                        print("New RevenueCat user created: \(created)")
+                        print("✅ RevenueCat login successful. New user? \(created)")
                     }
                 }
             } else {
-                // User is signed out set isAuthenticated to false
-                self?.isAuthenticated = false
-                self?.user = nil
-                
-                // If user signs out, log out of RevenueCat too
-                Purchases.shared.logOut { customerInfo, error in
+                Purchases.shared.logOut { _, error in
                     if let error = error {
                         print("⚠️ RevenueCat logout failed: \(error.localizedDescription)")
                     } else {
@@ -49,45 +101,17 @@ class AuthManager: ObservableObject {
     }
     
     func getIDToken(forceRefresh: Bool = false) async throws -> String {
-        // 1. Check if a user is currently signed in.
-        guard let user = Auth.auth().currentUser else {
-            // Throw an error if no user is authenticated
-            throw TokenError.userNotAuthenticated
-        }
-        
-        do {
-            // 2. Fetch the ID Token asynchronously.
-            // forceRefresh=true ensures the token is fresh, but often
-            // set to false unless an immediate refresh is needed.
-            let token = try await user.getIDTokenResult(forcingRefresh: forceRefresh).token
-            
-            // 3. Return the token string
-            return token
-            
-        } catch {
-            // 4. Handle token retrieval failure (e.g., network error)
-            print("Failed to retrieve ID Token: \(error.localizedDescription)")
-            throw error
-        }
+        try await authService.getIDToken(forceRefresh: forceRefresh)
     }
 
     // MARK: - Sign In
     func signIn(email: String, password: String) {
         errorMessage = nil // Clear any previous errors
         
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
-            if let error = error {
-                // Handle sign-in failure (e.g., incorrect password, no user)
-                print("Firebase sign-in error: \(error.localizedDescription)")
-                self?.errorMessage = "Username or password incorrect"
-                self?.isAuthenticated = false
-            } else {
-                // Sign-in successful
-                print("User signed in with UID: \(authResult?.user.uid ?? "N/A")")
-                self?.isAuthenticated = true
-                
-                // TODO: Here you would also create/fetch your AppUser SwiftData model
-                // based on the successful Firebase sign-in.
+        authService.signIn(email: email, password: password) { [weak self] error in
+            DispatchQueue.main.async {
+                self?.isAuthenticated = self?.authService.isAuthenticated ?? false
+                self?.errorMessage = error?.localizedDescription
             }
         }
     }
@@ -97,32 +121,19 @@ class AuthManager: ObservableObject {
     func signUp(email: String, password: String) {
         errorMessage = nil
         isLoading = true
-        
-        Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
-            DispatchQueue.main.async { // Ensure UI updates are on the main thread
+        authService.signUp(email: email, password: password) { [weak self] error in
+            DispatchQueue.main.async {
                 self?.isLoading = false
-                if let error = error {
-                    // Sign-up failed
-                    self?.errorMessage = "Sign-up failed"
-                    self?.isAuthenticated = false
-                } else {
-                    // Sign-up succeeded, user is automatically logged in
-                    print("New user created: \(authResult?.user.uid ?? "N/A")")
-                    self?.isAuthenticated = true
-                    // The view will automatically dismiss/transition because isAuthenticated changed
-                }
+                self?.isAuthenticated = self?.authService.isAuthenticated ?? false
+                self?.errorMessage = error?.localizedDescription
             }
         }
     }
        
        // MARK: - Sign Out
     func signOut() {
-        do {
-            try Auth.auth().signOut()
-            isAuthenticated = false
-        } catch let error {
-            errorMessage = error.localizedDescription
-        }
+        do { try authService.signOut() }
+        catch { errorMessage = error.localizedDescription }
     }
     
     func prepareAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
