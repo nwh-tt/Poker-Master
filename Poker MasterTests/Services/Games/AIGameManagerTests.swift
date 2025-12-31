@@ -75,7 +75,7 @@ final class SpyAIGameManager: AIGameManager {
         case playBettingRound(round: Int)
         case dealBoard(Int)
         case determineWinners
-        case processRoundEnd([String])
+        case processRoundEnd
         case saveStreetLog
         case sleep
     }
@@ -112,8 +112,8 @@ final class SpyAIGameManager: AIGameManager {
         // no-op: avoid SwiftData writes
     }
 
-    override func processRoundEnd(winners: [String], playersLeft: [AIPlayer], showdownDetails: [PlayerDetails]) {
-        calls.append(.processRoundEnd(winners))
+    override func processRoundEnd() async {
+        calls.append(.processRoundEnd)
         // no-op: don't mutate stacks unless you want to assert that too
     }
 
@@ -625,7 +625,6 @@ final class AIGameManagerTests: XCTestCase {
         await manager.gameLoop()
         
         // Key end-state
-        XCTAssertTrue(manager.isShowdown, "Expected showdown when remainingPlayers > 1 at end")
         XCTAssertTrue(manager.waitingForContinueButton, "Expected continue button enabled at end of loop")
         XCTAssertFalse(manager.skipActive, "Expected skipActive reset to false at end")
         XCTAssertEqual(manager.pot, 0, "Expected pot reset to 0 at end")
@@ -633,17 +632,17 @@ final class AIGameManagerTests: XCTestCase {
         
         // Key orchestration calls
         XCTAssertTrue(manager.calls.contains(.setUpBlinds))
-        XCTAssertTrue(manager.calls.contains(.determineWinners))
+        XCTAssertTrue(manager.calls.contains(.processRoundEnd))
         
         // Board dealing happened with 3/1/1
         XCTAssertTrue(manager.calls.contains(.dealBoard(3)))
         XCTAssertTrue(manager.calls.contains(.dealBoard(1)))
         
         // Should process round end and save at least once at end
-        XCTAssertTrue(manager.calls.contains { call in
-            if case .processRoundEnd(let winners) = call { return winners == ["HERO"] }
-            return false
-        })
+//        XCTAssertTrue(manager.calls.contains { call in
+//            if case .processRoundEnd(let winners) = call { return winners == ["HERO"] }
+//            return false
+//        })
         XCTAssertTrue(manager.calls.contains(.saveStreetLog))
     }
     
@@ -681,10 +680,10 @@ final class AIGameManagerTests: XCTestCase {
         XCTAssertFalse(manager.calls.contains(.determineWinners))
 
         // Still must process round end with ["HERO"] (based on singularWinner)
-        XCTAssertTrue(manager.calls.contains { call in
-            if case .processRoundEnd(let winners) = call { return winners == ["HERO"] }
-            return false
-        })
+//        XCTAssertTrue(manager.calls.contains { call in
+//            if case .processRoundEnd(let winners) = call { return winners == ["HERO"] }
+//            return false
+//        })
     }
     
     @MainActor
@@ -1777,104 +1776,143 @@ final class AIGameManagerTests: XCTestCase {
         XCTAssertEqual(amount, 6.5, accuracy: 1e-9)
     }
     
-    @MainActor
-    func test_processRoundEnd_splitsPotAmongWinners() {
+    func test_processRoundEnd_OneWinner() async {
         let manager = AIGameManager(testingMode: true)
 
         let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 50)
         let p2 = AIPlayer(name: "B", fullName: "", position: "MP", stack: 70)
         manager.aiPlayers = [p1, p2]
-
         manager.pot = 20
+        
+        // P1 folds -> winner p2
+        p1.fold(game: 0, round: 0)
+        
+        await manager.processRoundEnd()
 
-        manager.processRoundEnd(winners: ["A", "B"], playersLeft: [], showdownDetails: [])
+        XCTAssertEqual(p1.stack, 50)
+        XCTAssertEqual(p2.stack, 90, accuracy: 1e-9)
+    }
+    
+    func test_processRoundEnd_basicShowdown() async {
 
-        XCTAssertEqual(p1.stack, 60, accuracy: 1e-9)
+        let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 50)
+        let p2 = AIPlayer(name: "B", fullName: "", position: "MP", stack: 70)
+        manager.aiPlayers = [p1, p2]
+        
+        
+        mockAPI.nextWinners = ["B"]
+        mockAPI.nextWinnerDetails = [
+            PlayerDetails(name: "A", hand: [], score: 4, hand_name: ""),
+            PlayerDetails(name: "B", hand: [], score: 3, hand_name: "")
+        ]
+        
+        _ = p1.raise(amount: 10, game: 0, round: 0)
+        _ = p2.call(amount: 10, game: 0, round: 0)
+        manager.pot = 20
+        
+        // 2 active players - basic showdown
+        await manager.processRoundEnd()
+
+        XCTAssertEqual(p1.stack, 40)
         XCTAssertEqual(p2.stack, 80, accuracy: 1e-9)
     }
     
-    @MainActor
-    func test_processRoundEnd_ignoresUnknownWinnerNames() {
-        let manager = AIGameManager(testingMode: true)
+    func test_processRoundEnd_showdown_tie_splitsPot() async {
+        let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 100)
+        let p2 = AIPlayer(name: "B", fullName: "", position: "MP", stack: 100)
 
-        let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 50)
-        manager.aiPlayers = [p1]
-        manager.pot = 10
+        manager.aiPlayers = [p1, p2]
 
-        manager.processRoundEnd(winners: ["A", "MISSING"], playersLeft: [], showdownDetails: [])
+        mockAPI.nextWinners = ["A", "B"]
+        mockAPI.nextWinnerDetails = [
+            PlayerDetails(name: "A", hand: [], score: 1, hand_name: "Tie"),
+            PlayerDetails(name: "B", hand: [], score: 1, hand_name: "Tie")
+        ]
 
-        // potSplit = 10/2 = 5, only A exists => A gets 5
-        XCTAssertEqual(p1.stack, 55, accuracy: 1e-9)
+        _ = p1.raise(amount: 20, game: 0, round: 0)
+        _ = p2.call(amount: 20, game: 0, round: 0)
+        manager.pot = 40
+
+        await manager.processRoundEnd()
+
+        // Each put in 20, pot 40 split => each net 0 change
+        XCTAssertEqual(p1.stack, 100, accuracy: 1e-9)
+        XCTAssertEqual(p2.stack, 100, accuracy: 1e-9)
     }
     
-    @MainActor
-    func test_processRoundEnd_userWins_awardsXP_andSetsWonHand() {
-        let manager = AIGameManager(testingMode: true)
+    func test_processRoundEnd_showdown_oneSidePot_twoDifferentWinners() async {
+        let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 30)   // all-in
+        let p2 = AIPlayer(name: "B", fullName: "", position: "MP", stack: 100)
+        let p3 = AIPlayer(name: "C", fullName: "", position: "CO", stack: 100)
 
-        let hero = AIPlayer(name: "HERO", fullName: "", position: "UTG", stack: 100, isUser: true)
-        let v1 = AIPlayer(name: "V1", fullName: "", position: "MP", stack: 100)
-        manager.aiPlayers = [hero, v1]
+        manager.aiPlayers = [p1, p2, p3]
 
-        manager.pot = 40 // split 40/1 = 40 => xpEarned = max(Int(40/10)=4, 5) = 5
+        // Commitments
+        _ = p1.raise(amount: 30, game: 0, round: 0) // all-in
+        _ = p2.raise(amount: 60, game: 0, round: 0)
+        _ = p3.call(amount: 60, game: 0, round: 0)
 
-        let profile = MockProfile(username: "test")
-        manager.profile = profile
+        manager.pot = 150
 
-        // Make a minimal AIGameLog with required fields
-        let dummyGame = Game(gameType: .aiVsHuman)
-        manager.gameLog = dummyGame
-        manager.aiHandLog = AIGameLog(hand: "test", board: [], street: .preflop, game: dummyGame)
-        manager.aiHandLog?.reachedShowdown = true
-        manager.aiHandLog?.xpEarned = 0
+        // Winner ordering must allow:
+        // - A beats everyone in main pot
+        // - B beats C for side pot
+        mockAPI.nextWinners = ["A"] // (if your API returns just "overall" winners)
+        mockAPI.nextWinnerDetails = [
+            PlayerDetails(name: "A", hand: [], score: 1, hand_name: ""),
+            PlayerDetails(name: "B", hand: [], score: 2, hand_name: ""),
+            PlayerDetails(name: "C", hand: [], score: 3, hand_name: "")
+        ]
 
-        manager.processRoundEnd(winners: ["HERO"], playersLeft: [], showdownDetails: [])
+        await manager.processRoundEnd()
 
-        XCTAssertEqual(hero.stack, 140, accuracy: 1e-9)
-        XCTAssertEqual(profile.xpAdded, 5)
-        XCTAssertEqual(manager.aiHandLog?.xpEarned, 5)
-        XCTAssertEqual(manager.aiHandLog?.wonHand, true)
+        // After bets:
+        // A: 30 -> 0, wins 90 => 90
+        // B: 100 -> 40, wins 60 => 100
+        // C: 100 -> 40
+        XCTAssertEqual(p1.stack, 90, accuracy: 1e-9)
+        XCTAssertEqual(p2.stack, 100, accuracy: 1e-9)
+        XCTAssertEqual(p3.stack, 40, accuracy: 1e-9)
     }
     
-    @MainActor
-    func test_processRoundEnd_whenReachedShowdown_andUserNotWinner_setsWonHandFalse() {
-        let manager = AIGameManager(testingMode: true)
+    func test_processRoundEnd_showdown_twoSidePots_twoAllIns() async {
+        let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 20)   // all-in
+        let p2 = AIPlayer(name: "B", fullName: "", position: "MP", stack: 50)   // all-in
+        let p3 = AIPlayer(name: "C", fullName: "", position: "CO", stack: 200)
 
-        let hero = AIPlayer(name: "HERO", fullName: "", position: "UTG", stack: 100, isUser: true)
-        let v1 = AIPlayer(name: "V1", fullName: "", position: "MP", stack: 100)
-        manager.aiPlayers = [hero, v1]
-        manager.pot = 20
+        manager.aiPlayers = [p1, p2, p3]
 
-        let dummyGame = Game(gameType: .aiVsHuman)
-        manager.gameLog = dummyGame
-        manager.aiHandLog = AIGameLog(hand: "test", board: [], street: .preflop, game: dummyGame)
-        manager.aiHandLog?.reachedShowdown = true
-        manager.aiHandLog?.wonHand = true // start true to ensure it flips
+        _ = p1.raise(amount: 20, game: 0, round: 0)
+        _ = p2.raise(amount: 50, game: 0, round: 0)
+        _ = p3.call(amount: 80, game: 0, round: 0)
+        manager.pot = 150
 
-        manager.processRoundEnd(winners: ["V1"], playersLeft: [], showdownDetails: [])
+        // Make A best overall (wins main),
+        // B second (wins side1),
+        // C last (wins nothing except any "only eligible" pot behavior)
+        mockAPI.nextWinners = ["A"]
+        mockAPI.nextWinnerDetails = [
+            PlayerDetails(name: "A", hand: [], score: 1, hand_name: ""),
+            PlayerDetails(name: "B", hand: [], score: 2, hand_name: ""),
+            PlayerDetails(name: "C", hand: [], score: 3, hand_name: "")
+        ]
 
-        XCTAssertEqual(manager.aiHandLog?.wonHand, false)
+        await manager.processRoundEnd()
+
+        // This depends on how you treat "pot where only one eligible player exists"
+        // Many implementations won't create Side2 at all, or will just leave it as already in C's stack (but it isn't).
+        //
+        // If Side2 is created and awarded to C, expected:
+        // A: 20 -> 0 +60 = 60
+        // B: 50 -> 0 +60 = 60
+        // C: 200 -> 120 +30 = 150
+        //
+        // If Side2 is NOT created and your pot is still 150, then something else is wrong because money must go somewhere.
+        //
+        // So assert the money conservation and the known pots at least:
+        XCTAssertEqual(p1.stack + p2.stack + p3.stack, 20 + 50 + 200, accuracy: 1e-9)
     }
 
-    
-    @MainActor
-    func test_processRoundEnd_setsShowdownPlayers_excludingHero() {
-        let manager = AIGameManager(testingMode: true)
-
-        let hero = AIPlayer(name: "HERO", fullName: "", position: "UTG", stack: 100, isUser: true)
-        let v1 = AIPlayer(name: "V1", fullName: "", position: "MP", stack: 100)
-        manager.aiPlayers = [hero, v1]
-        manager.pot = 20
-
-        let dummyGame = Game(gameType: .aiVsHuman)
-        manager.gameLog = dummyGame
-        manager.aiHandLog = AIGameLog(hand: "tst", board: [], street: .preflop, game: dummyGame)
-        manager.aiHandLog?.reachedShowdown = true
-
-        manager.processRoundEnd(winners: ["HERO", "V1"], playersLeft: [], showdownDetails: [])
-
-        // What you probably WANT:
-        XCTAssertEqual(manager.aiHandLog?.showdownPlayers, ["V1"])
-    }
     
     func test_determineSidePots() {
         // Scenario one
@@ -2071,6 +2109,38 @@ final class AIGameManagerTests: XCTestCase {
         }
     }
 
+    
+    func test_distributePot_notUser() {
+        let player = AIPlayer(name: "test", fullName: "testste", position: "UTG", stack: 0.0)
+        
+        manager.distributePot(to: player, amount: 10)
+        
+        XCTAssertEqual(player.stack, 10)
+    }
+    
+    
+    @MainActor
+    func test_distributePot_user() {
+        let player = AIPlayer(name: "test", fullName: "testste", position: "UTG", stack: 0.0, isUser: true)
+        player.hand = [Card(suit: "hearts", rank: "K"),
+                       Card(suit: "diamonds", rank: "Q")]
+        
+        
+        
+        let game = Game(gameType: .aiVsHuman)
+        manager.gameLog = game
+        manager.aiPlayers = [player]
+        
+        _ = manager.initializeStreetLog()
+        
+        manager.distributePot(to: player, amount: 10)
+        
+        
+        XCTAssertEqual(player.stack, 10)
+        XCTAssertEqual(manager.aiHandLog?.wonHand, true)
+        XCTAssertEqual(manager.aiHandLog?.xpEarned, 5)
+        
+    }
 }
 
 

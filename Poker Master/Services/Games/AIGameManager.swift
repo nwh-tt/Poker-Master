@@ -75,9 +75,9 @@ class AIGameManager {
         isLoading = true
         let aiNames = await getAIPlayerNames()
         aiPlayers = createRandomPlayers(aiNames: aiNames)
-        isLoading = false
         
         // This still needs to be set to true regardless of any errors retrieving names
+        isLoading = false
         waitingForStartorRetryButton = true
     }
 
@@ -85,7 +85,7 @@ class AIGameManager {
         gameLog = Game(gameType: .aiVsHuman)
         context?.insert(gameLog!)
         
-        // Create deck and deal cards
+        // Deal cards
         for player in aiPlayers {
             player.hand.append(deck.dealCard())
             player.hand.append(deck.dealCard())
@@ -231,25 +231,8 @@ class AIGameManager {
             // Wait half a second
             await sleepIfNeeded()
             
-            var winnerNames: [String] = []
-            var showdownPlayerDetails: [PlayerDetails] = []
-            if remainingPlayers() > 1 {
-                let winnerDetails = await determineWinners()
-                winnerNames = winnerDetails.winners
-                showdownPlayerDetails = winnerDetails.player_details
-                isShowdown = true
-            } else {
-                let singularWinner = aiPlayers.first(where: { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game) })
-                winnerNames = [singularWinner!.name]
-            }
-            
-            let playersLeft = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
-            
-            if playersLeft.first(where: { $0.isUser }) != nil {
-                aiHandLog?.reachedShowdown = true
-            }
-            
-            processRoundEnd(winners: winnerNames, playersLeft: playersLeft, showdownDetails: showdownPlayerDetails)
+            // Process round - split winnings etc
+            await processRoundEnd()
             
             
             waitingForContinueButton = true
@@ -270,7 +253,7 @@ class AIGameManager {
     }
     
     func processRoundEnd() async {
-        // Process Singular winner - less complex
+        // Case 1: Single player left auto wins
         if remainingPlayers() == 1 {
             // Winner by last standing
             guard let winnerPlayer = aiPlayers.first(
@@ -283,6 +266,7 @@ class AIGameManager {
             return
         }
         
+        // Case 2: Showdown between multiple players
         let winnersAndDetails = await determineWinners()
         
         let remainingPlayers = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
@@ -300,7 +284,7 @@ class AIGameManager {
                         """)
                     }
 
-                    distributePot(to: player, amount: sidePot.amount)
+                    distributePot(to: player, amount: sidePot.splitAmount)
                 }
             
             // Capture showdown details if user is present in winners
@@ -308,6 +292,8 @@ class AIGameManager {
                 aiHandLog?.showdownPlayers = sidePot.eligiblePlayers.filter { $0.isUser }.map({ $0.name })
             }
         }
+        
+        isShowdown = true
     }
     
     // Create a function to handle distributing potSplit to players, and stats if the player is a user
@@ -501,36 +487,6 @@ class AIGameManager {
         await sleepIfNeeded()
         
         raise(aiPlayer: aiPlayers[bbIndex], amount: 1.0)
-    }
-    
-    func processRoundEnd(winners: [String], playersLeft: [AIPlayer], showdownDetails: [PlayerDetails]) {
-        guard !winners.isEmpty else {
-            print("processRoundEnd: no winners provided")
-            return
-        }
-        
-        // let sidePots = determineSidePots(playersInHand: playersLeft)
-        if aiHandLog?.reachedShowdown == true { aiHandLog?.wonHand = false }
-        
-        let potSplit = pot / Double(winners.count)
-        
-        for playerName in winners {
-            guard let player = aiPlayers.first(where: { $0.name == playerName }) else {
-                print("processRoundEnd: winner not found in aiPlayers: \(playerName)")
-                continue
-            }
-            player.stack += potSplit
-            if player.isUser {
-                aiHandLog?.wonHand = true
-                let xpEarned = max(Int(potSplit / 10), 5)
-                aiHandLog?.xpEarned += xpEarned
-                profile?.addXP(amount: xpEarned)
-            }
-        }
-        
-        if aiHandLog?.reachedShowdown == true {
-            aiHandLog?.showdownPlayers = winners.filter { $0.lowercased() != "hero" }
-        }
     }
     
     func determineSidePots(playersInHand: [AIPlayer], remainingDetails: [PlayerDetails]) -> [SidePot] {
