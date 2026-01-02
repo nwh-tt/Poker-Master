@@ -10,15 +10,15 @@ import SwiftUI
 struct MenuOption: View {
     let gameName: String
     let gameDescription: String
-    let gradientColor: Color
-    let adLockedGame: Bool
+    let gradientColor: [Color]
+    let locked: Bool
     let comingSoon: Bool
 
-    init(gameName: String, gameDescription: String, gradientColor: Color, adLockedGame: Bool = false, comingSoon: Bool = false) {
+    init(gameName: String, gameDescription: String, gradientColor: [Color], locked: Bool = false, comingSoon: Bool = false) {
         self.gameName = gameName
         self.gameDescription = gameDescription
         self.gradientColor = gradientColor
-        self.adLockedGame = adLockedGame
+        self.locked = locked
         self.comingSoon = comingSoon
     }
     
@@ -33,14 +33,14 @@ struct MenuOption: View {
                     .foregroundColor(.white.opacity(0.7))
             }
             Spacer()
-            if adLockedGame {
+            if locked {
                 VStack {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
                         .foregroundColor(.white)
-                    Text("Watch ad")
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.85))
+                        .frame(width: 15, height: 15)
+                        .padding()
                 }
             }
             else if comingSoon {
@@ -62,14 +62,7 @@ struct MenuOption: View {
         .frame(maxWidth: .infinity)
         .frame(height: 80)
         .background(
-            LinearGradient(
-                gradient: Gradient(stops: [
-                        .init(color: gradientColor, location: 0.0),
-                        .init(color: Color(red: 50/255, green: 55/255, blue: 60/255).opacity(0.5), location: 0.91)
-                ]),
-                startPoint: .bottomTrailing,
-                endPoint: .topLeading
-            )
+            LinearGradient(colors: gradientColor, startPoint: .topLeading, endPoint: .bottomTrailing)
         )
         .cornerRadius(15)
         .overlay(
@@ -81,15 +74,16 @@ struct MenuOption: View {
 }
 
 #Preview {
-    MenuOption(gameName: "Preflop", gameDescription: "Basic Preflop", gradientColor: Color(red: 80/255, green: 15/255, blue: 25/255).opacity(0.9))
+    MenuOption(gameName: "Preflop", gameDescription: "Basic Preflop", gradientColor: [Color(red: 0.18, green: 0.26, blue: 0.30).opacity(0.80), Color(red: 0.10, green: 0.15, blue: 0.18).opacity(0.80)]
+    )
 }
 
-#Preview("Ad Locked") {
+#Preview("Locked - limit hit") {
     MenuOption(
         gameName: "Equity Drill",
         gameDescription: "Watch an ad to unlock",
-        gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
-        adLockedGame: true
+        gradientColor: [Color(red: 0.18, green: 0.26, blue: 0.30).opacity(0.80), Color(red: 0.10, green: 0.15, blue: 0.18).opacity(0.80)],
+        locked: true
     )
 }
 
@@ -97,7 +91,7 @@ struct MenuOption: View {
     MenuOption(
         gameName: "Equity Drill",
         gameDescription: "Watch an ad to unlock",
-        gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
+        gradientColor: [Color(red: 0.18, green: 0.26, blue: 0.30).opacity(0.80), Color(red: 0.10, green: 0.15, blue: 0.18).opacity(0.80)],
         comingSoon: true
     )
 }

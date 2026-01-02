@@ -265,7 +265,7 @@ class MockProfile: Profile {
 }
 
 
-
+@MainActor
 final class AIGameManagerTests: XCTestCase {
     
     // MARK: - Helpers
@@ -1787,7 +1787,7 @@ final class AIGameManagerTests: XCTestCase {
         // P1 folds -> winner p2
         p1.fold(game: 0, round: 0)
         
-        await manager.processRoundEnd()
+        try? await manager.processRoundEnd()
 
         XCTAssertEqual(p1.stack, 50)
         XCTAssertEqual(p2.stack, 90, accuracy: 1e-9)
@@ -1811,10 +1811,66 @@ final class AIGameManagerTests: XCTestCase {
         manager.pot = 20
         
         // 2 active players - basic showdown
-        await manager.processRoundEnd()
+        try? await manager.processRoundEnd()
 
         XCTAssertEqual(p1.stack, 40)
         XCTAssertEqual(p2.stack, 80, accuracy: 1e-9)
+    }
+    
+    func test_processRoundEnd_basicShowdownOnePrevFolded() async {
+
+        let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 50)
+        let p2 = AIPlayer(name: "B", fullName: "", position: "MP", stack: 70)
+        let p3 = AIPlayer(name: "C", fullName: "", position: "CO", stack: 70)
+        manager.aiPlayers = [p1, p2, p3]
+        
+        
+        mockAPI.nextWinners = ["B"]
+        mockAPI.nextWinnerDetails = [
+            PlayerDetails(name: "A", hand: [], score: 4, hand_name: ""),
+            PlayerDetails(name: "B", hand: [], score: 3, hand_name: "")
+        ]
+        
+        _ = p1.raise(amount: 10, game: 0, round: 0)
+        _ = p2.call(amount: 10, game: 0, round: 0)
+        _ = p3.call(amount: 10, game: 0, round: 0)
+        p3.fold(game: 0, round: 0)
+        manager.pot = 20
+        
+        // 2 active players - basic showdown
+        try? await manager.processRoundEnd()
+
+        XCTAssertEqual(p1.stack, 40)
+        XCTAssertEqual(p3.stack, 60)
+        XCTAssertEqual(p2.stack, 90, accuracy: 1e-9)
+    }
+    
+    func test_processRoundEnd_basicShowdownInconsistentBetNumbers() async {
+
+        let p1 = AIPlayer(name: "A", fullName: "", position: "UTG", stack: 50)
+        let p2 = AIPlayer(name: "B", fullName: "", position: "MP", stack: 70)
+        let p3 = AIPlayer(name: "C", fullName: "", position: "CO", stack: 70)
+        manager.aiPlayers = [p1, p2, p3]
+        
+        
+        mockAPI.nextWinners = ["B"]
+        mockAPI.nextWinnerDetails = [
+            PlayerDetails(name: "C", hand: [], score: 4, hand_name: ""),
+            PlayerDetails(name: "B", hand: [], score: 3, hand_name: "")
+        ]
+        
+        _ = p1.raise(amount: 0.5, game: 0, round: 0)
+        _ = p2.raise(amount: 5, game: 0, round: 0)
+        _ = p3.call(amount: 5, game: 0, round: 0)
+        p1.fold(game: 0, round: 0)
+        _ = p2.raise(amount: 10, game: 0, round: 0)
+        _ = p3.call(amount: 10, game: 0, round: 0)
+        manager.pot = 20.5
+        
+        // 2 active players - basic showdown
+        try? await manager.processRoundEnd()
+
+        XCTAssertEqual(p2.stack, 80.5, accuracy: 1e-9)
     }
     
     func test_processRoundEnd_showdown_tie_splitsPot() async {
@@ -1833,7 +1889,7 @@ final class AIGameManagerTests: XCTestCase {
         _ = p2.call(amount: 20, game: 0, round: 0)
         manager.pot = 40
 
-        await manager.processRoundEnd()
+        try? await manager.processRoundEnd()
 
         // Each put in 20, pot 40 split => each net 0 change
         XCTAssertEqual(p1.stack, 100, accuracy: 1e-9)
@@ -1864,7 +1920,7 @@ final class AIGameManagerTests: XCTestCase {
             PlayerDetails(name: "C", hand: [], score: 3, hand_name: "")
         ]
 
-        await manager.processRoundEnd()
+        try? await manager.processRoundEnd()
 
         // After bets:
         // A: 30 -> 0, wins 90 => 90
@@ -1897,7 +1953,7 @@ final class AIGameManagerTests: XCTestCase {
             PlayerDetails(name: "C", hand: [], score: 3, hand_name: "")
         ]
 
-        await manager.processRoundEnd()
+        try? await manager.processRoundEnd()
 
         // This depends on how you treat "pot where only one eligible player exists"
         // Many implementations won't create Side2 at all, or will just leave it as already in C's stack (but it isn't).
@@ -1934,7 +1990,7 @@ final class AIGameManagerTests: XCTestCase {
         _ = p3.call(amount: 5, game: 0, round: 0)
         manager.pot = 15
         
-        let sidePots = manager.determineSidePots(playersInHand: [p1, p2, p3], remainingDetails: remainingDetails)
+        let sidePots = manager.determineSidePots(players: [p1, p2, p3], remainingDetails: remainingDetails)
         
         XCTAssertEqual(sidePots[0].amount, 15)
         let expectedEligiblePlayerNames = ["p1", "p2", "p3"]
@@ -1965,7 +2021,7 @@ final class AIGameManagerTests: XCTestCase {
             PlayerDetails(name: "p3", hand: [""], score: 20, hand_name: "")
         ]
 
-        let sidePots = manager.determineSidePots(playersInHand: [p1,p2,p3], remainingDetails: remainingDetails)
+        let sidePots = manager.determineSidePots(players: [p1,p2,p3], remainingDetails: remainingDetails)
 
         XCTAssertEqual(sidePots.count, 2)
 
@@ -2010,7 +2066,7 @@ final class AIGameManagerTests: XCTestCase {
             PlayerDetails(name: "p4", hand: [""], score: 20, hand_name: "")
         ]
 
-        let sidePots = manager.determineSidePots(playersInHand: [p1,p2,p3,p4], remainingDetails: remainingDetails)
+        let sidePots = manager.determineSidePots(players: [p1,p2,p3,p4], remainingDetails: remainingDetails)
 
         XCTAssertEqual(sidePots.count, 3)
 
@@ -2059,7 +2115,7 @@ final class AIGameManagerTests: XCTestCase {
             PlayerDetails(name: "p3", hand: [""], score: 10, hand_name: "")
         ]
 
-        let sidePots = manager.determineSidePots(playersInHand: [p1,p2,p3], remainingDetails: remainingDetails)
+        let sidePots = manager.determineSidePots(players: [p1,p2,p3], remainingDetails: remainingDetails)
 
         XCTAssertEqual(sidePots.count, 2)
 
@@ -2093,7 +2149,7 @@ final class AIGameManagerTests: XCTestCase {
             PlayerDetails(name: "p3", hand: [""], score: 20, hand_name: "")
         ]
 
-        let sidePots = manager.determineSidePots(playersInHand: [p1,p2,p3], remainingDetails: remainingDetails)
+        let sidePots = manager.determineSidePots(players: [p1,p2,p3], remainingDetails: remainingDetails)
 
         XCTAssertEqual(sidePots.count, 2)
         XCTAssertEqual(sidePots[0].amount, 30, accuracy: 1e-9)

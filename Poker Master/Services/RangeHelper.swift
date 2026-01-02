@@ -22,8 +22,6 @@ class RangeHelper {
     
     init(ranges: [String: [String: [String]]] = RangesFileManager.loadRanges()) {
             self.ranges = ranges
-        print("Range helper initialized")
-        
     }
     
     func refreshRanges() {

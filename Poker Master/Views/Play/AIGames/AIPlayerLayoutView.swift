@@ -32,7 +32,7 @@ struct AIPlayerLayoutView: View {
             }
         }
         .padding(4)
-        .padding(.vertical, 90)
+        .padding(.vertical, 80)
     }
     
     private var sixMaxLayout: some View {

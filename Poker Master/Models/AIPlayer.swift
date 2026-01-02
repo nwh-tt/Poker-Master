@@ -54,13 +54,14 @@ class AIPlayer: Identifiable {
     
     func totalContribution(game: Int) -> Double {
         var total = 0.0
-        
-        // Loop thtrough each round - last bet is highest bet always unless folded
         for round in Street.allCases.indices {
-            let lastBet = lastBet(game: game, round: round)
-            total += lastBet
+            let maxCommittedThisRound = moveHistory
+                .filter { $0.game == game && $0.round == round }
+                .map(\.amount)
+                .max() ?? 0.0
+
+            total += maxCommittedThisRound
         }
-        
         return total
     }
     
@@ -96,6 +97,9 @@ class AIPlayer: Identifiable {
 
         // Deduct from stack and record the raise
         stack -= amountToBet
+        
+        assert(stack >= 0, "Stack cannot be negative")
+        
         recordAction(.raise, amount: amount, game: game, round: round)
         return amountToBet
     }
@@ -108,6 +112,8 @@ class AIPlayer: Identifiable {
         }
         
         stack -= amountNeededToCall
+        
+        assert(stack >= 0, "Stack cannot be negative")
         recordAction(.call, amount: amount, game: game, round: round)
         return amountNeededToCall
     }

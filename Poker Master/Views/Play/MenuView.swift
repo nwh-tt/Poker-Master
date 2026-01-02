@@ -15,22 +15,32 @@ struct MenuView: View {
     
     @State private var navigateToEquityDrill = false
     
+    @State private var navigateToAITable = false
+    
     @State private var showPremiumPopup = false
     @State private var showCreateAccount = false
     
     @State private var isSubscribed = true
     
-    @Query var handLogs: [PreflopLog]
+    @Query var equityLogs: [EquityLog]
+    @Query var aiLogs: [AIGameLog]
     
+    var hitEquityLimit: Bool {
+        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
+        let recentEquityHands = equityLogs.filter {
+            $0.date >= cutoff
+        }
+        print("Printing recent equity count: \(recentEquityHands.count)")
+        return recentEquityHands.count <= 20
+    }
     
-    var needsAd: Bool {
-        false
-//        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
-//        let recentEquityHands = handLogs.filter {
-//            $0.typeOfHand == .equity && $0.date >= cutoff
-//        }
-//        print("Printing recent equity count: \(recentEquityHands.count)")
-//        return recentEquityHands.count >= 200
+    var hitAILimit: Bool {
+        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
+        let recentAIHands = aiLogs.filter {
+            $0.date >= cutoff
+        }
+        print("Printing recent ai game count: \(aiLogs.count)")
+        return recentAIHands.count <= 20
     }
 
     var body: some View {
@@ -80,51 +90,61 @@ struct MenuView: View {
                             MenuOption(
                                 gameName: "Basic Preflop",
                                 gameDescription: "Heads-up preflop decision training",
-                                gradientColor: Color(red: 80/255, green: 15/255, blue: 25/255).opacity(0.7)
+                                gradientColor: [
+                                    Color(red: 0.40, green: 0.15, blue: 0.22).opacity(0.70),
+                                    Color(red: 0.16, green: 0.05, blue: 0.10).opacity(0.80)
+                                ]
                             )
                         }
                         
-                        if (navigateToEquityDrill) {
-                            NavigationLink {
-                                EquitySettingsView()
-                                    .onDisappear {
-                                        navigateToEquityDrill = !needsAd
-                                    }
-                            } label: {
-                                MenuOption(
-                                    gameName: "Equity Drill",
-                                    gameDescription: "Learn Poker Equity Quickly",
-                                    gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7)
-                                )
+                        Button {
+                            if !hitEquityLimit || isSubscribed {
+                                navigateToEquityDrill = true
+                            } else {
+                                showPremiumPopup = true
                             }
-                        } else {
-                            Button {
-                                presentEquityDrillFlow()
-                            } label: {
-                                MenuOption(
-                                    gameName: "Equity Drill",
-                                    gameDescription: "Learn Poker Equity Quickly",
-                                    gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7),
-                                    adLockedGame: needsAd
-                                )
-                            }
+                        } label: {
+                            MenuOption(
+                                gameName: "Equity Drill",
+                                gameDescription: "Learn Poker Equity Quickly",
+                                gradientColor: [
+                                    Color(red: 0.08, green: 0.17, blue: 0.28).opacity(0.80),
+                                    Color(red: 0.04, green: 0.08, blue: 0.18).opacity(0.72)
+                                ],
+                                locked: hitEquityLimit
+                            )
+                        }.navigationDestination(isPresented: $navigateToEquityDrill) {
+                            EquitySettingsView()
                         }
                         
-                        NavigationLink {
-                            AITable(tableSize: "6")
-                                .toolbar(.hidden, for: .tabBar)
+                        Button {
+                            if !hitAILimit || isSubscribed {
+                                navigateToAITable = true
+                            } else {
+                                showPremiumPopup = true
+                            }
                         } label: {
                             MenuOption(
                                 gameName: "Play AI",
                                 gameDescription: "Play against a table of unique AI",
-                                gradientColor: Color(red: 15/255, green: 32/255, blue: 60/255).opacity(0.7)
+                                gradientColor: [
+                                    Color(red: 0.18, green: 0.26, blue: 0.30).opacity(0.80),
+                                    Color(red: 0.10, green: 0.15, blue: 0.18).opacity(0.60)
+                                ],
+                                locked: hitAILimit && !isSubscribed
                             )
+                        }.navigationDestination(isPresented: $navigateToAITable) {
+                            AITable(tableSize: "6")
+                                .toolbar(.hidden, for: .tabBar)
                         }
                         
                         MenuOption(
                             gameName: "Post Flop",
                             gameDescription: "Post Flop training with EV",
-                            gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9),
+                            gradientColor: [
+                                Color(red: 0.12, green: 0.25, blue: 0.18).opacity(0.80),
+                                Color(red: 0.06, green: 0.18, blue: 0.10).opacity(0.60)
+                            ],
                             comingSoon: true
                         )
                         
@@ -139,7 +159,10 @@ struct MenuView: View {
                             MenuOption(
                                 gameName: "Ranges",
                                 gameDescription: "View and edit ranges",
-                                gradientColor: Color(red: 0.0, green: 40/255, blue: 0.0).opacity(0.9)
+                                gradientColor: [
+                                    Color(red: 0.34, green: 0.18, blue: 0.40).opacity(0.60),
+                                    Color(red: 0.16, green: 0.08, blue: 0.20).opacity(0.60)
+                                ]
                             )
                         }
                         if !isSubscribed {
@@ -167,13 +190,12 @@ struct MenuView: View {
                         .onPurchaseCompleted { customerInfo in
                             // ✅ Your logic for a successful purchase goes here.
                             print("Purchase completed successfully! Customer Info: \(customerInfo.entitlements.active)")
-                            // TODO: Navigate to where the user was trying to go
+                            isSubscribed = true
                         }
                 }
             }
         }
         .task {
-            // await loadRewardedAd()
             isSubscribed = await SubscriptionManager.isSubscribed()
         }.preferredColorScheme(.dark)
     }

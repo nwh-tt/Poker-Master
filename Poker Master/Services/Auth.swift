@@ -15,6 +15,7 @@ protocol AuthServiceProtocol {
     var isAuthenticated: Bool { get }
     func addStateDidChangeListener(_ listener: @escaping (User?) -> Void)
     func signIn(email: String, password: String, completion: @escaping (Error?) -> Void)
+    func anonymousSignIn(completion: @escaping (Error?) -> Void)
     func signUp(email: String, password: String, completion: @escaping (Error?) -> Void)
     func signOut() throws
     func getIDToken(forceRefresh: Bool) async throws -> String
@@ -38,6 +39,12 @@ class FirebaseAuthService: AuthServiceProtocol {
 
     func signIn(email: String, password: String, completion: @escaping (Error?) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { _, error in
+            completion(error)
+        }
+    }
+    
+    func anonymousSignIn(completion: @escaping (Error?) -> Void) {
+        Auth.auth().signInAnonymously { _, error in
             completion(error)
         }
     }
@@ -66,6 +73,9 @@ class AuthManager: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var isLoading: Bool = false
     
+    // saves from race conditions
+    private var isEnsuringSignIn = false
+    
     private var currentNonce: String?
     private let authService: AuthServiceProtocol
 
@@ -80,21 +90,23 @@ class AuthManager: ObservableObject {
             self.user = user
             self.isAuthenticated = user != nil
             
-            if let user = user {
-                Purchases.shared.logIn(user.uid) { _, created, error in
-                    if let error = error {
-                        print("❌ Failed to log in to RevenueCat: \(error.localizedDescription)")
-                    } else {
-                        print("✅ RevenueCat login successful. New user? \(created)")
-                    }
-                }
-            } else {
-                Purchases.shared.logOut { _, error in
-                    if let error = error {
-                        print("⚠️ RevenueCat logout failed: \(error.localizedDescription)")
-                    } else {
-                        print("👋 Logged out of RevenueCat.")
-                    }
+            guard let user else {
+                // ✅ Do NOT log out of RevenueCat here.
+                // If you logOut, you create a new RC anonymous user and can "lose" entitlements.
+                return
+            }
+            
+            if user.isAnonymous {
+                // ✅ Keep RevenueCat anonymous; don't tie it to a throwaway Firebase UID
+                return
+            }
+            
+            
+            Purchases.shared.logIn(user.uid) { _, created, error in
+                if let error = error {
+                    print("❌ Failed to log in to RevenueCat: \(error.localizedDescription)")
+                } else {
+                    print("✅ RevenueCat login successful. New user? \(created)")
                 }
             }
         }
@@ -103,12 +115,39 @@ class AuthManager: ObservableObject {
     func getIDToken(forceRefresh: Bool = false) async throws -> String {
         try await authService.getIDToken(forceRefresh: forceRefresh)
     }
+    
+    @MainActor
+    func ensureSignedIn() {
+        if authService.isAuthenticated || isEnsuringSignIn { return }
+        isEnsuringSignIn = true
+        errorMessage = nil
+
+        authService.anonymousSignIn { [weak self] error in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.isEnsuringSignIn = false
+                self.isAuthenticated = self.authService.isAuthenticated
+                self.errorMessage = error?.localizedDescription
+            }
+        }
+    }
 
     // MARK: - Sign In
     func signIn(email: String, password: String) {
         errorMessage = nil // Clear any previous errors
         
         authService.signIn(email: email, password: password) { [weak self] error in
+            DispatchQueue.main.async {
+                self?.isAuthenticated = self?.authService.isAuthenticated ?? false
+                self?.errorMessage = error?.localizedDescription
+            }
+        }
+    }
+    
+    func anonymousSignIn() {
+        errorMessage = nil // Clear any previous errors
+        print("Anonymous Sign In triggered")
+        authService.anonymousSignIn { [weak self] error in
             DispatchQueue.main.async {
                 self?.isAuthenticated = self?.authService.isAuthenticated ?? false
                 self?.errorMessage = error?.localizedDescription

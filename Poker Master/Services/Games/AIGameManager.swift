@@ -8,6 +8,9 @@ enum GameLoopError: Error, Equatable {
     case invalidFirstPlayer
     case unknownAIAction
     case userCancelled
+    case sbNotFound
+    case bbNotFound
+    case winnerNotFound
 }
 
 struct SidePot {
@@ -17,6 +20,8 @@ struct SidePot {
     let splitAmount: Double
 }
 
+
+@MainActor
 @Observable
 class AIGameManager {
     // Data saving info
@@ -97,19 +102,19 @@ class AIGameManager {
     
     func canStartNewGame() -> Bool {
         guard let user = aiPlayers.first(where: { $0.isUser }) else {
-            print("Validation failed: no user found")
+            Log.aiGame.info("Validation failed: no user found")
             return false
         }
         
         let playersWithChips = aiPlayers.filter { $0.stack > 0 }
         if playersWithChips.count < 2 {
-            print("Validation failed: not enough players")
+            Log.aiGame.info("Validation failed: not enough players with chips")
             return false
         }
         
         // Check if user is in the game
         if user.stack <= 0 {
-            print("Validation failed: user is out of money")
+            Log.aiGame.info("Validation failed: user is out of money")
             return false
         }
         
@@ -148,25 +153,26 @@ class AIGameManager {
     @MainActor
     func initializeStreetLog() -> Bool {
         guard let currentGameLog = gameLog else {
-            print("No game log found - No data will be saved")
+            Log.aiGame.error("No game log found - No data will be saved")
             return false
         }
         
         guard let user = aiPlayers.first(where: { $0.isUser }) else {
-            print("No user found - No data will be saved")
+            Log.aiGame.error("No user found - No data will be saved")
             return false
         }
         
         guard Street.allCases.indices.contains(round) else {
-                print("Invalid round index: \(round)")
-                return false
+            Log.aiGame.error("initializeStreetLog failed: invalid round index \(self.round, privacy: .public)")
+            return false
         }
         
         let street = Street.allCases[round]
-        let board = board.map { $0.toString() }
+        let boardString = board.map { $0.toString() }
         
-        aiHandLog = AIGameLog(hand: user.hand.handToString(), board: board, street: street, game: currentGameLog)
+        aiHandLog = AIGameLog(hand: user.hand.handToString(), board: boardString, street: street, game: currentGameLog)
         
+        Log.aiGame.info("New hand log created for \(street.rawValue, privacy: .public)")
         return true
         
     }
@@ -174,7 +180,7 @@ class AIGameManager {
     @MainActor
     func saveStreetLog() {
         guard let currentLog = aiHandLog else {
-            print("No game log found - No data to be saved")
+            Log.aiGame.error("No game log found - No data to be saved")
             return
         }
         
@@ -183,7 +189,7 @@ class AIGameManager {
         do {
             try context?.save()
         } catch {
-            print("Failed to save game: \(error)")
+            Log.aiGame.error("Failed to save game: \(error, privacy: .public)")
         }
     }
     
@@ -232,7 +238,7 @@ class AIGameManager {
             await sleepIfNeeded()
             
             // Process round - split winnings etc
-            await processRoundEnd()
+            try await processRoundEnd()
             
             
             waitingForContinueButton = true
@@ -246,20 +252,22 @@ class AIGameManager {
             return
         }
         catch {
-           print("Error in game loop: \(error)")
+            Log.aiGame.error("Error in game loop: \(error, privacy: .public)")
+            
            // TODO: Show game over screen and prompt user to leave
            waitingForContinueButton = true
        }
     }
     
-    func processRoundEnd() async {
+    func processRoundEnd() async throws {
         // Case 1: Single player left auto wins
         if remainingPlayers() == 1 {
             // Winner by last standing
             guard let winnerPlayer = aiPlayers.first(
                 where: { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game) }
             ) else {
-                fatalError("Expected singular winner, but none found. Players: \(aiPlayers)")
+                Log.aiGame.error("Expected singular winner, but none found. Players: \(self.aiPlayers, privacy: .public)")
+                throw GameLoopError.winnerNotFound
             }
             aiHandLog?.reachedShowdown = false
             distributePot(to: winnerPlayer, amount: pot)
@@ -269,23 +277,20 @@ class AIGameManager {
         // Case 2: Showdown between multiple players
         let winnersAndDetails = await determineWinners()
         
-        let remainingPlayers = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
+        let activePlayers = getActivePlayers()
         
-        let sidePots = determineSidePots(playersInHand: remainingPlayers, remainingDetails: winnersAndDetails.player_details)
+        let sidePots = determineSidePots(players: aiPlayers, remainingDetails: winnersAndDetails.player_details)
         
         for sidePot in sidePots {
             for winnerName in sidePot.winners {
-                    guard let player = remainingPlayers.first(where: { $0.name == winnerName }) else {
-                        fatalError("""
-                        Side pot winner not found in remaining players.
-                        Winner name: \(winnerName)
-                        Remaining players: \(remainingPlayers.map { $0.name })
-                        Side pot: \(sidePot)
-                        """)
-                    }
-
-                    distributePot(to: player, amount: sidePot.splitAmount)
+                guard let player = activePlayers.first(where: { $0.name == winnerName }) else {
+                    Log.aiGame.error("Side pot winner not found in remaining players. Winner name: \(winnerName) Remaining players: \(activePlayers.map { $0.name })")
+                    throw GameLoopError.winnerNotFound
                 }
+                
+                distributePot(to: player, amount: sidePot.splitAmount)
+                Log.aiGame.info("Distributed \(sidePot.splitAmount, privacy: .public) to \(player.name, privacy: .public)")
+            }
             
             // Capture showdown details if user is present in winners
             if sidePot.eligiblePlayers.contains(where: { $0.isUser }) {
@@ -294,6 +299,7 @@ class AIGameManager {
         }
         
         isShowdown = true
+        aiHandLog?.reachedShowdown = true
     }
     
     // Create a function to handle distributing potSplit to players, and stats if the player is a user
@@ -309,7 +315,8 @@ class AIGameManager {
     
     @MainActor
     func playBettingRound() async throws {
-        print("=== 🃏 STARTING BETTING ROUND ===")
+        Log.aiGame.info("Betting round start game=\(self.game, privacy: .public) round=\(self.round, privacy: .public) active=\(self.getActivePlayers().count, privacy: .public) lastBet=\(self.lastPlayerBet, privacy: .public)")
+        
         var highestBet = 0.0
         var turn = getFirstPlayerToActIndex()
         
@@ -328,15 +335,15 @@ class AIGameManager {
         }
         
         // Check if any meaningful action can occur
-        let activePlayers = aiPlayers.filter {
-            $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)
-        }
+        let activePlayers = getActivePlayers()
         let playersWithChips = activePlayers.filter { $0.stack > 0 }
         
         if playersWithChips.count < 2 {
             await sleepIfNeeded()
             round += 1
             lastPlayerBet = 0
+            
+            Log.aiGame.info("Not enough players with chips (someone is likely all in)")
             return
         }
         
@@ -357,7 +364,7 @@ class AIGameManager {
                 continue
             }
             
-            let activePlayers = aiPlayers.filter { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game) }
+            let activePlayers = getActivePlayers()
             if  isBettingComplete(activePlayers: activePlayers, highestBet: highestBet) {
                 break
             }
@@ -373,6 +380,7 @@ class AIGameManager {
                 skipActive = false
                 (action, amount) = await getUserDecision()
                 
+                // If user exits
                 if action == "cancel" {
                     throw GameLoopError.userCancelled
                 }
@@ -415,9 +423,7 @@ class AIGameManager {
             // Advance turn
             turn = (turn + 1) % aiPlayers.count
 
-            // Check if only one player remains
-            let activeCount = aiPlayers.filter { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game) }.count
-            if activeCount == 1 {
+            if remainingPlayers() == 1 {
                 break
             }
         }
@@ -425,6 +431,9 @@ class AIGameManager {
         await sleepIfNeeded()
         round += 1
         lastPlayerBet = 0
+        
+        Log.aiGame.info("Betting round end game=\(self.game, privacy: .public) round=\(self.round, privacy: .public) pot=\(self.pot, privacy: .public) remaining=\(self.remainingPlayers(), privacy: .public)")
+
     }
     
     @MainActor
@@ -479,9 +488,17 @@ class AIGameManager {
         
         let sbIndex = getActivePlayerIndexInPosition(position: "SB")
         
+        if sbIndex == -1 {
+            throw GameLoopError.sbNotFound
+        }
+        
         raise(aiPlayer: aiPlayers[sbIndex], amount: 0.5)
 
         let bbIndex = getNextActivePlayerIndex(startingFrom: sbIndex)
+        
+        if bbIndex == -1 {
+            throw GameLoopError.bbNotFound
+        }
         
         // Wait half a second in between
         await sleepIfNeeded()
@@ -489,7 +506,7 @@ class AIGameManager {
         raise(aiPlayer: aiPlayers[bbIndex], amount: 1.0)
     }
     
-    func determineSidePots(playersInHand: [AIPlayer], remainingDetails: [PlayerDetails]) -> [SidePot] {
+    func determineSidePots(players: [AIPlayer], remainingDetails: [PlayerDetails]) -> [SidePot] {
         
         // Lookup between playerName and score
         let scoreByName: [String: Int] = Dictionary(
@@ -498,8 +515,9 @@ class AIGameManager {
         
         // Lookup between player and contribution (0 shouldn't even be possible here)
         let contribPairs: [(player: AIPlayer, contrib: Double)] =
-            playersInHand
+            players
             .map { ($0, $0.totalContribution(game: game)) }
+            .filter { $0.1 > 0 }
 
         guard !contribPairs.isEmpty else { return [] }
 
@@ -514,9 +532,9 @@ class AIGameManager {
             let contributors = contribPairs.filter { $0.contrib >= level }.map { $0.player }
             let potAmount = delta * Double(contributors.count)
 
+            let eligiblePlayers = contributors.filter { $0.lastMove(game: game) != .fold }
             // eligible: contributors that did not fold
-            let eligibleNames = contributors
-                .map { $0.name }
+            let eligibleNames = eligiblePlayers.map { $0.name }
             
             let eligibleWithScores: [(name: String, score: Int)] = eligibleNames.compactMap { name in
                 guard let s = scoreByName[name] else { return nil }
@@ -528,7 +546,7 @@ class AIGameManager {
             
             let split = winners.isEmpty ? 0.0 : (potAmount / Double(winners.count))
 
-            pots.append(SidePot(amount: potAmount, eligiblePlayers: contributors, winners: winners, splitAmount: split))
+            pots.append(SidePot(amount: potAmount, eligiblePlayers: eligiblePlayers, winners: winners, splitAmount: split))
             prevLevel = level
         }
 
@@ -622,7 +640,11 @@ class AIGameManager {
     }
     
     func remainingPlayers() -> Int {
-        return aiPlayers.filter { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)}.count
+        return getActivePlayers().count
+    }
+    
+    func getActivePlayers() -> [AIPlayer] {
+        aiPlayers.filter { $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game) }
     }
     
     /// Gets the first player to act in the round
@@ -732,7 +754,7 @@ class AIGameManager {
             let playerCount = Int(tableSize),
             aiNames.count == playerCount - 1
         else {
-            print("Invalid AI names count for table size")
+            Log.aiGame.error("Invalid AI names count for table size")
             return []
         }
         
@@ -783,6 +805,7 @@ class AIGameManager {
         do {
             return try await api.fetchAIPlayers(tableSize: tableSize)
         } catch {
+            Log.network.error("Failed to fetch AI players from API: \(error, privacy: .public)")
             errorMessage = "Failed to fetch AI players"
             showToast = true
             return []
@@ -812,6 +835,7 @@ class AIGameManager {
             return try await api.fetchAiDecision(aiName: ai.name, aiHole: ai.hand.map { $0.toString() }, board: board.map { $0.toString() }, potOdds: potOdds, opponentCount: remainingPlayers(), possibleMoves: possibleMoves)
             
         } catch {
+            Log.network.error("Failed to retrieve AI move from API: \(error, privacy: .public)")
             errorMessage = "Failed to get AI move"
             showToast = true
             return "fold"
@@ -832,7 +856,7 @@ class AIGameManager {
             
             return response
         } catch {
-            print(error)
+            Log.network.error("Failed to retrieve winners from API: \(error, privacy: .public)")
             errorMessage = "Failed to determine winners"
             showToast = true
             return  DetermineWinnerResponse(winners: [], player_details: [])

@@ -58,9 +58,13 @@ struct Poker_MasterApp: App {
                 .preferredColorScheme(.dark)
                 .environmentObject(userProfile)
                 .environmentObject(authManager)
-                .task {    // This runs once when ContentView appears
+                .task {
+                    // Load in any new challenges created
                     let context = ModelContext(sharedModelContainer)
                     await ChallengeDataManager.syncDefaultChallenges(context: context)
+                    
+                    // Signs user in anonomysly only if needed
+                    authManager.ensureSignedIn()
                 }
         }
         .modelContainer(sharedModelContainer)

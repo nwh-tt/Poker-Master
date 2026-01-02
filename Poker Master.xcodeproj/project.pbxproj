@@ -80,6 +80,7 @@
 		B6DCA8B42EE88CE1006E7F74 /* PokerTableComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA8B32EE88CD8006E7F74 /* PokerTableComponent.swift */; };
 		B6E29FA52ECD29BE0015F53D /* AIStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA42ECD29B60015F53D /* AIStatsView.swift */; };
 		B6E29FA72ECD427C0015F53D /* GenericStatViewComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */; };
+		B6EA5DCB2F05918D009B88EB /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EA5DCA2F059187009B88EB /* Log.swift */; };
 		B6EC8AC22E60F07800C1AC9B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */; };
 		B6EC8AC62E621C1C00C1AC9B /* UserProfileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */; };
 		B6EC8AC92E63830800C1AC9B /* PreflopSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */; };
@@ -182,6 +183,7 @@
 		B6DCA8B32EE88CD8006E7F74 /* PokerTableComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerTableComponent.swift; sourceTree = "<group>"; };
 		B6E29FA42ECD29B60015F53D /* AIStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStatsView.swift; sourceTree = "<group>"; };
 		B6E29FA62ECD42610015F53D /* GenericStatViewComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericStatViewComponents.swift; sourceTree = "<group>"; };
+		B6EA5DCA2F059187009B88EB /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		B6EC8AC12E60F07800C1AC9B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		B6EC8AC52E621C1C00C1AC9B /* UserProfileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileState.swift; sourceTree = "<group>"; };
 		B6EC8AC82E63830800C1AC9B /* PreflopSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreflopSettingsView.swift; sourceTree = "<group>"; };
@@ -293,6 +295,7 @@
 		B649ED4B2BD1B2CE00157267 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B6EA5DCA2F059187009B88EB /* Log.swift */,
 				B6DCA8A32EE33FDA006E7F74 /* APIs */,
 				B63574402EB4434400F1212D /* SubscriptionManager.swift */,
 				B690E2372E80D27C007C601E /* RangeHelper.swift */,
@@ -744,6 +747,7 @@
 				B645C6C72E7DA49D005F78BA /* LoginView.swift in Sources */,
 				B649ED512BD6DA6500157267 /* Card.swift in Sources */,
 				B6EC8AD82E735C4F00C1AC9B /* EquitySettingsView.swift in Sources */,
+				B6EA5DCB2F05918D009B88EB /* Log.swift in Sources */,
 				B6BB625B2E9AD06F00F1E565 /* AIPlayerLayoutView.swift in Sources */,
 				B694411B2EC80E0D005C5957 /* EquityStatsView.swift in Sources */,
 				B6D4036C2D919A27008A83E8 /* IncorrectSelectionView.swift in Sources */,
