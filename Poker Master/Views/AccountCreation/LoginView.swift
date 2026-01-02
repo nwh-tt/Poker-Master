@@ -131,10 +131,8 @@ struct LoginView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .preferredColorScheme(.dark)
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
-                if isAuthenticated {
-                    dismiss()
-                }
+            .onChange(of: authManager.isAnonymous) { _, _ in
+                dismiss()
             }
         }
     }

@@ -5,11 +5,6 @@ import CryptoKit
 import RevenueCat
 import Combine
 
-protocol AuthUser {
-    var uid: String { get }
-    var email: String? { get }
-}
-
 protocol AuthServiceProtocol {
     var currentUser: User? { get }
     var isAuthenticated: Bool { get }
@@ -68,6 +63,7 @@ class FirebaseAuthService: AuthServiceProtocol {
 class AuthManager: ObservableObject {
     @Published var user: User? // The current authenticated user
     @Published var isAuthenticated: Bool = false
+    @Published var isAnonymous: Bool = false
     
     // States to handle the UI
     @Published var errorMessage: String? = nil
@@ -88,7 +84,13 @@ class AuthManager: ObservableObject {
         authService.addStateDidChangeListener { [weak self] user in
             guard let self = self else { return }
             self.user = user
+            
+            // Reset important states
             self.isAuthenticated = user != nil
+            self.isAnonymous = false
+            
+            print("Authenticated: \(isAuthenticated)")
+            print("Is anon: \(self.isAnonymous)")
             
             guard let user else {
                 // ✅ Do NOT log out of RevenueCat here.
@@ -96,6 +98,7 @@ class AuthManager: ObservableObject {
                 return
             }
             
+            self.isAnonymous = user.isAnonymous
             if user.isAnonymous {
                 // ✅ Keep RevenueCat anonymous; don't tie it to a throwaway Firebase UID
                 return
@@ -131,23 +134,25 @@ class AuthManager: ObservableObject {
             }
         }
     }
-
-    // MARK: - Sign In
-    func signIn(email: String, password: String) {
+    
+    // MARK: - Anonymous Sign In occurs automatically
+    func anonymousSignIn() {
         errorMessage = nil // Clear any previous errors
-        
-        authService.signIn(email: email, password: password) { [weak self] error in
+        print("Anonymous Sign In triggered")
+        authService.anonymousSignIn { [weak self] error in
             DispatchQueue.main.async {
                 self?.isAuthenticated = self?.authService.isAuthenticated ?? false
                 self?.errorMessage = error?.localizedDescription
             }
         }
     }
-    
-    func anonymousSignIn() {
-        errorMessage = nil // Clear any previous errors
-        print("Anonymous Sign In triggered")
-        authService.anonymousSignIn { [weak self] error in
+
+    // MARK: - Sign In
+    func signIn(email: String, password: String) {
+        errorMessage = nil
+        isLoading = true
+        
+        authService.signIn(email: email, password: password) { [weak self] error in
             DispatchQueue.main.async {
                 self?.isAuthenticated = self?.authService.isAuthenticated ?? false
                 self?.errorMessage = error?.localizedDescription
@@ -160,11 +165,29 @@ class AuthManager: ObservableObject {
     func signUp(email: String, password: String) {
         errorMessage = nil
         isLoading = true
-        authService.signUp(email: email, password: password) { [weak self] error in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                self?.isAuthenticated = self?.authService.isAuthenticated ?? false
-                self?.errorMessage = error?.localizedDescription
+        
+        // Attempt to link if possible
+        let user = Auth.auth().currentUser
+        
+        if user != nil && user?.isAnonymous == true {
+            let credential = EmailAuthProvider.credential(
+                withEmail: email,
+                password: password
+            )
+            user?.link(with: credential) { [weak self] _, error in
+                DispatchQueue.main.async {
+                    self?.isLoading = false
+                    self?.isAuthenticated = self?.authService.isAuthenticated ?? false
+                    self?.errorMessage = error?.localizedDescription
+                }
+            }
+        } else {
+            authService.signUp(email: email, password: password) { [weak self] error in
+                DispatchQueue.main.async {
+                    self?.isLoading = false
+                    self?.isAuthenticated = self?.authService.isAuthenticated ?? false
+                    self?.errorMessage = error?.localizedDescription
+                }
             }
         }
     }

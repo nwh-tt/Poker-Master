@@ -227,7 +227,7 @@ struct ProfileView: View {
                                     .cornerRadius(12)
                             }.padding(.horizontal)
                         }
-                        if !authManager.isAuthenticated {
+                        if authManager.isAnonymous || !authManager.isAuthenticated {
                             Button(action: {
                                 showCreateAccount = true
                             }) {
@@ -256,7 +256,7 @@ struct ProfileView: View {
                         }
                     }
                     Spacer()
-                    if authManager.isAuthenticated {
+                    if authManager.isAuthenticated && !authManager.isAnonymous {
                         Button(action: {
                             authManager.signOut()
                         }) {
