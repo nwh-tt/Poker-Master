@@ -270,6 +270,11 @@ struct ProfileView: View {
             }
             .fullScreenCover(isPresented: $showPremiumPopup) {
                 PaywallView()
+                    .onPurchaseCompleted { customerInfo in
+                        if customerInfo.entitlements["Premium Subscription"]?.isActive == true {
+                            isSubscribed = true
+                        }
+                    }
             }
             .fullScreenCover(isPresented: $showCreateAccount) {
                 CreateAccountView(showLoginCallback: showLoginScreen)
@@ -281,18 +286,18 @@ struct ProfileView: View {
                 isSubscribed = await SubscriptionManager.isSubscribed()
             }.preferredColorScheme(.dark)
             if currentUser.leveledUP {
-                    LevelUpOverlay(level: currentUser.level)
-                        .transition(.opacity.combined(with: .scale))
-                        .zIndex(1)
-                        .onAppear {
-                            // auto-dismiss after 2 seconds
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                withAnimation {
-                                    currentUser.leveledUP = false
-                                }
+                LevelUpOverlay(level: currentUser.level)
+                    .transition(.opacity.combined(with: .scale))
+                    .zIndex(1)
+                    .onAppear {
+                        // auto-dismiss after 2 seconds
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            withAnimation {
+                                currentUser.leveledUP = false
                             }
                         }
-                }
+                    }
+            }
         }
     }
     

@@ -101,6 +101,11 @@ struct AIStatsView: View {
             }
             .fullScreenCover(isPresented: $showPremiumPopup) {
                 PaywallView()
+                    .onPurchaseCompleted { customerInfo in
+                        if customerInfo.entitlements["Premium Subscription"]?.isActive == true {
+                            isSubscribed = true
+                        }
+                    }
             }.task {
                 isSubscribed = await SubscriptionManager.isSubscribed()
             }
@@ -194,7 +199,7 @@ struct ThreeStatBlock: View {
     context.insert(game)
     
     for _ in 0..<10 {
-        var street = Street.allCases.randomElement()!
+        let street = Street.allCases.randomElement()!
         
         let aiLog = AIGameLog(hand: "", street: street, game: game)
         aiLog.wonHand = true

@@ -25,22 +25,30 @@ struct MenuView: View {
     @Query var equityLogs: [EquityLog]
     @Query var aiLogs: [AIGameLog]
     
-    var hitEquityLimit: Bool {
-        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
-        let recentEquityHands = equityLogs.filter {
-            $0.date >= cutoff
-        }
-        print("Printing recent equity count: \(recentEquityHands.count)")
-        return recentEquityHands.count <= 20
-    }
-    
-    var hitAILimit: Bool {
+    var recentAIHandsCount: Int {
         let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
         let recentAIHands = aiLogs.filter {
             $0.date >= cutoff
         }
-        print("Printing recent ai game count: \(aiLogs.count)")
-        return recentAIHands.count <= 20
+        
+        return recentAIHands.count
+    }
+    
+    var recentEquityHandsCount: Int {
+        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
+        let recentEquityHands = equityLogs.filter {
+            $0.date >= cutoff
+        }
+        
+        return recentEquityHands.count
+    }
+    
+    var hitEquityLimit: Bool {
+        recentEquityHandsCount >= 20
+    }
+    
+    var hitAILimit: Bool {
+        recentAIHandsCount >= 20
     }
 
     var body: some View {
@@ -111,7 +119,8 @@ struct MenuView: View {
                                     Color(red: 0.08, green: 0.17, blue: 0.28).opacity(0.80),
                                     Color(red: 0.04, green: 0.08, blue: 0.18).opacity(0.72)
                                 ],
-                                locked: hitEquityLimit
+                                locked: hitEquityLimit && !isSubscribed,
+                                playedFreeHands: !isSubscribed ? recentEquityHandsCount : 0
                             )
                         }.navigationDestination(isPresented: $navigateToEquityDrill) {
                             EquitySettingsView()
@@ -131,7 +140,8 @@ struct MenuView: View {
                                     Color(red: 0.18, green: 0.26, blue: 0.30).opacity(0.80),
                                     Color(red: 0.10, green: 0.15, blue: 0.18).opacity(0.60)
                                 ],
-                                locked: hitAILimit && !isSubscribed
+                                locked: hitAILimit && !isSubscribed,
+                                playedFreeHands: !isSubscribed ? recentAIHandsCount : 0
                             )
                         }.navigationDestination(isPresented: $navigateToAITable) {
                             AITable(tableSize: "6")
@@ -188,15 +198,16 @@ struct MenuView: View {
                 .fullScreenCover(isPresented: $showPremiumPopup) {
                     PaywallView()
                         .onPurchaseCompleted { customerInfo in
-                            // ✅ Your logic for a successful purchase goes here.
-                            print("Purchase completed successfully! Customer Info: \(customerInfo.entitlements.active)")
-                            isSubscribed = true
+                            if customerInfo.entitlements["Premium Subscription"]?.isActive == true {
+                                isSubscribed = true
+                            }
                         }
                 }
             }
         }
         .task {
             isSubscribed = await SubscriptionManager.isSubscribed()
+            print("isSubscribed: \(isSubscribed)")
         }.preferredColorScheme(.dark)
     }
     

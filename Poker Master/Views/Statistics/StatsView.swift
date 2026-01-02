@@ -98,6 +98,11 @@ struct StatsView: View {
         }
         .fullScreenCover(isPresented: $showPremiumPopup) {
             PaywallView()
+                .onPurchaseCompleted { customerInfo in
+                    if customerInfo.entitlements["Premium Subscription"]?.isActive == true {
+                        isSubscribed = true
+                    }
+                }
         }.task {
             isSubscribed = await SubscriptionManager.isSubscribed()
         }.preferredColorScheme(.dark)
