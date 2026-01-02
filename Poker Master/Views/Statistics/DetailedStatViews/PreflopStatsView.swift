@@ -145,11 +145,11 @@ struct PreflopStatsView: View {
     context.insert(game)
     
     for _ in 0..<10 {
-        var hand = Position.allCases.randomElement()!
-        var raiseType = RaiseType.allCases.randomElement()!
-        var action = Action.allCases.randomElement()!
-        var betAmount = Double.random(in: 0...70)
-        var pot = Double.random(in: 0...200)
+        let hand = Position.allCases.randomElement()!
+        let raiseType = RaiseType.allCases.randomElement()!
+        let action = Action.allCases.randomElement()!
+        let betAmount = Double.random(in: 0...70)
+        let pot = Double.random(in: 0...200)
         
         let handLog = PreflopLog(position: hand, hand: "", pair: false, action: action, raiseType: raiseType, betAmount: betAmount, pot: pot, xpEarned: 0, isCorrect: Bool.random(), game: game)
         game.preflopHands.append(handLog)

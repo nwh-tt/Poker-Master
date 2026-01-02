@@ -131,8 +131,8 @@ struct EquityStatsView: View {
     context.insert(game)
     
     for _ in 0..<10 {
-        var street = Street.allCases.randomElement()!
-        var villainType = VillainType.allCases.randomElement()!
+        let street = Street.allCases.randomElement()!
+        let villainType = VillainType.allCases.randomElement()!
         let equityLog = EquityLog(street: street, villainType: villainType, hand: "", equity: 0, xpEarned: 0, isCorrect: Bool.random(), game: game)
         game.equityHands.append(equityLog)
         context.insert(equityLog)
