@@ -28,12 +28,13 @@ struct PlayerInfoSheet: View {
     
     func determineInvestedField() -> String {
         let latestBet = player.lastBet(game: game, round: round)
+        let startingStack = player.stack + latestBet
         let amountInvested = "\(latestBet.formattedString()) BB"
         
         var percent = 0.0
-        if player.stack > 0 {
-            percent = (latestBet / player.stack) * 100
-        } else if player.stack == 0 && latestBet > 0 {
+        if startingStack > 0 {
+            percent = (latestBet / startingStack) * 100
+        } else if startingStack == 0 && latestBet > 0 {
             percent = 100.0
         }
         
