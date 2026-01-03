@@ -10,17 +10,20 @@ import SwiftUI
 struct PlayerInfoSheet: View {
     let player: AIPlayer
     // Mock data for now
-    var stackSize = ""
-    var investedThisHand: String = "12 BB (18%)"
-    let winRate = "+7.3 bb/100"
-    let biggestWin = "142 BB Pot"
-    let round = 1
-    let game = 0
+    var stackSize: String {
+        "\(player.stack.formattedString()) BB"
+    }
+    var investedThisHand: String {
+        determineInvestedField()
+    }
     
-    init(player: AIPlayer) {
+    let round: Int
+    let game: Int
+    
+    init(player: AIPlayer, game: Int, round: Int) {
         self.player = player
-        self.stackSize = "\(String(format: "%.1f", player.stack)) BB"
-        self.investedThisHand = determineInvestedField()
+        self.game = game
+        self.round = round
     }
     
     func determineInvestedField() -> String {
@@ -56,10 +59,6 @@ struct PlayerInfoSheet: View {
                     infoRow(title: "Stack", value: stackSize)
                     infoRow(title: "Invested", value: investedThisHand)
                 }
-                GridRow {
-                    infoRow(title: "Win Rate", value: winRate, color: .green)
-                    infoRow(title: "Biggest Win", value: biggestWin, color: .yellow)
-                }
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 30)
@@ -86,7 +85,7 @@ struct PlayerInfoSheet: View {
 #Preview {
     let player = AIPlayer(name: "HERO", fullName: "p1", position: "SB", stack: 100.0)
     let _ = player.raise(amount: 9.5, game: 0, round: 1)
-    PlayerInfoSheet(player: player)
+    PlayerInfoSheet(player: player, game: 0, round: 1)
         .preferredColorScheme(.dark)
 }
 

@@ -46,8 +46,6 @@ struct AIStatsView: View {
         // Wins
         totalWins = vsAiLogs.filter { $0.wonHand == true }.count
         
-        vsAiLogs.filter { $0.wonHand == true }.forEach { print($0.pot) }
-        
         // Amount won
         let totalWon = vsAiLogs.filter { $0.wonHand == true }.reduce(0) { $0 + $1.pot } * 2
         totalAmountWon = totalWon.shortCurrencyString()
@@ -212,11 +210,7 @@ struct ThreeStatBlock: View {
         context.insert(aiLog)
     }
     
-    do {
-        try context.save()
-    } catch {
-        print(error)
-    }
+    try? context.save()
     
     return AIStatsView()
         .modelContainer(container)

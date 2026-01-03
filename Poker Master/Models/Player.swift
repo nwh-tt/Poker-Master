@@ -59,7 +59,7 @@ class Player {
     func setHand(hand: String) {
         // check if hand is empty
         guard !hand.isEmpty else {
-            print("Empty hand string")
+            Log.preflopGame.notice("Empty hand string")
             return
         }
         let ranks = Array(hand)

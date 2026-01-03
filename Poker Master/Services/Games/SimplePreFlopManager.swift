@@ -61,7 +61,6 @@ class SimplePreFlopManager: ObservableObject {
         self.selectedPosition = selectedPosition
         self.selectedAction = selectedAction.lowercased()
         self.size = size
-        print("Size: \(size)")
         // create game to later be inserted
         game = Game(date: Date(), gameType: .preFlop, totalHands: 0, duration: 0.0)
         
@@ -79,7 +78,6 @@ class SimplePreFlopManager: ObservableObject {
     
     func setProfile(profile: Profile) {
         self.profile = profile
-        print("Profile set to: \(profile.username)")
     }
     
     // sets villian bet number and determines hand
@@ -149,7 +147,6 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     func startGame() async {
-        print("Game has started")
         try? await Task.sleep(nanoseconds: 500_000_000) // Wait 0.5 seconds
         await executeLoop()
     }
@@ -234,7 +231,7 @@ class SimplePreFlopManager: ObservableObject {
             do {
                 try context?.save()
             } catch {
-                print("Failed to save game: \(error)")
+                Log.data.error("Failed to save preflop game: \(error, privacy: .private)")
             }
             isGameOver = true
             return

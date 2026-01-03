@@ -138,11 +138,7 @@ struct EquityStatsView: View {
         context.insert(equityLog)
     }
     
-    do {
-        try context.save()
-    } catch {
-        print(error)
-    }
+    try? context.save()
     
     return EquityStatsView()
         .modelContainer(container)

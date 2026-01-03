@@ -89,9 +89,6 @@ class AuthManager: ObservableObject {
             self.isAuthenticated = user != nil
             self.isAnonymous = false
             
-            print("Authenticated: \(isAuthenticated)")
-            print("Is anon: \(self.isAnonymous)")
-            
             guard let user else {
                 // ✅ Do NOT log out of RevenueCat here.
                 // If you logOut, you create a new RC anonymous user and can "lose" entitlements.
@@ -107,9 +104,9 @@ class AuthManager: ObservableObject {
             
             Purchases.shared.logIn(user.uid) { _, created, error in
                 if let error = error {
-                    print("❌ Failed to log in to RevenueCat: \(error.localizedDescription)")
+                    Log.auth.error("❌ Failed to log in to RevenueCat: \(error.localizedDescription, privacy: .private)")
                 } else {
-                    print("✅ RevenueCat login successful. New user? \(created)")
+                    Log.auth.info("✅ RevenueCat login successful")
                 }
             }
         }
@@ -138,7 +135,7 @@ class AuthManager: ObservableObject {
     // MARK: - Anonymous Sign In occurs automatically
     func anonymousSignIn() {
         errorMessage = nil // Clear any previous errors
-        print("Anonymous Sign In triggered")
+        Log.auth.info("Anonymous Sign In triggered")
         authService.anonymousSignIn { [weak self] error in
             DispatchQueue.main.async {
                 self?.isAuthenticated = self?.authService.isAuthenticated ?? false
@@ -217,7 +214,7 @@ class AuthManager: ObservableObject {
             
         case .failure(let error):
             errorMessage = "Apple Sign-in failed"
-            print("Apple Sign-in failed: \(error.localizedDescription)")
+            Log.auth.error("Apple Sign-in failed: \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -232,7 +229,7 @@ class AuthManager: ObservableObject {
         guard let appleIDToken = appleIDCredential.identityToken,
               let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
             errorMessage = "Please try again"
-            print("Failed to get token from AppleIDCredential")
+            Log.auth.error("Failed to get token from AppleIDCredential")
             return
         }
         
@@ -244,7 +241,7 @@ class AuthManager: ObservableObject {
         
         Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
             if let error = error {
-                print("Firebase sign-in error: \(error.localizedDescription)")
+                Log.auth.error("Firebase sign-in error: \(error.localizedDescription, privacy: .private)")
                 self?.errorMessage = "Firebase sign-in error"
                 return
             }

@@ -273,7 +273,7 @@ struct AITable: View {
             }
         )
         .sheet(item: $selectedPlayer) { player in
-            PlayerInfoSheet(player: player)
+            PlayerInfoSheet(player: player, game: aiManager.game, round: aiManager.round)
                 .presentationDetents([.fraction(0.35)])
                 .presentationDragIndicator(.visible)
         }

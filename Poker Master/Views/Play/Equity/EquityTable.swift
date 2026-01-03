@@ -349,13 +349,12 @@ struct EquityTable: View {
             )
             context.insert(equityLog)
             do {
-                print("Saving EquityLog: \(equityLog)")
                 try context.save()
             } catch {
-                print("Failed to save EquityLog: \(error)")
+                Log.data.error("Failed to save EquityLog: \(error, privacy: .private)")
             }
         } else {
-            print("Game not found. No log saved")
+            Log.data.error("Game not found. No Equity log saved")
         }
         
         

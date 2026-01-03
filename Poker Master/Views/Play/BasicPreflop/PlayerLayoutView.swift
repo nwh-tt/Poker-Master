@@ -13,8 +13,6 @@ struct PlayerLayoutView: View {
     init(players: [Player]) {
         self.players = players
         self.size = String(players.count)
-        
-        print("Players count: \(players.count)")
     }
     
     var body: some View {

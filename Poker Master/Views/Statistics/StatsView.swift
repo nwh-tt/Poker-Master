@@ -254,11 +254,7 @@ struct WinPercentageStatView: View {
     }
     
     
-    do {
-        try context.save()
-    } catch {
-        print(error)
-    }
+    try? context.save()
     
     return StatsView()
         .modelContainer(container)

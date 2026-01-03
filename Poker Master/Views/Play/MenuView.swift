@@ -207,7 +207,6 @@ struct MenuView: View {
         }
         .task {
             isSubscribed = await SubscriptionManager.isSubscribed()
-            print("isSubscribed: \(isSubscribed)")
         }.preferredColorScheme(.dark)
     }
     

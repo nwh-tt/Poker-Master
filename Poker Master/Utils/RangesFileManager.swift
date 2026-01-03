@@ -24,9 +24,9 @@ class RangesFileManager {
                let data = try? Data(contentsOf: bundleURL) {
                 do {
                     try data.write(to: url)  // Save the file to the Documents directory
-                    print("ranges.json copied to Documents directory")
+                    Log.ranges.info("ranges.json copied to Documents directory")
                 } catch {
-                    print("Failed to write file to Documents directory: \(error)")
+                    Log.ranges.error("Failed to copy ranges.json to Documents directory: \(error, privacy: .private)")
                 }
             }
         }
@@ -48,16 +48,14 @@ class RangesFileManager {
         ranges[size]?["\(baseKey)_raise"] = raiseRanges
         ranges[size]?["\(baseKey)_call"] = callRanges
         
-        print("Saving ranges: \(baseKey)_raise and \(baseKey)_call")
-        
         let url = getRangesFileURL()
         
         do {
             let data = try JSONEncoder().encode(ranges)
             try data.write(to: url, options: .atomic)
-            print("✅ Successfully saved raise & call ranges for \(baseKey)")
+            Log.ranges.info("Saved raise & call ranges for \(baseKey)")
         } catch {
-            print("❌ Error saving ranges: \(error)")
+            Log.ranges.error("❌ Failed to save ranges for \(baseKey): \(error, privacy: .private)")
         }
     }
     
@@ -68,12 +66,12 @@ class RangesFileManager {
            let data = try? Data(contentsOf: bundleURL) {
             do {
                 try data.write(to: destinationURL, options: .atomic)
-                print("✅ Successfully reloaded ranges from Xcode bundle into memory.")
+                Log.ranges.info("Reloaded ranges from Xcode bundle into memory.")
             } catch {
-                print("❌ Failed to reload ranges: \(error)")
+                Log.ranges.error("❌ Failed to reload ranges: \(error, privacy: .private)")
             }
         } else {
-            print("❌ Could not find Ranges.json in bundle.")
+            Log.ranges.error("❌ Could not find Ranges.json in bundle.")
         }
     }
 

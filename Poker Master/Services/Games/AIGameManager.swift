@@ -153,12 +153,12 @@ class AIGameManager {
     @MainActor
     func initializeStreetLog() -> Bool {
         guard let currentGameLog = gameLog else {
-            Log.aiGame.error("No game log found - No data will be saved")
+            Log.data.error("No game log found - No vsAI data will be saved")
             return false
         }
         
         guard let user = aiPlayers.first(where: { $0.isUser }) else {
-            Log.aiGame.error("No user found - No data will be saved")
+            Log.aiGame.error("No user found in aiGame - No data will be saved")
             return false
         }
         
@@ -172,7 +172,6 @@ class AIGameManager {
         
         aiHandLog = AIGameLog(hand: user.hand.handToString(), board: boardString, street: street, game: currentGameLog)
         
-        Log.aiGame.info("New hand log created for \(street.rawValue, privacy: .public)")
         return true
         
     }
@@ -180,7 +179,7 @@ class AIGameManager {
     @MainActor
     func saveStreetLog() {
         guard let currentLog = aiHandLog else {
-            Log.aiGame.error("No game log found - No data to be saved")
+            Log.data.error("No game log found - No vsAI data will be saved")
             return
         }
         
@@ -189,7 +188,7 @@ class AIGameManager {
         do {
             try context?.save()
         } catch {
-            Log.aiGame.error("Failed to save game: \(error, privacy: .public)")
+            Log.data.error("Failed to save vs ai game: \(error, privacy: .private)")
         }
     }
     

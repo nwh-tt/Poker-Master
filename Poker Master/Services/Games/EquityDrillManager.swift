@@ -45,10 +45,7 @@ class EquityDrillManager: ObservableObject {
                     scenarioQueue.append(scenario)
                 }
                 
-
-                print("Preloaded scenarios: \(scenarioQueue)")
                 stageNextScenario()
-            
                 // Preload additional scenarios
                 preloadScenarios()
             }
@@ -107,8 +104,6 @@ class EquityDrillManager: ObservableObject {
             }
         }
         
-        print("Fetching equity for: \(selectedVillainType), \(currentStreet)")
-        
         // Fetch equity asynchronously
         do {
             var response: EquityResponse?
@@ -156,7 +151,7 @@ class EquityDrillManager: ObservableObject {
             return scenario
         } catch {
             // 3. Handle any error thrown (401, network failure, decoding failure, etc.)
-            print("Error fetching equity in createScenario: \(error.localizedDescription)")
+            Log.equityGame.error("Error fetching equity in createScenario: \(error.localizedDescription, privacy: .private)")
             errorMessage = "Failed to fetch equity"
             showToast = true
             return nil // Return nil on failure
@@ -180,8 +175,6 @@ class EquityDrillManager: ObservableObject {
                     scenarioQueue.append(newScenario)
                 }
             }
-        } else {
-            print("No more scenarios to load")
         }
     }
     
@@ -195,10 +188,7 @@ class EquityDrillManager: ObservableObject {
                     scenarioQueue.append(scenario)
                 }
                 
-
-                print("Preloaded scenarios: \(scenarioQueue)")
                 stageNextScenario()
-            
                 // Preload additional scenarios
                 preloadScenarios()
             }

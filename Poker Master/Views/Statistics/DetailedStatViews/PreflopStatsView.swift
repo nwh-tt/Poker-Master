@@ -156,11 +156,7 @@ struct PreflopStatsView: View {
         context.insert(handLog)
     }
     
-    do {
-        try context.save()
-    } catch {
-        print(error)
-    }
+    try? context.save()
     
     return PreflopStatsView()
         .modelContainer(container)

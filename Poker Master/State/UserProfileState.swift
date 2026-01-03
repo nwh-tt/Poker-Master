@@ -18,9 +18,9 @@ class UserProfileState: ObservableObject {
             let profiles = try context.fetch(fetchDescriptor)
             if let firstProfile = profiles.first {
                 self.profile = firstProfile
-                print("Fetched user: \(firstProfile.username)")
+                Log.app.info("Fetched user: \(firstProfile.username, privacy: .private)")
             } else {
-                print("No user found, creating default user")
+                Log.app.info("No user found, creating default user")
                 // Create a default user if none exists
                 let newProfile = Profile(username: "DefaultUser")
                 context.insert(newProfile)
@@ -28,12 +28,12 @@ class UserProfileState: ObservableObject {
                 self.profile = newProfile
             }
         } catch {
-            fatalError("Failed to fetch or create profile: \(error)")
+            Log.app.fault("Failed to fetch or create profile: \(error, privacy: .public)")
+            fatalError("Failed to fetch or create profile \(error)")
         }
     }
     
     func addXP(_ amount: Int) {
         profile.addXP(amount: amount)
-        // Save to context if needed
     }
 }

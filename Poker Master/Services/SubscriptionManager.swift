@@ -17,7 +17,7 @@ enum SubscriptionManager {
             let info = try await Purchases.shared.customerInfo()
             return info.entitlements[entitlementID]?.isActive == true
         } catch {
-            print("❌ Error checking subscription: \(error.localizedDescription)")
+            Log.app.error("❌ Error checking subscription: \(error.localizedDescription, privacy: .private)")
             return false
         }
     }
