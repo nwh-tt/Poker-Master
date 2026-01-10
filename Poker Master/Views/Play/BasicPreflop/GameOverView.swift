@@ -25,6 +25,8 @@ struct GameOverView: View {
                 HStack(spacing: 16) {
                     // Play Again button
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
                         // Restart game action
                         startNewGame()
                     }) {

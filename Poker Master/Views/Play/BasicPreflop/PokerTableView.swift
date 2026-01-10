@@ -47,6 +47,8 @@ struct PokerTableView: View {
     
     // function to trigger confetti and turn buttons green
     private func buttonClicked(buttonClicked: Action) {
+        
+        
         let isCorrect = gameManager.userMadeMove(decision: buttonClicked)
         
         if (isCorrect) {
@@ -56,10 +58,6 @@ struct PokerTableView: View {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
                 correctMoveMade = .none // Reset button color
-                // check if handsPlayed > handLimit
-                if (gameManager.handsPlayed >= 10) {
-                    return
-                }
                 gameManager.resetAndStartNewGame()
             }
         }

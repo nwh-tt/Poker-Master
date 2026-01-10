@@ -129,6 +129,8 @@ struct AITable: View {
                         if aiManager.errorMessage != nil {
                             HStack(spacing: 10) {
                                 Button(action: {
+                                    let generator = UIImpactFeedbackGenerator(style: .rigid)
+                                    generator.impactOccurred()
                                     // Keep playing action
                                     Task {
                                         await aiManager.populateAINames()
@@ -152,6 +154,9 @@ struct AITable: View {
                         else {
                             HStack(spacing: 10) {
                                 Button(action: {
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    
                                     aiManager.waitingForStartorRetryButton = false
                                     Task {
                                         await aiManager.startGame()
@@ -177,6 +182,8 @@ struct AITable: View {
                     else if aiManager.waitingForContinueButton {
                         HStack(spacing: 10) {
                             Button(action: {
+                                let generator = UIImpactFeedbackGenerator(style: .rigid)
+                                generator.impactOccurred()
                                 dismiss()
                             }) {
                                 HStack(spacing: 6) {
@@ -191,6 +198,8 @@ struct AITable: View {
                             }
                             if aiManager.canStartNewGame() {
                                 Button(action: {
+                                    let generator = UIImpactFeedbackGenerator(style: .rigid)
+                                    generator.impactOccurred()
                                     // Keep playing action
                                     aiManager.waitingForContinueButton = false
                                     Task {
@@ -218,7 +227,7 @@ struct AITable: View {
                                 Button(action: {
                                     // Trigger haptics
                                     let generator: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-                                    generator.impactOccurred()
+                                    
                                     
                                     if action == "Raise" {
                                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -226,6 +235,7 @@ struct AITable: View {
                                         }
                                     }
                                     else {
+                                        generator.impactOccurred()
                                         aiManager.handleUserMove(move:(action.lowercased(), 0.0))
                                         
                                         raiseMenuVisible = false
@@ -254,6 +264,8 @@ struct AITable: View {
                 if aiManager.canSkip {
                     // A button with the word skip and forward.fill icon
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
                         aiManager.skipActive = true
                     }) {
                         HStack(spacing: 6) {
