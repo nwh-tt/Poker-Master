@@ -14,20 +14,17 @@ struct StatsView: View {
     @State private var showPremiumPopup = false
     @State private var isSubscribed = true
     
-    @EnvironmentObject var userProfileState: UserProfileState
-    
     @Query var handLogs: [PreflopLog]
     @Query var games: [Game]
     
     @State private var hoursPlayed: String = "0h"
+    @State private var totalGames: Int = 0
     @State private var preflopGames: Int = 0
     @State private var equityGames: Int = 0
     @State private var vsAIGames: Int = 0
     
     // Call this once in .onAppear
     private func calculateStats() {
-        print("Equity count:")
-        print(games.filter{ $0.gameType == .equityDrill }.count)
         let validGames = games.filter {
             !$0.preflopHands.isEmpty || !$0.equityHands.isEmpty || !$0.aiGameHands.isEmpty
         }
@@ -37,12 +34,9 @@ struct StatsView: View {
         preflopGames = validGames.filter { $0.gameType == .preFlop }.count
         equityGames = validGames.filter { $0.gameType == .equityDrill }.count
         vsAIGames = validGames.filter { $0.gameType == .aiVsHuman }.count
+        
+        totalGames = validGames.count
     }
-    
-    var currentUser: Profile {
-        userProfileState.profile
-    }
-    
     
     var body: some View {
         NavigationStack {
@@ -52,7 +46,7 @@ struct StatsView: View {
                     VStack {
                         HStack {
                             GenericStatBlock(title:"Time Played", metric: hoursPlayed)
-                            GenericStatBlock(title: "Level", metric: String(currentUser.level))
+                            GenericStatBlock(title: "Total Games", metric: String(totalGames))
                         }
                         
                         PieChart(values: [
@@ -263,5 +257,4 @@ struct WinPercentageStatView: View {
     
     return StatsView()
         .modelContainer(container)
-        .environmentObject(UserProfileState(context: context))
 }

@@ -229,14 +229,6 @@ struct PieChart: View {
                         angularInset: 1.5
                     )
                     .foregroundStyle(item.color.opacity(0.9))
-                    .annotation(position: .overlay) {
-                        if item.slice.value > 0 {
-                            Text("\(item.slice.value)")
-                                .font(.caption)
-                                .foregroundColor(.black)
-                                .bold()
-                        }
-                    }
                 }
                 .frame(width: 270, height: 220)
                 
