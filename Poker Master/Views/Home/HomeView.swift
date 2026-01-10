@@ -13,20 +13,20 @@ struct HomeView: View {
     let categoryOrder = ["Preflop", "Postflop", "Bankroll", "Tournaments"]
         let categorizedArticles: [String: [(title: String, subtitle: String, url: String)]] = [
             "Preflop": [
-                ("Opening Ranges", "Optimal preflop hand selection", "https://www.pokernews.com/strategy/preflop.htm"),
-                ("3-Bet Strategy", "How to 3-bet effectively", "https://www.pokerstrategy.com/strategy/3bet")
+                ("Opening Ranges", "Optimal preflop hand selection", "https://www.pokernews.com/poker-range-charts"),
+                ("Preflop Betting Strategy", "How to bet effectively", "https://www.thepokerbank.com/strategy/hand-guide/preflop/")
             ],
             "Postflop": [
-                ("Continuation Bets", "When to c-bet on the flop", "https://www.pokernews.com/strategy/c-bet.htm"),
-                ("Bluffing Spots", "Identifying profitable bluffs", "https://www.pokerstrategy.com/strategy/bluff")
+                ("Flop Analysis", "How to analyze the flop", "https://www.pokerprofessor.com/university/how-to-win-at-poker/post-flop-strategy"),
+                ("Bluffing Spots", "Strategy for bluffing opportunities", "https://www.888poker.com/magazine/strategy/poker-bluff")
             ],
             "Bankroll": [
-                ("Bankroll Management", "Keep your poker finances in check", "https://www.pokerstrategy.com/bankroll"),
-                ("Variance Understanding", "Manage swings and variance", "https://www.pokernews.com/strategy/variance.htm")
+                ("Bankroll Management", "Keep your poker finances in check", "https://www.pokernews.com/strategy/an-introduction-to-bankroll-management-19610.htm"),
+                ("Variance Understanding", "Manage swings and variance", "https://blog.gtowizard.com/variance-and-bankroll-management/")
             ],
             "Tournaments": [
                 ("Early Stage Strategy", "How to play early in tournaments", "https://www.pokerstrategy.com/strategy/early-stage"),
-                ("ICM Concepts", "Independent Chip Model explained", "https://www.pokernews.com/strategy/icm.htm")
+                ("ICM Concepts", "Independent Chip Model explained", "https://blog.gtowizard.com/icm-basics/")
             ]
         ]
     @State private var expandedCategories: Set<String>
@@ -88,7 +88,7 @@ struct HomeView: View {
                             // MARK: - Quick Actions
                             HStack(spacing: 16) {
                                 NavigationLink(destination: PreflopSettingsView()) {
-                                    ActionButton(title: "Play Game", icon: "play.fill")
+                                    ActionButton(title: "Quick Start", icon: "play.fill")
                                 }
                             }
                             .padding(.horizontal)
