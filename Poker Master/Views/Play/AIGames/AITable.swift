@@ -66,6 +66,10 @@ struct AITable: View {
                         HStack(spacing: 10) {
                             ForEach(aiManager.getUserDefaultBets(), id: \.self) { multiplier in
                                 Button(action: {
+                                    // Trigger haptics
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    
                                     aiManager.handleUserMove(move:("raise", Double(multiplier)))
                                     raiseMenuVisible = false
                                 }) {
@@ -89,6 +93,10 @@ struct AITable: View {
                                 }
                             }
                             Button(action: {
+                                // Trigger haptics
+                                let generator = UIImpactFeedbackGenerator(style: .heavy)
+                                generator.impactOccurred()
+                                
                                 aiManager.handleUserMove(move:("allin", 0.0))
                                 raiseMenuVisible = false
                             }) {
@@ -144,7 +152,6 @@ struct AITable: View {
                         else {
                             HStack(spacing: 10) {
                                 Button(action: {
-                                    // Keep playing action
                                     aiManager.waitingForStartorRetryButton = false
                                     Task {
                                         await aiManager.startGame()
@@ -159,7 +166,9 @@ struct AITable: View {
                                     .background(darkBlue)
                                     .clipShape(Capsule())
                                     .foregroundColor(.white)
+                                    .opacity(aiManager.isLoading ? 0.5 : 1.0)
                                 }
+                                .disabled(aiManager.isLoading)
                                 .padding(.horizontal, 8)
                                 .padding(.bottom, 8)
                             }
@@ -207,6 +216,10 @@ struct AITable: View {
                         HStack(spacing: 10) {
                             ForEach(Array(aiManager.getPossibleActions().enumerated()), id: \.offset) { index, action in
                                 Button(action: {
+                                    // Trigger haptics
+                                    let generator: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+                                    generator.impactOccurred()
+                                    
                                     if action == "Raise" {
                                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                             raiseMenuVisible.toggle()
@@ -214,6 +227,7 @@ struct AITable: View {
                                     }
                                     else {
                                         aiManager.handleUserMove(move:(action.lowercased(), 0.0))
+                                        
                                         raiseMenuVisible = false
                                     }
                                 }) {
@@ -229,7 +243,6 @@ struct AITable: View {
                         }.id(aiManager.waitingForUserInput)
                         .padding(.horizontal, 8)
                         .padding(.bottom, 8)
-                        
                     }
                 }.padding(4)
             }.padding(.horizontal)

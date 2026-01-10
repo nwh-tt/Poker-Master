@@ -63,7 +63,7 @@ struct Poker_MasterApp: App {
                     let context = ModelContext(sharedModelContainer)
                     await ChallengeDataManager.syncDefaultChallenges(context: context)
                     
-                    // Signs user in anonomysly only if needed
+                    // Signs user in anonomously only if needed
                     authManager.ensureSignedIn()
                 }
         }

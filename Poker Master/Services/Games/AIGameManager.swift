@@ -11,6 +11,7 @@ enum GameLoopError: Error, Equatable {
     case sbNotFound
     case bbNotFound
     case winnerNotFound
+    case apiNotSet
 }
 
 struct SidePot {
@@ -274,7 +275,7 @@ class AIGameManager {
         }
         
         // Case 2: Showdown between multiple players
-        let winnersAndDetails = await determineWinners()
+        let winnersAndDetails = try await determineWinners()
         
         let activePlayers = getActivePlayers()
         
@@ -841,13 +842,13 @@ class AIGameManager {
         }
     }
     
-    func determineWinners() async -> DetermineWinnerResponse {
+    func determineWinners() async throws -> DetermineWinnerResponse {
         let playersLeft = aiPlayers.filter({ $0.lastMove(game: game) != .fold && !$0.isOutOfMoney(game: game)})
         
         guard let api = vsAiAPI else {
             errorMessage = "Internal Error"
             showToast = true
-            return DetermineWinnerResponse(winners: [], player_details: [])
+            throw GameLoopError.apiNotSet
         }
         
         do {
@@ -858,7 +859,7 @@ class AIGameManager {
             Log.network.error("Failed to retrieve winners from API: \(error, privacy: .public)")
             errorMessage = "Failed to determine winners"
             showToast = true
-            return  DetermineWinnerResponse(winners: [], player_details: [])
+            throw GameLoopError.winnerNotFound
         }
     }
     
