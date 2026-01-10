@@ -43,9 +43,6 @@ class EquityAPI {
     }
     
     func fetchEquityHand(heroHole: [String], villainHole: [String], board: [String] = []) async throws -> EquityResponse {
-        for card in villainHole {
-            print(card)
-        }
         let body = EquityRequestHand(hero_hole: heroHole, villain_hole: villainHole, board: board)
 
         // Error handling for encoding is now automatic via try/catch in the caller

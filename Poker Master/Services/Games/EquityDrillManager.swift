@@ -19,6 +19,12 @@ class EquityDrillManager: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var showToast = false
     
+    private var preloadTask: Task<Void, Never>?
+    private var topUpTask: Task<Void, Never>?
+    private var requestsMade = 0
+    private let maxRequestsPerGame = 15
+    private var hasStarted = false
+    
     let equityAPI: EquityAPI
     var context: ModelContext?
     
@@ -30,6 +36,10 @@ class EquityDrillManager: ObservableObject {
     private var scenarioQueue: [EquityScenario] = []
     private let queueSize = 3
     
+    private var remainingRequests: Int {
+        max(0, maxRequestsPerGame - requestsMade)
+    }
+    
     // User selections
     var street: String = "Any"
     var villainType: String = "Any" // Any, Ranges, Cards
@@ -38,22 +48,56 @@ class EquityDrillManager: ObservableObject {
         self.street = street
         self.villainType = villainType
         self.equityAPI = EquityAPI(authManager: authManager)
-        // Load in the first scenario
+    }
+
+    deinit {
+        preloadTask?.cancel()
+        topUpTask?.cancel()
+    }
+    
+    func startNewGame(force: Bool = false) {
+        if hasStarted && !force { return }
+        hasStarted = true
+        preloadTask?.cancel()
+        topUpTask?.cancel()
+        preloadTask = nil
+        topUpTask = nil
+        requestsMade = 0
+        score = 0
+        roundsPlayed = 0
+        equityReady = false
+        currentScenario = nil
+        scenarioQueue.removeAll()
+        errorMessage = nil
+        showToast = false
+        
         Task { @MainActor in
-                // Load the first scenario
-                if let scenario = await createScenario() {
-                    scenarioQueue.append(scenario)
-                }
-                
-                stageNextScenario()
-                // Preload additional scenarios
-                preloadScenarios()
+            if let scenario = await createScenario() {
+                scenarioQueue.append(scenario)
             }
+            
+            stageNextScenario()
+            preloadScenarios()
+        }
+    }
+    
+    func stopPreloading() {
+        preloadTask?.cancel()
+        topUpTask?.cancel()
+        preloadTask = nil
+        topUpTask = nil
+        hasStarted = false
     }
     
     private func preloadScenarios() {
-        Task {
-            for _ in 0..<queueSize {
+        preloadTask?.cancel()
+        preloadTask = Task {
+            let targetCount = min(max(0, queueSize - scenarioQueue.count), remainingRequests)
+            guard targetCount > 0 else { return }
+
+            for _ in 0..<targetCount {
+                if Task.isCancelled { return }
+
                 if let scenario = await createScenario() {
                     scenarioQueue.append(scenario)
                 }
@@ -61,7 +105,18 @@ class EquityDrillManager: ObservableObject {
         }
     }
     
+    private func handleRequestLimitReached() {
+        guard errorMessage == nil else { return }
+        errorMessage = "Request limit reached"
+        showToast = true
+    }
+    
     private func createScenario() async -> EquityScenario? {
+        guard remainingRequests > 0 else {
+            handleRequestLimitReached()
+            return nil
+        }
+        requestsMade += 1
         // Randomly selects a key
         
         
@@ -169,8 +224,13 @@ class EquityDrillManager: ObservableObject {
         self.equityReady = true
         // check if there are more scenarios to load (limit is 10 hands played so no need to load anymore)
         if roundsPlayed + scenarioQueue.count < 10 {
+            guard remainingRequests > 0 else {
+                handleRequestLimitReached()
+                return
+            }
             // Preload a new scenario in the background to keep queue full
-            Task {
+            topUpTask?.cancel()
+            topUpTask = Task {
                 if let newScenario = await createScenario() {
                     scenarioQueue.append(newScenario)
                 }
@@ -179,19 +239,7 @@ class EquityDrillManager: ObservableObject {
     }
     
     func reset() {
-        self.score = 0
-        self.roundsPlayed = 0
-        
-        Task { @MainActor in
-                // Load the first scenario
-                if let scenario = await createScenario() {
-                    scenarioQueue.append(scenario)
-                }
-                
-                stageNextScenario()
-                // Preload additional scenarios
-                preloadScenarios()
-            }
+        startNewGame(force: true)
     }
     
     func getEquityOptions(correctEquityHigh: Int, correctEquityLow: Int, correctEquityRange: String) -> [String] {

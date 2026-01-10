@@ -283,10 +283,13 @@ struct EquityTable: View {
         }
         .edgesIgnoringSafeArea(.all)
         .onAppear() {
-            let newGame = Game(gameType: .equityDrill)
-            game = newGame
-            context.insert(newGame)
-        }.toolbar {
+            game = nil
+            equityDrillManager.startNewGame()
+        }
+        .onDisappear {
+            equityDrillManager.stopPreloading()
+        }
+        .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Text("\(equityDrillManager.score) / \(equityDrillManager.roundsPlayed)")
                     .font(.system(size: 16, weight: .semibold))
@@ -335,26 +338,31 @@ struct EquityTable: View {
         userProfile.addXP(xpEarned)
         
         // add a hand log entry
-        if let currentGame = game {
-            currentGame.totalHands += 1
-            currentGame.duration = Date().timeIntervalSince(currentGame.date)
-            let equityLog = EquityLog(
-                street: scenario.street,
-                villainType: scenario.villainType,
-                hand: scenario.heroHand.handToString(),
-                equity: computedEquity,
-                xpEarned: xpEarned,
-                isCorrect: isCorrect,
-                game: currentGame
-            )
-            context.insert(equityLog)
-            do {
-                try context.save()
-            } catch {
-                Log.data.error("Failed to save EquityLog: \(error, privacy: .private)")
-            }
-        } else {
+        if game == nil {
+            let newGame = Game(gameType: .equityDrill)
+            game = newGame
+            context.insert(newGame)
+        }
+        guard let currentGame = game else {
             Log.data.error("Game not found. No Equity log saved")
+            return
+        }
+        currentGame.totalHands += 1
+        currentGame.duration = Date().timeIntervalSince(currentGame.date)
+        let equityLog = EquityLog(
+            street: scenario.street,
+            villainType: scenario.villainType,
+            hand: scenario.heroHand.handToString(),
+            equity: computedEquity,
+            xpEarned: xpEarned,
+            isCorrect: isCorrect,
+            game: currentGame
+        )
+        context.insert(equityLog)
+        do {
+            try context.save()
+        } catch {
+            Log.data.error("Failed to save EquityLog: \(error, privacy: .private)")
         }
         
         

@@ -26,12 +26,17 @@ struct StatsView: View {
     
     // Call this once in .onAppear
     private func calculateStats() {
-        let totalSeconds = games.reduce(0) { $0 + $1.duration }
+        print("Equity count:")
+        print(games.filter{ $0.gameType == .equityDrill }.count)
+        let validGames = games.filter {
+            !$0.preflopHands.isEmpty || !$0.equityHands.isEmpty || !$0.aiGameHands.isEmpty
+        }
+        let totalSeconds = validGames.reduce(0) { $0 + $1.duration }
         hoursPlayed = "\(Int(ceil(totalSeconds / 3600.0)))h"
         
-        preflopGames = games.filter { $0.gameType == .preFlop }.count
-        equityGames = games.filter { $0.gameType == .equityDrill }.count
-        vsAIGames = games.filter { $0.gameType == .aiVsHuman }.count
+        preflopGames = validGames.filter { $0.gameType == .preFlop }.count
+        equityGames = validGames.filter { $0.gameType == .equityDrill }.count
+        vsAIGames = validGames.filter { $0.gameType == .aiVsHuman }.count
     }
     
     var currentUser: Profile {

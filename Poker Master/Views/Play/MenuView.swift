@@ -209,20 +209,6 @@ struct MenuView: View {
             isSubscribed = await SubscriptionManager.isSubscribed()
         }.preferredColorScheme(.dark)
     }
-    
-    
-    private func presentEquityDrillFlow() {
-        if !authManager.isAuthenticated {
-            navigateToEquityDrill = true
-            // present the create account flow
-            // showCreateAccount = true
-            return
-        }
-        
-        
-        navigateToEquityDrill = true
-        
-    }
 }
 
 
