@@ -24,11 +24,12 @@ struct ChallengeDataManager {
         // 4️⃣ Otherwise, insert defaults
         let defaultChallenges: [(title: String, desc: String, icon: String, goals: [Int])] = [
             ("Volume Player", "Play hands", "suit.club.fill", [10, 50, 200, 500, 1500, 3000]),
-            ("Poker IQ", "Make right plays", "brain.fill", [5, 25, 100, 250, 750, 1500]),
+            ("Poker IQ", "Make correct plays", "brain.fill", [5, 25, 100, 250, 750, 1500]),
             ("Pocket Rockets", "Hit pocket pairs", "die.face.2.fill", [5, 20, 100, 300, 800, 1500]),
             ("Hot Hand", "Correct 3 times in a row", "flame.fill", [5, 20, 100, 300, 800, 1500]),
             ("Closer", "Finish full matches", "target", [5, 20, 100, 300, 800, 1500]),
-            ("Perfect Game", "Games without errors", "crown.fill", [5, 20, 100, 300, 800, 1500])
+            ("Perfect Game", "Games without errors", "crown.fill", [5, 20, 100, 300, 800, 1500]),
+            ("Hands Played", "Play hands across all modes", "hand.raised.fill", [25, 100, 500, 1500, 3000, 7500])
         ]
 
         for data in defaultChallenges {
@@ -54,11 +55,12 @@ struct ChallengeDataManager {
 
         let defaultChallenges: [(title: String, desc: String, icon: String, goals: [Int])] = [
             ("Volume Player", "Play hands", "suit.club.fill", [10, 50, 200, 500, 1500, 3000]),
-            ("Poker IQ", "Make right plays", "brain.fill", [5, 25, 100, 250, 750, 1500]),
+            ("Poker IQ", "Make correct plays", "brain.fill", [5, 25, 100, 250, 750, 1500]),
             ("Pocket Rockets", "Hit pocket pairs", "die.face.2.fill", [5, 20, 100, 300, 800, 1500]),
             ("Hot Hand", "Correct 3 times in a row", "flame.fill", [5, 20, 100, 300, 800, 1500]),
             ("Closer", "Finish full matches", "target", [5, 20, 100, 300, 800, 1500]),
-            ("Perfect Game", "Games without errors", "crown.fill", [5, 20, 100, 300, 800, 1500])
+            ("Perfect Game", "Games without errors", "crown.fill", [5, 20, 100, 300, 800, 1500]),
+            ("Hands Played", "Play hands across all modes", "hand.raised.fill", [25, 100, 500, 1500, 3000, 7500])
         ]
 
         for defaultChallenge in defaultChallenges {

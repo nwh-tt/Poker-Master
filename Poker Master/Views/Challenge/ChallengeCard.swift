@@ -10,6 +10,8 @@ import SwiftData
 
 struct ChallengeCard: View {
     @Query<PreflopLog>(sort: []) var handLogs: [PreflopLog]
+    @Query<EquityLog>(sort: []) var equityLogs: [EquityLog]
+    @Query<AIGameLog>(sort: []) var vsAiLogs: [AIGameLog]
     @Query<Game>(sort: []) var games: [Game]
     
     @State private var showGlow = false
@@ -61,25 +63,31 @@ struct ChallengeCard: View {
     
     func getProgress() -> Int {
         if (challenge.title == "Volume Player") {
-            return handLogs.count
+            return handLogs.count + equityLogs.count + vsAiLogs.count
         }
         else if (challenge.title == "Poker IQ") {
-            return handLogs.reduce(0) { $0 + ($1.isCorrect ? 1 : 0) }
+            let preflopCorrect = handLogs.reduce(0) { $0 + ($1.isCorrect ? 1 : 0) }
+            let equityCorrect = equityLogs.reduce(0) { $0 + ($1.isCorrect ? 1 : 0) }
+            return preflopCorrect + equityCorrect
         }
         else if (challenge.title == "Pocket Rockets") {
             return handLogs.reduce(0) { $0 + ($1.pair ? 1 : 0) }
         } 
         else if (challenge.title == "Hot Hand") {
-            return countStreaksOf(atLeast: 3, in: handLogs)
-        } 
+            let preflopStreaks = countStreaksOf(atLeast: 3, in: handLogs)
+            let equityStreaks = countEquityStreaksOf(atLeast: 3, in: equityLogs)
+            return preflopStreaks + equityStreaks
+        }
         else if (challenge.title == "Closer") {
             // only count games > 8 hands
-            return games.filter { $0.preflopHands.count > 8 }.count
+            return games.filter { $0.preflopHands.count > 8 || $0.equityHands.count > 8 }.count
         }
         else if (challenge.title == "Perfect Game") {
-            return games.filter { game in
-                !game.preflopHands.isEmpty && game.preflopHands.allSatisfy { $0.isCorrect }
+            return games.filter { game in game.preflopHands.allSatisfy { $0.isCorrect } || game.equityHands.allSatisfy { $0.isCorrect }
             }.count
+        }
+        else if (challenge.title == "Hands Played") {
+            return handLogs.count + equityLogs.count + vsAiLogs.count
         }
             
     
@@ -87,6 +95,29 @@ struct ChallengeCard: View {
     }
         
     func countStreaksOf(atLeast streakLength: Int, in hands: [PreflopLog]) -> Int {
+        var count = 0
+        var currentStreak = 0
+        
+        for hand in hands {
+            if hand.isCorrect {
+                currentStreak += 1
+            } else {
+                if currentStreak >= streakLength {
+                    count += 1
+                }
+                currentStreak = 0
+            }
+        }
+            
+        // Check at the end in case the last streak reaches the requirement
+        if currentStreak >= streakLength {
+            count += 1
+        }
+        
+        return count
+    }
+    
+    func countEquityStreaksOf(atLeast streakLength: Int, in hands: [EquityLog]) -> Int {
         var count = 0
         var currentStreak = 0
         
