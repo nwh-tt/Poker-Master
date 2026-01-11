@@ -6,5 +6,5 @@
 //
 
 enum APIConfig {
-    static let environment: APIEnvironment = .local
+    static let environment: APIEnvironment = .production
 }

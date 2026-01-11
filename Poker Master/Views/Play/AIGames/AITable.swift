@@ -129,7 +129,7 @@ struct AITable: View {
                         if aiManager.errorMessage != nil {
                             HStack(spacing: 10) {
                                 Button(action: {
-                                    let generator = UIImpactFeedbackGenerator(style: .rigid)
+                                    let generator = UIImpactFeedbackGenerator(style: .light)
                                     generator.impactOccurred()
                                     // Keep playing action
                                     Task {
@@ -137,7 +137,7 @@ struct AITable: View {
                                     }
                                 }) {
                                     HStack(spacing: 6) {
-                                        Image(systemName: "arrow.trianglehead.clockwise")
+                                        Image(systemName: "arrow.clockwise")
                                         Text("Retry")
                                     }
                                     .frame(maxWidth: .infinity)
@@ -192,7 +192,7 @@ struct AITable: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.red.opacity(0.15))
+                                .background(Color.red.opacity(0.30))
                                 .clipShape(Capsule())
                                 .foregroundColor(.white)
                             }
