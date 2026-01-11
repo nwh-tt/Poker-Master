@@ -4,6 +4,7 @@ struct GameOverView: View {
     @Environment(\.dismiss) var dismiss
     let correctDecisions: Int
     let totalHands: Int
+    let canPlayAgain: Bool
     var startNewGame: () -> Void
     
     var body: some View {
@@ -22,42 +23,19 @@ struct GameOverView: View {
                         .font(.title2)
                 }
                 
-                HStack(spacing: 16) {
-                    // Play Again button
-                    Button(action: {
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                        // Restart game action
-                        startNewGame()
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                                .foregroundColor(.white)
-                            Text("Play Again")
-                                .foregroundColor(.white)
-                                .bold()
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(red: 19/255, green: 70/255, blue: 50/255),
-                                         Color(red: 50/255, green: 130/255, blue: 80/255)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .cornerRadius(16)
-                        .shadow(radius: 4)
-                    }
-                    
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        HStack {
-                                Image(systemName: "house.fill") // indicates home/exit
+                VStack(spacing: 12) {
+                    HStack(spacing: 16) {
+                        // Play Again button
+                        Button(action: {
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                            // Restart game action
+                            startNewGame()
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.clockwise")
                                     .foregroundColor(.white)
-                                Text("Home")
+                                Text("Play Again")
                                     .foregroundColor(.white)
                                     .bold()
                             }
@@ -65,19 +43,52 @@ struct GameOverView: View {
                             .frame(maxWidth: .infinity)
                             .background(
                                 LinearGradient(
-                                    colors: [
-                                        Color(red: 200/255, green: 50/255, blue: 50/255), // darker red
-                                        Color(red: 255/255, green: 100/255, blue: 50/255) // orange-red
-                                    ],
+                                    colors: [Color(red: 19/255, green: 70/255, blue: 50/255),
+                                             Color(red: 50/255, green: 130/255, blue: 80/255)],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
                             )
                             .cornerRadius(16)
                             .shadow(radius: 4)
+                        }
+                        .disabled(!canPlayAgain)
+                        .opacity(canPlayAgain ? 1 : 0.5)
+                        
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            HStack {
+                                    Image(systemName: "house.fill") // indicates home/exit
+                                        .foregroundColor(.white)
+                                    Text("Home")
+                                        .foregroundColor(.white)
+                                        .bold()
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    LinearGradient(
+                                        colors: [
+                                            Color(red: 200/255, green: 50/255, blue: 50/255), // darker red
+                                            Color(red: 255/255, green: 100/255, blue: 50/255) // orange-red
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .cornerRadius(16)
+                                .shadow(radius: 4)
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    if !canPlayAgain {
+                        Text("Daily free limit reached")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
                     }
                 }
-                .padding(.horizontal)
             }
             .padding()
         }
@@ -85,5 +96,5 @@ struct GameOverView: View {
 }
 
 #Preview {
-    GameOverView(correctDecisions: 9, totalHands: 10, startNewGame: {})
+    GameOverView(correctDecisions: 9, totalHands: 10,  canPlayAgain: false, startNewGame: {})
 }

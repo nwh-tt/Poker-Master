@@ -71,7 +71,7 @@ struct PokerTableView: View {
     var body: some View {
             ZStack {
                 if (gameManager.isGameOver) {
-                        GameOverView(correctDecisions: gameManager.score, totalHands: gameManager.handsPlayed, startNewGame: {
+                        GameOverView(correctDecisions: gameManager.score, totalHands: gameManager.handsPlayed, canPlayAgain: true, startNewGame: {
                             gameManager.completeReset()
                         })
                             .scaleEffect(showGameOver ? 1 : 0.8)

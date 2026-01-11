@@ -20,6 +20,7 @@ struct EquityTable: View {
     @State private var selectedEquity: String? = nil
     @StateObject private var equityDrillManager: EquityDrillManager
     @State private var showResult: Bool = false
+    @State private var isSubscribed = true
     @Environment(\.modelContext) private var context
     @EnvironmentObject var userProfile: UserProfileState
     
@@ -47,6 +48,7 @@ struct EquityTable: View {
                 GameOverView(
                     correctDecisions: equityDrillManager.score,
                     totalHands: equityDrillManager.roundsPlayed,
+                    canPlayAgain: !userProfile.hitEquityLimit(isSubscribed: isSubscribed),
                     startNewGame: {
                         equityDrillManager.reset()
                         showGameOver = false
@@ -317,6 +319,9 @@ struct EquityTable: View {
         )
         .toolbar(.hidden, for: .tabBar)
         .preferredColorScheme(.dark)
+        .task {
+            isSubscribed = await SubscriptionManager.isSubscribed()
+        }
     }
     
     private func handleSelection(_ option: String, in scenario: EquityScenario) {

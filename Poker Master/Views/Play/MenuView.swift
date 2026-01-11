@@ -12,6 +12,7 @@ import RevenueCatUI
 
 struct MenuView: View {
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var userProfile: UserProfileState
     
     @State private var navigateToEquityDrill = false
     
@@ -22,33 +23,21 @@ struct MenuView: View {
     
     @State private var isSubscribed = true
     
-    @Query var equityLogs: [EquityLog]
-    @Query var aiLogs: [AIGameLog]
-    
-    var recentAIHandsCount: Int {
-        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
-        let recentAIHands = aiLogs.filter {
-            $0.date >= cutoff
-        }
-        
-        return recentAIHands.count
+    private var recentAIHandsCount: Int {
+        userProfile.aiHandsCount()
     }
     
-    var recentEquityHandsCount: Int {
-        let cutoff = Calendar.current.date(byAdding: .hour, value: -12, to: Date())!
-        let recentEquityHands = equityLogs.filter {
-            $0.date >= cutoff
-        }
-        
-        return recentEquityHands.count
+    private var recentEquityHandsCount: Int {
+        userProfile.equityHandsCount()
     }
     
-    var hitEquityLimit: Bool {
-        recentEquityHandsCount >= 20
+    private var hitEquityLimit: Bool {
+        false
+        // userProfile.hitEquityLimit(isSubscribed: isSubscribed)
     }
     
-    var hitAILimit: Bool {
-        recentAIHandsCount >= 20
+    private var hitAILimit: Bool {
+        userProfile.hitAILimit(isSubscribed: isSubscribed)
     }
 
     var body: some View {

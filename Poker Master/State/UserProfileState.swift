@@ -11,8 +11,10 @@ import SwiftData
 @MainActor
 class UserProfileState: ObservableObject {
     @Published var profile: Profile
+    private let context: ModelContext
     
     init(context: ModelContext) {
+        self.context = context
         do {
             let fetchDescriptor = FetchDescriptor<Profile>(predicate: nil)
             let profiles = try context.fetch(fetchDescriptor)
@@ -35,5 +37,39 @@ class UserProfileState: ObservableObject {
     
     func addXP(_ amount: Int) {
         profile.addXP(amount: amount)
+    }
+
+    func equityHandsCount(for date: Date = Date()) -> Int {
+        let cutoff = Calendar.current.startOfDay(for: date)
+        let predicate = #Predicate<EquityLog> { $0.date >= cutoff }
+        let descriptor = FetchDescriptor<EquityLog>(predicate: predicate)
+        do {
+            return try context.fetch(descriptor).count
+        } catch {
+            Log.data.error("Failed to fetch equity logs: \(error, privacy: .private)")
+            return 0
+        }
+    }
+
+    func aiHandsCount(for date: Date = Date()) -> Int {
+        let cutoff = Calendar.current.startOfDay(for: date)
+        let predicate = #Predicate<AIGameLog> { $0.date >= cutoff }
+        let descriptor = FetchDescriptor<AIGameLog>(predicate: predicate)
+        do {
+            return try context.fetch(descriptor).count
+        } catch {
+            Log.data.error("Failed to fetch AI logs: \(error, privacy: .private)")
+            return 0
+        }
+    }
+
+    func hitEquityLimit(isSubscribed: Bool, for date: Date = Date()) -> Bool {
+        guard !isSubscribed else { return false }
+        return equityHandsCount(for: date) >= 20
+    }
+
+    func hitAILimit(isSubscribed: Bool, for date: Date = Date()) -> Bool {
+        guard !isSubscribed else { return false }
+        return aiHandsCount(for: date) >= 20
     }
 }

@@ -10,16 +10,16 @@ import SwiftData
 
 struct EquitySettingsView: View {
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var userProfile: UserProfileState
     @Environment(\.dismiss) private var dismiss
     
     @State private var selectedStreet: String = "Any"
     @State private var selectedEquityType: String = "Any"
-    @State private var navigateToTable = false
+    @State private var isSubscribed = true
     
     let streetOptions = ["Any", "Preflop", "Flop", "Turn"]
     let equityOptions = ["Any", "Ranges", "Cards"]
     
-        
     
     var body: some View {
         VStack(spacing: 24) {
@@ -50,31 +50,45 @@ struct EquitySettingsView: View {
                 .pickerStyle(.segmented)
                 .tint(Color.blue)
             }
-                
-            NavigationLink(
-                destination: EquityTable(street: "Any", villainType: "Any", authManager: authManager)
-            ) {
-                Text("Start Game")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(
-                        LinearGradient(
-                            colors: [Color(red: 19/255, green: 70/255, blue: 50/255),
-                                     Color(red: 50/255, green: 130/255, blue: 80/255)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-            }
             
             Spacer()
+                
+            VStack(spacing: 8) {
+                NavigationLink(
+                    destination: EquityTable(street: selectedStreet, villainType: selectedEquityType, authManager: authManager)
+                ) {
+                    Text("Start Game")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [Color(red: 19/255, green: 70/255, blue: 50/255),
+                                         Color(red: 50/255, green: 130/255, blue: 80/255)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                .disabled(userProfile.hitEquityLimit(isSubscribed: isSubscribed))
+                .opacity(userProfile.hitEquityLimit(isSubscribed: isSubscribed) ? 0.5 : 1)
+
+                if userProfile.hitEquityLimit(isSubscribed: isSubscribed) {
+                    Text("Daily free limit reached")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            }
+            .padding(.bottom, 32)
         }
         .padding()
         .navigationTitle("Options")
         .preferredColorScheme(.dark)
+        .task {
+            isSubscribed = await SubscriptionManager.isSubscribed()
+        }
     }
 }
 
@@ -82,4 +96,5 @@ struct EquitySettingsView: View {
     @Previewable @StateObject var authManager = AuthManager()
     EquitySettingsView()
         .environmentObject(authManager)
+        .environmentObject(UserProfileState(context: ModelContext(try! ModelContainer(for: Profile.self))))
 }
