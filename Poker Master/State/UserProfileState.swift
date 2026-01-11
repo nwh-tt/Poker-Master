@@ -64,12 +64,12 @@ class UserProfileState: ObservableObject {
     }
 
     func hitEquityLimit(isSubscribed: Bool, for date: Date = Date()) -> Bool {
-        guard !isSubscribed else { return false }
+        guard !isSubscribed else { return false } // If user is subscribed no limit applies
         return equityHandsCount(for: date) >= 20
     }
 
     func hitAILimit(isSubscribed: Bool, for date: Date = Date()) -> Bool {
-        guard !isSubscribed else { return false }
+        guard !isSubscribed else { return false } // If user is subscribed no limit applies
         return aiHandsCount(for: date) >= 20
     }
 }
