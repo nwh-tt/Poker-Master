@@ -110,8 +110,8 @@
             filePath = "Poker Master/Services/Games/EquityDrillManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
             landmarkName = "EquityDrillManager"
             landmarkType = "3">
          </BreakpointContent>
@@ -142,9 +142,25 @@
             filePath = "Poker Master/Views/Play/Equity/EquityTable.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "40"
-            endingLineNumber = "40"
-            landmarkName = "init(street:villainType:authManager:)"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A571592A-B7F7-4245-9A1A-076C05ACD2A0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Poker Master/Services/Games/EquityDrillManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
+            landmarkName = "createScenario()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

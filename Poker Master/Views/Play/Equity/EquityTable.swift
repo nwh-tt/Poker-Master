@@ -315,6 +315,7 @@ struct EquityTable: View {
                 }
             }
         )
+        .toolbar(.hidden, for: .tabBar)
         .preferredColorScheme(.dark)
     }
     
