@@ -1819,6 +1819,7 @@ final class AIGameManagerTests: XCTestCase {
 
         XCTAssertEqual(p1.stack, 40)
         XCTAssertEqual(p2.stack, 80, accuracy: 1e-9)
+        XCTAssertEqual(manager.winnersThisHand, ["B"])
     }
     
     func test_processRoundEnd_basicShowdownOnePrevFolded() async {
@@ -1847,6 +1848,7 @@ final class AIGameManagerTests: XCTestCase {
         XCTAssertEqual(p1.stack, 40)
         XCTAssertEqual(p3.stack, 60)
         XCTAssertEqual(p2.stack, 90, accuracy: 1e-9)
+        XCTAssertEqual(manager.winnersThisHand, ["B"])
     }
     
     func test_processRoundEnd_basicShowdownInconsistentBetNumbers() async {
@@ -1875,6 +1877,7 @@ final class AIGameManagerTests: XCTestCase {
         try? await manager.processRoundEnd()
 
         XCTAssertEqual(p2.stack, 80.5, accuracy: 1e-9)
+        XCTAssertEqual(manager.winnersThisHand, ["B"])
     }
     
     func test_processRoundEnd_showdown_tie_splitsPot() async {
@@ -1898,6 +1901,7 @@ final class AIGameManagerTests: XCTestCase {
         // Each put in 20, pot 40 split => each net 0 change
         XCTAssertEqual(p1.stack, 100, accuracy: 1e-9)
         XCTAssertEqual(p2.stack, 100, accuracy: 1e-9)
+        XCTAssertEqual(manager.winnersThisHand, ["A", "B"])
     }
     
     func test_processRoundEnd_showdown_oneSidePot_twoDifferentWinners() async {
@@ -1933,6 +1937,7 @@ final class AIGameManagerTests: XCTestCase {
         XCTAssertEqual(p1.stack, 90, accuracy: 1e-9)
         XCTAssertEqual(p2.stack, 100, accuracy: 1e-9)
         XCTAssertEqual(p3.stack, 40, accuracy: 1e-9)
+        XCTAssertEqual(manager.winnersThisHand, ["A", "B"])
     }
     
     func test_processRoundEnd_showdown_twoSidePots_twoAllIns() async {
@@ -1971,6 +1976,7 @@ final class AIGameManagerTests: XCTestCase {
         //
         // So assert the money conservation and the known pots at least:
         XCTAssertEqual(p1.stack + p2.stack + p3.stack, 20 + 50 + 200, accuracy: 1e-9)
+        XCTAssertEqual(manager.winnersThisHand, ["A", "C",  "B"])
     }
 
     

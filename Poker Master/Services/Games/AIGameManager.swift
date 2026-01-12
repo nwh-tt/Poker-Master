@@ -41,6 +41,7 @@ class AIGameManager {
     let deck = Deck() // Create a shared deck
     var board: [Card] = []
     var isShowdown = false
+    var winnersThisHand: Set<String> = []
     
     // Used to handle user input
     var waitingForUserInput: Bool = false
@@ -129,6 +130,7 @@ class AIGameManager {
         
         // Reset necessarry variables and trigger a new hand deal out
         isShowdown = false
+        winnersThisHand = []
         board = []
         deck.resetDeck() // Creates new shuffled deck
         round = 0
@@ -278,6 +280,7 @@ class AIGameManager {
         
         for sidePot in sidePots {
             for winnerName in sidePot.winners {
+                winnersThisHand.insert(winnerName)
                 guard let player = activePlayers.first(where: { $0.name == winnerName }) else {
                     Log.aiGame.error("Side pot winner not found in remaining players. Winner name: \(winnerName) Remaining players: \(activePlayers.map { $0.name })")
                     throw GameLoopError.winnerNotFound
@@ -445,6 +448,7 @@ class AIGameManager {
         pot = 0
         lastPlayerBet = 0
         isShowdown = false
+        winnersThisHand = []
         skipActive = false
 
         // players
@@ -757,7 +761,7 @@ class AIGameManager {
         let players = createAndReorderPlayers(startingPosition: userPosition)
         
         // User is always first
-        players[0].name = "HERO"
+        players[0].name = "YOU"
         players[0].isUser = true
         
         for (aiIndex, aiName) in aiNames.enumerated() {

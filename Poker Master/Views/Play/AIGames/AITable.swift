@@ -39,7 +39,13 @@ struct AITable: View {
                     .frame(width: 50, height: 50)
                     .foregroundColor(Color(red: 1,green: 1,blue: 0.95).opacity(0.2))
             } else {
-                AIPlayerLayoutView(players: aiManager.aiPlayers, game: aiManager.game, round: aiManager.round, isShowdown: aiManager.isShowdown) { tappedPlayer in
+                AIPlayerLayoutView(
+                    players: aiManager.aiPlayers,
+                    game: aiManager.game,
+                    round: aiManager.round,
+                    isShowdown: aiManager.isShowdown,
+                    winners: aiManager.winnersThisHand
+                ) { tappedPlayer in
                     selectedPlayer = tappedPlayer
                 }
                 AIBoardView(board: aiManager.board)

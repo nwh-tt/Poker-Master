@@ -17,6 +17,7 @@ struct AIPlayerPositionView: View {
     let game: Int
     let round: Int
     var isShowdown: Bool
+    let isWinner: Bool
     
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     
@@ -26,6 +27,7 @@ struct AIPlayerPositionView: View {
         let cardOffsets = direction == "right" ? [45, 67] : [-67, -45]
         // let amount = player.folded ? "Fold" : "\(Int(player.stack)) BB"
         let textColor = player.lastMove(game: game) == Action.fold ? Color.gray : Color.white
+        let nameColor = isShowdown && isWinner ? Color.yellow.opacity(0.9) : textColor
         if player.isOutOfMoney(game: game) && player.hand.isEmpty {
             ZStack {
                 RoundedRectangle(cornerRadius: 5)
@@ -53,16 +55,43 @@ struct AIPlayerPositionView: View {
                             .animation(.easeOut(duration: 0.3), value: player.stack)
                     )
                     .offset(CGSize(width: rectangleOffset, height: 0))
-                Circle()
-                    .fill(Color.black.opacity(1))
-                    .frame(width: 50, height: 50)
-                    .overlay(Circle().stroke(textColor, lineWidth: 2)
-                    ).overlay(
-                        Text(player.name)
-                            .font(.system(size: 16))
-                            .fontWeight(.bold)
-                            .foregroundColor(textColor)
-                    )
+                ZStack {
+                    if isShowdown && isWinner {
+                        Circle()
+                            .fill(Color.yellow.opacity(0.25))
+                            .frame(width: 64, height: 64)
+                            .blur(radius: 6)
+                            .transition(.opacity)
+                    }
+
+                    Circle()
+                        .fill(Color.black.opacity(1))
+                        .frame(width: 50, height: 50)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.yellow.opacity(0.6), lineWidth: 5)
+                                .opacity(isShowdown && isWinner ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.25), value: isWinner)
+                        )
+                        .overlay(Circle().stroke(textColor, lineWidth: 2))
+                        .overlay(
+                            Text(player.name)
+                                .font(.system(size: 16))
+                                .fontWeight(.bold)
+                                .foregroundColor(nameColor)
+                        )
+                        .overlay {
+                            if isShowdown && isWinner {
+                                Image(systemName: "crown.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(Color.yellow.opacity(0.7))
+                                    .offset(x: 0.0, y: -16.0)
+                                    .transition(.opacity)
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.25), value: isWinner)
+                }
+                .animation(.easeInOut(duration: 0.25), value: isWinner)
                 ZStack {
                     if player.lastMoveForRound(game: game, round: round) != .none {
                         HStack(spacing: 4) {
@@ -164,10 +193,10 @@ struct FlippingCardView<Front: View, Back: View>: View {
 }
 
 #Preview {
-    let player = AIPlayer(name: "ATW", fullName: "test", position: "BB", stack: 100.0)
+    let player = AIPlayer(name: "YOU", fullName: "test", position: "BB", stack: 100.0)
     player.hand = [Card(suit: "heart", rank: "2"), Card(suit: "heart", rank: "2")]
     
     //player.raise(amountRaisingTo: 2.5)
     //let _ = player.fold(game: 0, round: 0)
-    return AIPlayerPositionView(player: player, direction: "right", isUser: false, game: 1, round: 0, isShowdown: false)
+    return AIPlayerPositionView(player: player, direction: "left", isUser: false, game: 1, round: 0, isShowdown: true, isWinner: true)
 }

@@ -180,7 +180,7 @@ struct EquityTable: View {
                     .frame(width: 50, height: 50)
                     .overlay(Circle().stroke(.white, lineWidth: 2))
                     .overlay(
-                        Text("Hero")
+                        Text("You")
                             .font(.system(size: 16))
                             .fontWeight(.bold)
                             .foregroundColor(.white)
