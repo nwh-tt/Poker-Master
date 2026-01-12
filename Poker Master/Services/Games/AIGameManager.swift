@@ -232,11 +232,6 @@ class AIGameManager {
                 }
             }
             
-            
-            
-            // Wait half a second
-            await sleepIfNeeded()
-            
             // Process round - split winnings etc
             try await processRoundEnd()
             
@@ -392,12 +387,11 @@ class AIGameManager {
                 waitingForUserInput = false
             }
             else {
-                await sleepIfNeeded()
                 (action, amount) = await makeAIDecision(ai: currentPlayer)
             }
             
 
-            switch action {
+            switch action.lowercased() {
             case "fold":
                 if currentPlayer.isUser {
                     aiHandLog?.folds += 1
@@ -410,7 +404,7 @@ class AIGameManager {
             case "raise":
                 raise(aiPlayer: currentPlayer, amount: amount)
                 highestBet = max(highestBet, amount) // should be impossible but just in case
-            case "allin":
+            case "allin", "all in":
                 let allInAmount = currentPlayer.stack + currentPlayer.lastBet(game: game, round: round)
                 raise(aiPlayer: currentPlayer, amount: allInAmount)
                 highestBet = max(highestBet, allInAmount)
@@ -832,8 +826,18 @@ class AIGameManager {
         }
         
         do {
-            return try await api.fetchAiDecision(aiName: ai.name, aiHole: ai.hand.map { $0.toString() }, board: board.map { $0.toString() }, potOdds: potOdds, opponentCount: remainingPlayers(), possibleMoves: possibleMoves)
-            
+            let startTime = Date()
+            let response = try await api.fetchAiDecision(
+                aiName: ai.name,
+                aiHole: ai.hand.map { $0.toString() },
+                board: board.map { $0.toString() },
+                potOdds: potOdds,
+                opponentCount: remainingPlayers(),
+                possibleMoves: possibleMoves
+            )
+            let elapsed = Date().timeIntervalSince(startTime)
+            await sleepRemaining(targetSeconds: 0.8, elapsedSeconds: elapsed)
+            return response
         } catch {
             Log.network.error("Failed to retrieve AI move from API: \(error, privacy: .public)")
             errorMessage = "Failed to get AI move"
@@ -852,8 +856,10 @@ class AIGameManager {
         }
         
         do {
+            let startTime = Date()
             let response = try await api.processWinners(playersLeft: playersLeft, board: board.map { $0.toString() })
-            
+            let elapsed = Date().timeIntervalSince(startTime)
+            await sleepRemaining(targetSeconds: 0.8, elapsedSeconds: elapsed)
             return response
         } catch {
             Log.network.error("Failed to retrieve winners from API: \(error, privacy: .public)")
@@ -867,6 +873,15 @@ class AIGameManager {
     func sleepIfNeeded() async {
         guard !skipActive else { return }
         await sleepFunction(sleepTime)
+    }
+
+    @MainActor
+    private func sleepRemaining(targetSeconds: TimeInterval, elapsedSeconds: TimeInterval) async {
+        guard !skipActive else { return }
+        let remaining = max(0, targetSeconds - elapsedSeconds)
+        let nanoseconds = UInt64(remaining * 1_000_000_000)
+        guard nanoseconds > 0 else { return }
+        await sleepFunction(nanoseconds)
     }
     
     var sleepFunction: (UInt64) async -> Void = { nanoseconds in

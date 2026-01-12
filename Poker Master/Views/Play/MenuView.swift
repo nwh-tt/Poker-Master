@@ -32,8 +32,7 @@ struct MenuView: View {
     }
     
     private var hitEquityLimit: Bool {
-        false
-        // userProfile.hitEquityLimit(isSubscribed: isSubscribed)
+        userProfile.hitEquityLimit(isSubscribed: isSubscribed)
     }
     
     private var hitAILimit: Bool {

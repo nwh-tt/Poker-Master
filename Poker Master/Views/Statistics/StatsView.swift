@@ -13,6 +13,7 @@ import RevenueCatUI
 struct StatsView: View {
     @State private var showPremiumPopup = false
     @State private var isSubscribed = true
+    @Namespace private var statsZoomNamespace
     
     @Query var handLogs: [PreflopLog]
     @Query var games: [Game]
@@ -62,25 +63,58 @@ struct StatsView: View {
 
                         
                         HStack {
-                            NavigationLink {
-                                PreflopStatsView()
-                            } label: {
-                                DetailedStatOption(gameType: "Preflop", tintColor: .blue)
-                                    .frame(maxWidth: .infinity)
+                            if #available(iOS 18.0, *) {
+                                NavigationLink {
+                                    PreflopStatsView()
+                                        .navigationTransition(.zoom(sourceID: "preflopStats", in: statsZoomNamespace))
+                                } label: {
+                                    DetailedStatOption(gameType: "Preflop", tintColor: .blue)
+                                        .frame(maxWidth: .infinity)
+                                        .matchedTransitionSource(id: "preflopStats", in: statsZoomNamespace)
+                                }
+                            } else {
+                                NavigationLink {
+                                    PreflopStatsView()
+                                } label: {
+                                    DetailedStatOption(gameType: "Preflop", tintColor: .blue)
+                                        .frame(maxWidth: .infinity)
+                                }
                             }
                             
-                            NavigationLink {
-                                EquityStatsView()
-                            } label: {
-                                DetailedStatOption(gameType: "Equity", tintColor: .green)
-                                    .frame(maxWidth: .infinity)
+                            if #available(iOS 18.0, *) {
+                                NavigationLink {
+                                    EquityStatsView()
+                                        .navigationTransition(.zoom(sourceID: "equityStats", in: statsZoomNamespace))
+                                } label: {
+                                    DetailedStatOption(gameType: "Equity", tintColor: .green)
+                                        .frame(maxWidth: .infinity)
+                                        .matchedTransitionSource(id: "equityStats", in: statsZoomNamespace)
+                                }
+                            } else {
+                                NavigationLink {
+                                    EquityStatsView()
+                                } label: {
+                                    DetailedStatOption(gameType: "Equity", tintColor: .green)
+                                        .frame(maxWidth: .infinity)
+                                }
                             }
                             
-                            NavigationLink {
-                                AIStatsView()
-                            } label: {
-                                DetailedStatOption(gameType: "VS AI", tintColor: .red)
-                                    .frame(maxWidth: .infinity)
+                            if #available(iOS 18.0, *) {
+                                NavigationLink {
+                                    AIStatsView()
+                                        .navigationTransition(.zoom(sourceID: "aiStats", in: statsZoomNamespace))
+                                } label: {
+                                    DetailedStatOption(gameType: "VS AI", tintColor: .red)
+                                        .frame(maxWidth: .infinity)
+                                        .matchedTransitionSource(id: "aiStats", in: statsZoomNamespace)
+                                }
+                            } else {
+                                NavigationLink {
+                                    AIStatsView()
+                                } label: {
+                                    DetailedStatOption(gameType: "VS AI", tintColor: .red)
+                                        .frame(maxWidth: .infinity)
+                                }
                             }
                         }
                         .padding(.top)

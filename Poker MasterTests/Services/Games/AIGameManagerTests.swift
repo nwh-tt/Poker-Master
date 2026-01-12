@@ -187,6 +187,10 @@ func makeInMemoryContext() -> ModelContext {
 
 
 class MockAuthService: AuthServiceProtocol {
+    func anonymousSignIn(completion: @escaping ((any Error)?) -> Void) {
+        completion(nil)
+    }
+    
     var currentUser: User? = nil
     var isAuthenticated: Bool { currentUser != nil }
     private var listeners: [(User?) -> Void] = []
@@ -1486,10 +1490,10 @@ final class AIGameManagerTests: XCTestCase {
         func test_determineWinners_whenAPIIsNil_setsErrorAndReturnsEmpty() async {
             manager.vsAiAPI = nil
 
-            let winnerDetails = await manager.determineWinners()
-            let winners = winnerDetails.winners
+            let winnerDetails = try? await manager.determineWinners()
+            let winners = winnerDetails?.winners
 
-            XCTAssertEqual(winners, [])
+            XCTAssertEqual(winners, nil)
             XCTAssertEqual(manager.errorMessage, "Internal Error")
             XCTAssertTrue(manager.showToast)
         }
@@ -1499,10 +1503,10 @@ final class AIGameManagerTests: XCTestCase {
             mockAPI.shouldThrow = true
             manager.vsAiAPI = mockAPI
 
-            let winnerDetails = await manager.determineWinners()
-            let winners = winnerDetails.winners
+            let winnerDetails = try? await manager.determineWinners()
+            let winners = winnerDetails?.winners
 
-            XCTAssertEqual(winners, [])
+            XCTAssertEqual(winners, nil)
             XCTAssertEqual(manager.errorMessage, "Failed to determine winners")
             XCTAssertTrue(manager.showToast)
         }
@@ -1532,8 +1536,8 @@ final class AIGameManagerTests: XCTestCase {
                 Card(suit: "diamonds", rank: "Q")
             ]
 
-            let winnerDetails = await manager.determineWinners()
-            let winners = winnerDetails.winners
+            let winnerDetails = try? await manager.determineWinners()
+            let winners = winnerDetails?.winners
 
             // Return value
             XCTAssertEqual(winners, ["HERO", "V1"])

@@ -62,8 +62,8 @@
             filePath = "Poker MasterTests/Services/Games/AIGameManagerTests.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1274"
-            endingLineNumber = "1274"
+            startingLineNumber = "1278"
+            endingLineNumber = "1278"
             landmarkName = "testCallAfterRaise()"
             landmarkType = "7">
          </BreakpointContent>
