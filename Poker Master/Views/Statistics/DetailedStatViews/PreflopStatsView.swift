@@ -76,7 +76,7 @@ struct PreflopStatsView: View {
         }
         
         preflopHandsByPosition = aggregateBy(Position.allCases, groupBy: { $0.position })
-        preflopHandsByAction = aggregateBy(Action.allCases, groupBy: { $0.action })
+        preflopHandsByAction = aggregateBy(Action.allCases.filter { $0 != .none }, groupBy: { $0.action })
         preflopHandsByRaiseType = aggregateBy(RaiseType.allCases, groupBy: { $0.raiseType })
     }
     
