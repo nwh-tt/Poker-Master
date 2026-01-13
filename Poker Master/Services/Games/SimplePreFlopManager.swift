@@ -209,20 +209,6 @@ class SimplePreFlopManager: ObservableObject {
     }
     
     func resetAndStartNewGame() {
-        pot = 0
-        betToStopOn = 1
-        // Reset players and reinitialize the deck
-        deck.resetDeck()
-        players = createRandomPlayers()
-        user = players[0]
-        
-        // Deal two new cards to each player
-        for player in players {
-            player.hand = [deck.dealCard(), deck.dealCard()]
-        }
-        
-        
-        
         if (handsPlayed >= 10) {
             // Determine game duration using game.date to current Date
             game.duration = Date().timeIntervalSince(game.date)
@@ -235,6 +221,20 @@ class SimplePreFlopManager: ObservableObject {
             }
             isGameOver = true
             return
+        }
+        
+        
+        pot = 0
+        betToStopOn = 1
+        // Reset players and reinitialize the deck
+        deck.resetDeck()
+        players = createRandomPlayers()
+        user = players[0]
+        
+        
+        // Deal two new cards to each player
+        for player in players {
+            player.hand = [deck.dealCard(), deck.dealCard()]
         }
         
         // Reset game-related variables
