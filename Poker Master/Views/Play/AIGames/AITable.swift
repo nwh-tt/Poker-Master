@@ -44,7 +44,8 @@ struct AITable: View {
                     game: aiManager.game,
                     round: aiManager.round,
                     isShowdown: aiManager.isShowdown,
-                    winners: aiManager.winnersThisHand
+                    winners: aiManager.winnersThisHand,
+                    handNames: aiManager.showdownHandNames
                 ) { tappedPlayer in
                     selectedPlayer = tappedPlayer
                 }

@@ -18,6 +18,7 @@ struct AIPlayerPositionView: View {
     let round: Int
     var isShowdown: Bool
     let isWinner: Bool
+    let handName: String?
     
     let borderColor = Color(red: 1,green: 1,blue: 0.95).opacity(0.8)
     
@@ -25,9 +26,21 @@ struct AIPlayerPositionView: View {
         let textOffset = direction == "right" ? 10 : -10
         let rectangleOffset = direction == "right" ? 48 : -48
         let cardOffsets = direction == "right" ? [45, 67] : [-67, -45]
+        let handNameOffset = direction == "right" ? 58 : -58
         // let amount = player.folded ? "Fold" : "\(Int(player.stack)) BB"
         let textColor = player.lastMove(game: game) == Action.fold ? Color.gray : Color.white
         let nameColor = isShowdown && isWinner ? Color.yellow.opacity(0.9) : textColor
+        let displayHandName: String? = {
+            guard let handName else { return nil }
+            switch handName {
+            case "Four of a Kind":
+                return "Quads"
+            case "Three of a Kind":
+                return "Trips"
+            default:
+                return handName
+            }
+        }()
         if player.isOutOfMoney(game: game) && player.hand.isEmpty {
             ZStack {
                 RoundedRectangle(cornerRadius: 5)
@@ -42,19 +55,30 @@ struct AIPlayerPositionView: View {
         }
         else {
             ZStack {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(Color.black)
-                    .frame(width: 90, height: 25)
-                    .overlay (
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(textColor, lineWidth: 2)
-                    )
-                    .overlay(
-                        Text("")
-                            .countingPlayerText(to: player.stack, color: textColor, offset: textOffset)
-                            .animation(.easeOut(duration: 0.3), value: player.stack)
-                    )
-                    .offset(CGSize(width: rectangleOffset, height: 0))
+                VStack(spacing: 4) {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color.black)
+                        .frame(width: 90, height: 25)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(textColor, lineWidth: 2)
+                        )
+                        .overlay(
+                            Text("")
+                                .countingPlayerText(to: player.stack, color: textColor, offset: textOffset)
+                                .animation(.easeOut(duration: 0.3), value: player.stack)
+                        )
+                }
+                .offset(CGSize(width: rectangleOffset, height: 0))
+                VStack {
+                    if isShowdown, let displayHandName {
+                        Text(displayHandName)
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.gray)
+                    }
+                }
+                .offset(CGSize(width: handNameOffset, height: 22))
                 ZStack {
                     if isShowdown && isWinner {
                         Circle()
@@ -198,5 +222,5 @@ struct FlippingCardView<Front: View, Back: View>: View {
     
     //player.raise(amountRaisingTo: 2.5)
     //let _ = player.fold(game: 0, round: 0)
-    return AIPlayerPositionView(player: player, direction: "left", isUser: false, game: 1, round: 0, isShowdown: true, isWinner: true)
+    return AIPlayerPositionView(player: player, direction: "left", isUser: false, game: 1, round: 0, isShowdown: true, isWinner: true, handName: "Four of a Kind")
 }

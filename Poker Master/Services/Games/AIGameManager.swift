@@ -42,6 +42,7 @@ class AIGameManager {
     var board: [Card] = []
     var isShowdown = false
     var winnersThisHand: Set<String> = []
+    var showdownHandNames: [String: String] = [:]
     
     // Used to handle user input
     var waitingForUserInput: Bool = false
@@ -131,6 +132,7 @@ class AIGameManager {
         // Reset necessarry variables and trigger a new hand deal out
         isShowdown = false
         winnersThisHand = []
+        showdownHandNames = [:]
         board = []
         deck.resetDeck() // Creates new shuffled deck
         round = 0
@@ -276,6 +278,9 @@ class AIGameManager {
         
         let activePlayers = getActivePlayers()
         
+        showdownHandNames = Dictionary(
+            uniqueKeysWithValues: winnersAndDetails.player_details.map { ($0.name, $0.hand_name) }
+        )
         let sidePots = determineSidePots(players: aiPlayers, remainingDetails: winnersAndDetails.player_details)
         
         for sidePot in sidePots {
@@ -449,6 +454,7 @@ class AIGameManager {
         lastPlayerBet = 0
         isShowdown = false
         winnersThisHand = []
+        showdownHandNames = [:]
         skipActive = false
 
         // players
