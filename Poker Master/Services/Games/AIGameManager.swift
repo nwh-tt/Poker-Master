@@ -30,6 +30,7 @@ class AIGameManager {
     var vsAiAPI: VsAIAPI?
     
     var profile: Profile? = nil
+    var isPaid: Bool = false
     var gameLog: Game?
     var aiHandLog: AIGameLog?
     // Game state variables

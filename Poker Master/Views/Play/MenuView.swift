@@ -22,6 +22,7 @@ struct MenuView: View {
     @State private var showCreateAccount = false
     
     @State private var isSubscribed = true
+    @State private var isSubscriptionLoaded = false
     
     private var recentAIHandsCount: Int {
         userProfile.aiHandsCount()
@@ -110,8 +111,11 @@ struct MenuView: View {
                                 locked: hitEquityLimit && !isSubscribed,
                                 playedFreeHands: !isSubscribed ? recentEquityHandsCount : 0
                             )
-                        }.navigationDestination(isPresented: $navigateToEquityDrill) {
-                            EquitySettingsView()
+                        }
+                        .disabled(!isSubscriptionLoaded)
+                        .opacity(!isSubscriptionLoaded ? 0.5 : 1.0)
+                        .navigationDestination(isPresented: $navigateToEquityDrill) {
+                            EquitySettingsView(isSubscribed: isSubscribed)
                         }
                         
                         Button {
@@ -131,8 +135,11 @@ struct MenuView: View {
                                 locked: hitAILimit && !isSubscribed,
                                 playedFreeHands: !isSubscribed ? recentAIHandsCount : 0
                             )
-                        }.navigationDestination(isPresented: $navigateToAITable) {
-                            AITable(tableSize: "6")
+                        }
+                        .disabled(!isSubscriptionLoaded)
+                        .opacity(!isSubscriptionLoaded ? 0.5 : 1.0)
+                        .navigationDestination(isPresented: $navigateToAITable) {
+                            AITable(tableSize: "6", isPaid: isSubscribed)
                                 .toolbar(.hidden, for: .tabBar)
                         }
                         
@@ -144,7 +151,7 @@ struct MenuView: View {
                                 Color(red: 0.06, green: 0.18, blue: 0.10).opacity(0.60)
                             ],
                             comingSoon: true
-                        )
+                        ).opacity(0.7)
                         
                         Text("Tools")
                             .font(.headline)
@@ -195,7 +202,9 @@ struct MenuView: View {
         }
         .task {
             isSubscribed = await SubscriptionManager.isSubscribed()
-        }.preferredColorScheme(.dark)
+            isSubscriptionLoaded = true
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

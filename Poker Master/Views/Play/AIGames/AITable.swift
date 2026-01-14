@@ -25,9 +25,11 @@ struct AITable: View {
     @State private var selectedPlayer: AIPlayer? = nil
     
     let tableSize: String
+    let isPaid: Bool
     
-    init(tableSize: String) {
+    init(tableSize: String, isPaid: Bool) {
         self.tableSize = tableSize
+        self.isPaid = isPaid
     }
     
     var body: some View {
@@ -287,6 +289,7 @@ struct AITable: View {
             aiManager.context = context
             aiManager.profile = userProfile.profile
             aiManager.setAPIManager(authManager: authManager)
+            aiManager.isPaid = isPaid
         }
         .toast(
             isPresenting: $aiManager.showToast,
@@ -335,7 +338,7 @@ struct AITable: View {
     let user = Profile(username: "Ned Whittleton")
     context.insert(user)
     
-    return AITable(tableSize: "6")
+    return AITable(tableSize: "6", isPaid: true)
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
         .environmentObject(AuthManager())

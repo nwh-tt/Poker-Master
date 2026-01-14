@@ -15,7 +15,7 @@ struct EquitySettingsView: View {
     
     @State private var selectedStreet: String = "Any"
     @State private var selectedEquityType: String = "Any"
-    @State private var isSubscribed = true
+    let isSubscribed: Bool
     
     let streetOptions = ["Any", "Preflop", "Flop", "Turn"]
     let equityOptions = ["Any", "Ranges", "Cards"]
@@ -55,7 +55,7 @@ struct EquitySettingsView: View {
                 
             VStack(spacing: 8) {
                 NavigationLink(
-                    destination: EquityTable(street: selectedStreet, villainType: selectedEquityType, authManager: authManager)
+                    destination: EquityTable(street: selectedStreet, villainType: selectedEquityType, isSubscribed: isSubscribed, authManager: authManager)
                 ) {
                     Text("Start Game")
                         .font(.headline)
@@ -86,15 +86,12 @@ struct EquitySettingsView: View {
         .padding()
         .navigationTitle("Options")
         .preferredColorScheme(.dark)
-        .task {
-            isSubscribed = await SubscriptionManager.isSubscribed()
-        }
     }
 }
 
 #Preview {
     @Previewable @StateObject var authManager = AuthManager()
-    EquitySettingsView()
+    EquitySettingsView(isSubscribed: true)
         .environmentObject(authManager)
         .environmentObject(UserProfileState(context: ModelContext(try! ModelContainer(for: Profile.self))))
 }

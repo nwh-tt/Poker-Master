@@ -26,6 +26,7 @@ class EquityDrillManager: ObservableObject {
     private var hasStarted = false
     
     let equityAPI: EquityAPI
+    private let isPaid: Bool
     var context: ModelContext?
     
     var betNumber: Int = 1
@@ -44,9 +45,10 @@ class EquityDrillManager: ObservableObject {
     var street: String = "Any"
     var villainType: String = "Any" // Any, Ranges, Cards
     
-    init(street: String, villainType: String, authManager: AuthManager) {
+    init(street: String, villainType: String, isPaid: Bool, authManager: AuthManager) {
         self.street = street
         self.villainType = villainType
+        self.isPaid = isPaid
         self.equityAPI = EquityAPI(authManager: authManager)
     }
 
@@ -170,7 +172,8 @@ class EquityDrillManager: ObservableObject {
                 response = try await equityAPI.fetchEquityRange(
                     heroHole: [heroHand[0].toString(), heroHand[1].toString()],
                     villainRange: villainRange,
-                    board: board.map { $0.toString() } // Ensure board is also mapped to strings
+                    board: board.map { $0.toString() },
+                    isPaid: isPaid
                 )
             } else {
                 guard let villainHand else {
@@ -179,7 +182,8 @@ class EquityDrillManager: ObservableObject {
                 response = try await equityAPI.fetchEquityHand(
                     heroHole: [heroHand[0].toString(), heroHand[1].toString()],
                     villainHole: [villainHand[0].toString(), villainHand[1].toString()],
-                    board: board.map { $0.toString() } // Ensure board is also mapped to strings
+                    board: board.map { $0.toString() },
+                    isPaid: isPaid
                 )
             }
             guard let response else {

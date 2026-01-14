@@ -20,7 +20,7 @@ struct EquityTable: View {
     @State private var selectedEquity: String? = nil
     @StateObject private var equityDrillManager: EquityDrillManager
     @State private var showResult: Bool = false
-    @State private var isSubscribed = true
+    private let isSubscribed: Bool
     @Environment(\.modelContext) private var context
     @EnvironmentObject var userProfile: UserProfileState
     
@@ -35,10 +35,11 @@ struct EquityTable: View {
     let villainType: String
     @State private var game: Game? = nil
     
-    init(street: String, villainType: String, authManager: AuthManager) {
+    init(street: String, villainType: String, isSubscribed: Bool, authManager: AuthManager) {
         self.street = street
         self.villainType = villainType
-        _equityDrillManager = StateObject(wrappedValue: EquityDrillManager(street: street, villainType: villainType, authManager: authManager))
+        self.isSubscribed = isSubscribed
+        _equityDrillManager = StateObject(wrappedValue: EquityDrillManager(street: street, villainType: villainType, isPaid: isSubscribed, authManager: authManager))
     }
     
     var body: some View {
@@ -319,9 +320,6 @@ struct EquityTable: View {
         )
         .toolbar(.hidden, for: .tabBar)
         .preferredColorScheme(.dark)
-        .task {
-            isSubscribed = await SubscriptionManager.isSubscribed()
-        }
     }
     
     private func handleSelection(_ option: String, in scenario: EquityScenario) {
@@ -407,7 +405,7 @@ struct EquityTable: View {
         let user = Profile(username: "Ned Whittleton")
         context.insert(user)
     
-    return EquityTable(street: "Any", villainType: "Ranges", authManager: authManager)
+    return EquityTable(street: "Any", villainType: "Ranges", isSubscribed: true, authManager: authManager)
         .environment(\.modelContext, context)
         .environmentObject(UserProfileState(context: context))
 }
