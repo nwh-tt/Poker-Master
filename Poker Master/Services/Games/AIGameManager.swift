@@ -844,7 +844,8 @@ class AIGameManager {
                 board: board.map { $0.toString() },
                 potOdds: potOdds,
                 opponentCount: remainingPlayers(),
-                possibleMoves: possibleMoves
+                possibleMoves: possibleMoves,
+                isPaid: isPaid
             )
             let elapsed = Date().timeIntervalSince(startTime)
             await sleepRemaining(targetSeconds: 0.8, elapsedSeconds: elapsed)

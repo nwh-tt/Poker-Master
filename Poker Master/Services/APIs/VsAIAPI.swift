@@ -18,6 +18,7 @@ struct FetchAiDecisionRequest: Codable {
     let potOdds: Double
     let numOpponents: Int
     let possibleMoves: [String]
+    let isPaid: Bool
 }
 
 struct PlayersLeftDetails: Codable {
@@ -57,9 +58,9 @@ class VsAIAPI {
     }
     
     // Pot odds is amount in / pot
-    func fetchAiDecision(aiName: String, aiHole: [String], board: [String], potOdds: Double, opponentCount: Int, possibleMoves: [String]) async throws -> String {
+    func fetchAiDecision(aiName: String, aiHole: [String], board: [String], potOdds: Double, opponentCount: Int, possibleMoves: [String], isPaid: Bool) async throws -> String {
         
-        let body = FetchAiDecisionRequest(aiName: aiName, aiHole: aiHole, board: board, potOdds: potOdds, numOpponents: opponentCount, possibleMoves: possibleMoves)
+        let body = FetchAiDecisionRequest(aiName: aiName, aiHole: aiHole, board: board, potOdds: potOdds, numOpponents: opponentCount, possibleMoves: possibleMoves, isPaid: isPaid)
         
         let request = try await client.makeRequest(path: "/ai/decision", method: "POST", body: body)
         

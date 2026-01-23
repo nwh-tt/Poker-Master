@@ -20,8 +20,12 @@ struct ProfileView: View {
     
     @State private var showCreateAccount: Bool = false
     @State private var showLoginView: Bool = false
-    
+
     @State private var isSubscribed: Bool = true
+    @State private var showDeleteAccountAlert: Bool = false
+    @State private var showDeleteAccountError: Bool = false
+    @State private var deleteAccountErrorMessage: String = ""
+    @State private var isDeletingAccount: Bool = false
     
     @Query var games: [Game]
     
@@ -42,6 +46,19 @@ struct ProfileView: View {
     
     func showCreateAccountScreen() {
         showCreateAccount = true
+    }
+
+    func performDeleteAccount() {
+        isDeletingAccount = true
+        authManager.deleteAccount { error in
+            isDeletingAccount = false
+            if let error {
+                deleteAccountErrorMessage = authManager.errorMessage ?? error.localizedDescription
+                showDeleteAccountError = true
+            } else {
+                authManager.ensureSignedIn()
+            }
+        }
     }
     
     
@@ -257,12 +274,28 @@ struct ProfileView: View {
                     }
                     Spacer()
                     if authManager.isAuthenticated && !authManager.isAnonymous {
-                        Button(action: {
-                            authManager.signOut()
-                        }) {
-                            Text("Sign Out")
-                                .foregroundColor(.white)
-                                .underline()
+                        VStack(spacing: 12) {
+                            Button(action: {
+                                authManager.signOut()
+                            }) {
+                                Text("Sign Out")
+                                    .foregroundColor(.white)
+                                    .underline()
+                            }
+                            Spacer()
+                                Button(role: .destructive, action: {
+                                    showDeleteAccountAlert = true
+                                }) {
+                                    HStack(spacing: 8) {
+                                        if isDeletingAccount {
+                                            ProgressView()
+                                                .tint(.white)
+                                        }
+                                        Text("Delete Account")
+                                    }
+                                }
+                                .disabled(isDeletingAccount)
+                            
                         }
                     }
                 }
@@ -281,6 +314,19 @@ struct ProfileView: View {
             }
             .fullScreenCover(isPresented: $showLoginView) {
                 LoginView(showCreateAccountCallback: showCreateAccountScreen)
+            }
+            .alert("Delete Account", isPresented: $showDeleteAccountAlert) {
+                Button("Delete Account", role: .destructive) {
+                    performDeleteAccount()
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("This will permanently delete your account and sign you out.")
+            }
+            .alert("Unable to Delete Account", isPresented: $showDeleteAccountError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(deleteAccountErrorMessage)
             }
             .task {
                 isSubscribed = await SubscriptionManager.isSubscribed()

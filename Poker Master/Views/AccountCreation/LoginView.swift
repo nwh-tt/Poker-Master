@@ -134,6 +134,11 @@ struct LoginView: View {
             .onChange(of: authManager.isAnonymous) { _, _ in
                 dismiss()
             }
+            .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
+                if isAuthenticated && !authManager.isAnonymous {
+                    dismiss()
+                }
+            }
         }
     }
 }

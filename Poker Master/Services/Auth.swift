@@ -13,6 +13,7 @@ protocol AuthServiceProtocol {
     func anonymousSignIn(completion: @escaping (Error?) -> Void)
     func signUp(email: String, password: String, completion: @escaping (Error?) -> Void)
     func signOut() throws
+    func deleteAccount(completion: @escaping (Error?) -> Void)
     func getIDToken(forceRefresh: Bool) async throws -> String
 }
 
@@ -52,6 +53,17 @@ class FirebaseAuthService: AuthServiceProtocol {
 
     func signOut() throws {
         try Auth.auth().signOut()
+    }
+
+    func deleteAccount(completion: @escaping (Error?) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            completion(TokenError.userNotAuthenticated)
+            return
+        }
+
+        user.delete { error in
+            completion(error)
+        }
     }
 
     func getIDToken(forceRefresh: Bool = false) async throws -> String {
@@ -153,6 +165,8 @@ class AuthManager: ObservableObject {
             DispatchQueue.main.async {
                 self?.isAuthenticated = self?.authService.isAuthenticated ?? false
                 self?.errorMessage = error?.localizedDescription
+                self?.isLoading = false
+                self?.isAnonymous = false
             }
         }
     }
@@ -174,6 +188,7 @@ class AuthManager: ObservableObject {
             user?.link(with: credential) { [weak self] _, error in
                 DispatchQueue.main.async {
                     self?.isLoading = false
+                    self?.isAnonymous = false
                     self?.isAuthenticated = self?.authService.isAuthenticated ?? false
                     self?.errorMessage = error?.localizedDescription
                 }
@@ -184,6 +199,7 @@ class AuthManager: ObservableObject {
                     self?.isLoading = false
                     self?.isAuthenticated = self?.authService.isAuthenticated ?? false
                     self?.errorMessage = error?.localizedDescription
+                    self?.isAnonymous = false
                 }
             }
         }
@@ -193,6 +209,21 @@ class AuthManager: ObservableObject {
     func signOut() {
         do { try authService.signOut() }
         catch { errorMessage = error.localizedDescription }
+    }
+
+    func deleteAccount(completion: @escaping (Error?) -> Void) {
+        errorMessage = nil
+        isLoading = true
+
+        authService.deleteAccount { [weak self] error in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                if let error {
+                    self?.errorMessage = self?.deleteAccountErrorMessage(for: error) ?? error.localizedDescription
+                }
+                completion(error)
+            }
+        }
     }
     
     func prepareAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
@@ -280,6 +311,15 @@ class AuthManager: ObservableObject {
       }.joined()
 
       return hashString
+    }
+
+    private func deleteAccountErrorMessage(for error: Error) -> String {
+        let nsError = error as NSError
+        if let code = AuthErrorCode(rawValue: nsError.code), code == .requiresRecentLogin {
+            return "Please sign in again to delete your account."
+        }
+
+        return error.localizedDescription
     }
     
     

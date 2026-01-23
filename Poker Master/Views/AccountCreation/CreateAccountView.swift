@@ -164,8 +164,13 @@ struct CreateAccountView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .preferredColorScheme(.dark)
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .onChange(of: authManager.isAnonymous) { _, isAnonymous in
-                if !isAnonymous {
+            .onChange(of: authManager.isAnonymous) { _, _ in
+                if authManager.isAuthenticated && !authManager.isAnonymous {
+                    dismiss()
+                }
+            }
+            .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
+                if isAuthenticated && !authManager.isAnonymous {
                     dismiss()
                 }
             }
