@@ -4,10 +4,10 @@ An iOS poker trainer that drills the three skills that decide most hands: preflo
 equity estimation, and postflop play against opponents who behave like real player types.
 
 SwiftUI + SwiftData client, backed by a Python/FastAPI service on Cloud Run that handles the
-Monte Carlo simulation and hand evaluation. Built and shipped solo.
+Monte Carlo simulation and hand evaluation. Both halves built and shipped solo.
 
-- **Client:** this repo
-- **Backend:** [nwh-tt/PokerMasterBackend](https://github.com/nwh-tt/PokerMasterBackend)
+This repo is the iOS client. The backend lives in a separate private repo; it's described below
+because the split is the interesting part of the design.
 
 ---
 
@@ -65,9 +65,9 @@ An AI profile is four floats: `aggression`, `tightness`, `adaptive`, `bluff_freq
    probability drawn from a logistic curve on the equity surplus, scaled by `aggression`.
 
 The scoring step is a pure function with the RNG injected, which makes it both unit-testable and
-measurable. `tools/profile_ai_decisions.py` in the backend repo sweeps every profile across a grid of
-equity × pot odds × opponent count, and `summarize_ai_profile.py` renders the action-rate curves — so
-tuning a profile is a measured change rather than a guess.
+measurable. A profiling script sweeps every profile across a grid of equity × pot odds × opponent
+count and renders the resulting action-rate curves, so tuning a profile is a measured change rather
+than a guess.
 
 ### Auth
 
